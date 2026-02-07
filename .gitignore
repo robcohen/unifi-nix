@@ -1,0 +1,22 @@
+# Nix
+result
+result-*
+.direnv/
+
+# Secrets (never commit these)
+secrets/
+*.secret
+.env
+
+# Generated config files
+*.json
+!examples/*.json
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store

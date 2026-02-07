@@ -1,0 +1,318 @@
+# UniFi declarative configuration module
+# Defines options for networks, WiFi, and firewall rules
+{ lib, config, ... }:
+
+let
+  inherit (lib) mkOption mkEnableOption types literalExpression;
+
+  # Secret reference type - can be a plain string or { _secret = "path"; }
+  secretType = types.either types.str (types.submodule {
+    options._secret = mkOption {
+      type = types.str;
+      description = "Path to secret (resolved at deploy time via sops/agenix)";
+    };
+  });
+
+  # Network configuration options
+  networkOpts = { name, ... }: {
+    options = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether this network is enabled";
+      };
+
+      vlan = mkOption {
+        type = types.nullOr types.int;
+        default = null;
+        description = "VLAN ID. null for untagged/default network.";
+        example = 10;
+      };
+
+      subnet = mkOption {
+        type = types.str;
+        description = "Network subnet in CIDR notation (gateway/prefix)";
+        example = "192.168.10.1/24";
+      };
+
+      purpose = mkOption {
+        type = types.enum [ "corporate" "guest" "wan" "vlan-only" ];
+        default = "corporate";
+        description = "Network purpose/type";
+      };
+
+      dhcp = {
+        enable = mkEnableOption "DHCP server for this network";
+
+        start = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "DHCP range start IP";
+          example = "192.168.10.6";
+        };
+
+        end = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "DHCP range end IP";
+          example = "192.168.10.254";
+        };
+
+        dns = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "DNS servers to advertise via DHCP";
+          example = [ "76.76.2.44" "76.76.10.44" ];
+        };
+
+        leasetime = mkOption {
+          type = types.int;
+          default = 86400;
+          description = "DHCP lease time in seconds";
+        };
+      };
+
+      isolate = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Isolate this network from other VLANs (block inter-VLAN routing)";
+      };
+
+      internetAccess = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether devices on this network can access the internet";
+      };
+
+      mdns = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable mDNS/Bonjour forwarding";
+      };
+
+      igmpSnooping = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable IGMP snooping for multicast optimization";
+      };
+    };
+  };
+
+  # WiFi network configuration options
+  wifiOpts = { name, ... }: {
+    options = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether this WiFi network is enabled";
+      };
+
+      ssid = mkOption {
+        type = types.str;
+        description = "WiFi network name (SSID)";
+        example = "MyNetwork";
+      };
+
+      passphrase = mkOption {
+        type = secretType;
+        description = "WiFi password (can be secret reference)";
+        example = literalExpression ''{ _secret = "wifi/main"; }'';
+      };
+
+      network = mkOption {
+        type = types.str;
+        description = "Name of the network (VLAN) this WiFi should use";
+        example = "iot";
+      };
+
+      hidden = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Hide SSID from broadcast";
+      };
+
+      security = mkOption {
+        type = types.enum [ "wpapsk" "wpa2" "wpa3" "open" ];
+        default = "wpapsk";
+        description = "Security mode";
+      };
+
+      wpa3 = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Enable WPA3 support";
+        };
+
+        transition = mkOption {
+          type = types.bool;
+          default = true;
+          description = "WPA3 transition mode (WPA2+WPA3 for compatibility)";
+        };
+      };
+
+      pmf = mkOption {
+        type = types.enum [ "disabled" "optional" "required" ];
+        default = "optional";
+        description = "Protected Management Frames mode";
+      };
+
+      clientIsolation = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Isolate wireless clients from each other";
+      };
+
+      multicastEnhance = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Convert multicast to unicast for streaming";
+      };
+
+      bands = mkOption {
+        type = types.listOf (types.enum [ "2g" "5g" "6g" ]);
+        default = [ "2g" "5g" ];
+        description = "WiFi bands to broadcast on";
+      };
+
+      minRate = {
+        "2g" = mkOption {
+          type = types.int;
+          default = 1000;
+          description = "Minimum data rate for 2.4GHz in kbps";
+        };
+        "5g" = mkOption {
+          type = types.int;
+          default = 6000;
+          description = "Minimum data rate for 5GHz in kbps";
+        };
+      };
+
+      guestMode = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable guest mode (captive portal ready)";
+      };
+
+      apGroups = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "AP groups to broadcast this SSID (empty = all)";
+      };
+    };
+  };
+
+  # Firewall rule options
+  firewallRuleOpts = { name, ... }: {
+    options = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+      };
+
+      description = mkOption {
+        type = types.str;
+        default = "";
+      };
+
+      action = mkOption {
+        type = types.enum [ "accept" "drop" "reject" ];
+        default = "drop";
+      };
+
+      from = mkOption {
+        type = types.either types.str (types.listOf types.str);
+        description = "Source network(s) or 'any'";
+        example = "iot";
+      };
+
+      to = mkOption {
+        type = types.either types.str (types.listOf types.str);
+        description = "Destination network(s) or 'any'";
+        example = "default";
+      };
+
+      protocol = mkOption {
+        type = types.enum [ "all" "tcp" "udp" "icmp" "tcp_udp" ];
+        default = "all";
+      };
+
+      ports = mkOption {
+        type = types.nullOr (types.listOf types.int);
+        default = null;
+        description = "Destination ports (null = all)";
+        example = [ 80 443 ];
+      };
+
+      index = mkOption {
+        type = types.int;
+        default = 2000;
+        description = "Rule priority (lower = higher priority)";
+      };
+    };
+  };
+
+in {
+  options.unifi = {
+    host = mkOption {
+      type = types.str;
+      description = "UDM IP address or hostname";
+      example = "192.168.1.1";
+    };
+
+    site = mkOption {
+      type = types.str;
+      default = "default";
+      description = "UniFi site name";
+    };
+
+    networks = mkOption {
+      type = types.attrsOf (types.submodule networkOpts);
+      default = {};
+      description = "Network (VLAN) configurations";
+      example = literalExpression ''
+        {
+          iot = {
+            vlan = 10;
+            subnet = "192.168.10.1/24";
+            dhcp.enable = true;
+            isolate = true;
+          };
+        }
+      '';
+    };
+
+    wifi = mkOption {
+      type = types.attrsOf (types.submodule wifiOpts);
+      default = {};
+      description = "WiFi network configurations";
+      example = literalExpression ''
+        {
+          main = {
+            ssid = "MyNetwork";
+            passphrase = { _secret = "wifi/main"; };
+            network = "default";
+            wpa3.enable = true;
+          };
+        }
+      '';
+    };
+
+    firewall = {
+      rules = mkOption {
+        type = types.attrsOf (types.submodule firewallRuleOpts);
+        default = {};
+        description = "Firewall/traffic rules";
+        example = literalExpression ''
+          {
+            block-iot-to-lan = {
+              from = "iot";
+              to = "default";
+              action = "drop";
+            };
+          }
+        '';
+      };
+    };
+  };
+}
