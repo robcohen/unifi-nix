@@ -4,6 +4,7 @@ set -euo pipefail
 
 CONFIG_JSON="${1:-}"
 HOST="${2:-}"
+SSH_USER="${SSH_USER:-root}"
 
 if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "Usage: unifi-diff <config.json> <host>"
@@ -36,7 +37,7 @@ NC='\033[0m'
 
 # Fetch current state from UDM via SSH+MongoDB
 echo "Fetching current configuration..."
-CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
+CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
 JSON.stringify({
   networks: db.networkconf.find({}, {
     _id: 0, name: 1, vlan: 1, ip_subnet: 1, dhcpd_enabled: 1,

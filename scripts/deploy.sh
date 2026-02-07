@@ -5,6 +5,7 @@ set -euo pipefail
 CONFIG_JSON="${1:-}"
 HOST="${2:-}"
 DRY_RUN="${DRY_RUN:-false}"
+SSH_USER="${SSH_USER:-root}"
 
 if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "Usage: unifi-deploy <config.json> <host>"
@@ -15,6 +16,7 @@ if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo ""
   echo "Environment:"
   echo "  DRY_RUN=true           Show commands without executing"
+  echo "  SSH_USER=root          SSH username (default: root)"
   echo "  UNIFI_SECRETS_DIR=path Directory containing secret files"
   echo ""
   echo "Example:"
@@ -40,19 +42,19 @@ run_mongo() {
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "[DRY RUN] mongo: ${cmd:0:80}..."
   else
-    ssh -o ConnectTimeout=10 "root@$HOST" "mongo --quiet --port 27117 ace --eval '$cmd'"
+    ssh -o ConnectTimeout=10 "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '$cmd'"
   fi
 }
 
 # Get site_id
 echo "Fetching site info..."
-SITE_INFO=$(ssh "root@$HOST" "mongo --quiet --port 27117 ace --eval 'JSON.stringify(db.site.findOne())'")
+SITE_INFO=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval 'JSON.stringify(db.site.findOne())'")
 SITE_ID=$(echo "$SITE_INFO" | jq -r '._id."$oid"')
 echo "Site ID: $SITE_ID"
 
 # Build network name -> id mapping
 echo "Building network mappings..."
-NETWORK_MAP=$(ssh "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
+NETWORK_MAP=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
   JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
     m[n.name] = n._id.str || n._id.toString();
     return m;
@@ -80,7 +82,7 @@ done
 
 # Refresh network map
 if [[ "$DRY_RUN" != "true" ]]; then
-  NETWORK_MAP=$(ssh "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
+  NETWORK_MAP=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
     JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
       m[n.name] = n._id.str || n._id.toString();
       return m;
@@ -132,7 +134,7 @@ for wifi in $(echo "$DESIRED" | jq -r '.wifi | keys[]'); do
     .site_id = \"$SITE_ID\"
   ")
 
-  existing=$(ssh "root@$HOST" "mongo --quiet --port 27117 ace --eval '
+  existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
     JSON.stringify(db.wlanconf.findOne({name: \"$ssid\"}, {_id: 1}))
   '" 2>/dev/null || echo "null")
 
@@ -162,7 +164,7 @@ if [[ "$rule_count" -gt 0 ]]; then
       .site_id = \"$SITE_ID\"
     ")
 
-    existing=$(ssh "root@$HOST" "mongo --quiet --port 27117 ace --eval '
+    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
       JSON.stringify(db.traffic_rule.findOne({description: \"$desc\"}, {_id: 1}))
     '" 2>/dev/null || echo "null")
 

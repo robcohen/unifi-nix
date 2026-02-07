@@ -36,9 +36,15 @@ let
       };
 
       purpose = mkOption {
-        type = types.enum [ "corporate" "guest" "wan" "vlan-only" ];
+        type = types.enum [ "corporate" "guest" "wan" "vlan-only" "remote-user-vpn" "site-vpn" ];
         default = "corporate";
         description = "Network purpose/type";
+      };
+
+      networkGroup = mkOption {
+        type = types.enum [ "LAN" "WAN" "WAN2" ];
+        default = "LAN";
+        description = "Network group (LAN for internal networks, WAN/WAN2 for uplinks)";
       };
 
       dhcp = {
@@ -192,6 +198,39 @@ let
         type = types.bool;
         default = false;
         description = "Enable guest mode (captive portal ready)";
+      };
+
+      fastRoaming = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable 802.11r Fast BSS Transition for faster roaming";
+      };
+
+      bssTransition = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable 802.11v BSS Transition Management";
+      };
+
+      macFilter = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Enable MAC address filtering";
+        };
+
+        policy = mkOption {
+          type = types.enum [ "allow" "deny" ];
+          default = "allow";
+          description = "MAC filter policy (allow = whitelist, deny = blacklist)";
+        };
+
+        list = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "List of MAC addresses to filter";
+          example = [ "00:11:22:33:44:55" "AA:BB:CC:DD:EE:FF" ];
+        };
       };
 
       apGroups = mkOption {

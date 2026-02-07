@@ -31,14 +31,18 @@ let
       # VLAN settings
       vlan_enabled = cfg.vlan != null;
       vlan = if cfg.vlan != null then cfg.vlan else 0;
-      networkgroup = "LAN";
+      networkgroup = cfg.networkGroup;
 
       # DHCP settings
       dhcpd_enabled = cfg.dhcp.enable;
       dhcpd_start = if cfg.dhcp.start != null then cfg.dhcp.start
-                    else "${subnet.baseIp}.6";
+                    else if cfg.dhcp.enable then
+                      throw "Network '${name}': dhcp.start is required when dhcp.enable = true"
+                    else "";
       dhcpd_stop = if cfg.dhcp.end != null then cfg.dhcp.end
-                   else "${subnet.baseIp}.254";
+                   else if cfg.dhcp.enable then
+                     throw "Network '${name}': dhcp.end is required when dhcp.enable = true"
+                   else "";
       dhcpd_leasetime = cfg.dhcp.leasetime;
 
       # DNS settings
@@ -101,11 +105,16 @@ let
     minrate_na_enabled = true;
     minrate_na_data_rate_kbps = cfg.minRate."5g";
 
-    # Other defaults
-    bss_transition = true;
-    fast_roaming_enabled = false;
-    mac_filter_enabled = false;
-    mac_filter_policy = "allow";
+    # Roaming and transition features
+    bss_transition = cfg.bssTransition;
+    fast_roaming_enabled = cfg.fastRoaming;
+
+    # MAC filtering
+    mac_filter_enabled = cfg.macFilter.enable;
+    mac_filter_policy = cfg.macFilter.policy;
+    mac_filter_list = cfg.macFilter.list;
+
+    # Other settings
     no2ghz_oui = false;
     setting_preference = "manual";
   };
