@@ -110,6 +110,10 @@
               diffutils
             ];
             text = builtins.readFile ./scripts/deploy.sh;
+            excludeShellChecks = [
+              "SC2029" # Variables intentionally expanded client-side for SSH
+              "SC2154" # $oid is a MongoDB field name, not a shell variable
+            ];
             inherit meta;
           };
 
