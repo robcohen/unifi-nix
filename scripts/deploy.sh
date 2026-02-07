@@ -52,12 +52,12 @@ echo "Site ID: $SITE_ID"
 
 # Build network name -> id mapping
 echo "Building network mappings..."
-NETWORK_MAP=$(ssh "root@$HOST" "mongo --quiet --port 27117 ace --eval '
-  JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce((m, n) => {
-    m[n.name] = n._id.\"\$oid\" || n._id.toString();
+NETWORK_MAP=$(ssh "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
+  JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
+    m[n.name] = n._id.str || n._id.toString();
     return m;
   }, {}))
-'")
+"')
 
 echo ""
 echo "=== Applying Networks ==="
@@ -80,12 +80,12 @@ done
 
 # Refresh network map
 if [[ "$DRY_RUN" != "true" ]]; then
-  NETWORK_MAP=$(ssh "root@$HOST" "mongo --quiet --port 27117 ace --eval '
-    JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce((m, n) => {
-      m[n.name] = n._id.\"\$oid\" || n._id.toString();
+  NETWORK_MAP=$(ssh "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
+    JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
+      m[n.name] = n._id.str || n._id.toString();
       return m;
     }, {}))
-  '")
+  "')
 fi
 
 echo ""
