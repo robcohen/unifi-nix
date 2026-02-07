@@ -36,9 +36,9 @@ NC='\033[0m'
 
 # Fetch current state from UDM via SSH+MongoDB
 echo "Fetching current configuration..."
-CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$HOST" "mongo --quiet --port 27117 ace --eval '
+CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
 JSON.stringify({
-  networks: db.networkconf.find({purpose: \"corporate\"}, {
+  networks: db.networkconf.find({purpose: {\$in: [\"corporate\", \"guest\"]}}, {
     _id: 0, name: 1, vlan: 1, ip_subnet: 1, dhcpd_enabled: 1,
     dhcpd_start: 1, dhcpd_stop: 1, dhcpd_dns_1: 1, dhcpd_dns_2: 1,
     internet_access_enabled: 1, network_isolation_enabled: 1, enabled: 1
@@ -48,7 +48,7 @@ JSON.stringify({
     wpa3_support: 1, l2_isolation: 1, networkconf_id: 1
   }).toArray()
 })
-'")
+"')
 
 DESIRED=$(cat "$CONFIG_JSON")
 
