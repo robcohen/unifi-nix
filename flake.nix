@@ -176,22 +176,27 @@
             deploy = {
               type = "app";
               program = "${deploy}/bin/unifi-deploy";
+              meta.description = "Deploy UniFi configuration to UDM";
             };
             diff = {
               type = "app";
               program = "${diff}/bin/unifi-diff";
+              meta.description = "Show diff between local and remote UniFi config";
             };
             eval = {
               type = "app";
               program = "${eval}/bin/unifi-eval";
+              meta.description = "Evaluate Nix UniFi configuration to JSON";
             };
             validate = {
               type = "app";
               program = "${validate}/bin/unifi-validate";
+              meta.description = "Validate UniFi configuration against schema";
             };
             default = {
               type = "app";
               program = "${deploy}/bin/unifi-deploy";
+              meta.description = "Deploy UniFi configuration to UDM";
             };
           };
 
