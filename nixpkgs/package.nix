@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     owner = "robcohen";
     repo = "unifi-nix";
     rev = "v${version}";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-oho4YhfAfNK3etRZfw+vslzgk/qS1SA1+d5YVBRh/G0=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
