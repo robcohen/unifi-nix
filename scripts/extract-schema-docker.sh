@@ -103,7 +103,7 @@ fi
 echo ""
 echo "=== Fetching OpenAPI spec ==="
 TEMP_SPEC=$(mktemp)
-curl -sk "https://localhost:18443/api-docs/integration.json" > "$TEMP_SPEC"
+curl -sk "https://localhost:18443/api-docs/integration.json" >"$TEMP_SPEC"
 
 # Validate the spec
 if ! jq -e '.info.version' "$TEMP_SPEC" &>/dev/null; then
@@ -137,20 +137,20 @@ jq '{
   source: "docker",
   image: $image,
   extractedAt: now | strftime("%Y-%m-%dT%H:%M:%SZ")
-}' --arg image "$IMAGE" "$TEMP_SPEC" > "$SCHEMA_DIR/metadata.json"
+}' --arg image "$IMAGE" "$TEMP_SPEC" >"$SCHEMA_DIR/metadata.json"
 echo "Saved: metadata.json"
 
 # Extract schema names
 echo ""
 echo "=== Extracting schema definitions ==="
-jq '.components.schemas | keys' "$TEMP_SPEC" > "$SCHEMA_DIR/schema-names.json"
+jq '.components.schemas | keys' "$TEMP_SPEC" >"$SCHEMA_DIR/schema-names.json"
 SCHEMA_COUNT=$(jq 'length' "$SCHEMA_DIR/schema-names.json")
 echo "Found $SCHEMA_COUNT schema definitions"
 
 # Extract API paths
 echo ""
 echo "=== Extracting API paths ==="
-jq '.paths | keys' "$TEMP_SPEC" > "$SCHEMA_DIR/api-paths.json"
+jq '.paths | keys' "$TEMP_SPEC" >"$SCHEMA_DIR/api-paths.json"
 PATH_COUNT=$(jq 'length' "$SCHEMA_DIR/api-paths.json")
 echo "Found $PATH_COUNT API paths"
 
@@ -165,7 +165,7 @@ jq '
     required: .value.required,
     properties: (.value.properties | keys)
   }
-)' "$TEMP_SPEC" > "$SCHEMA_DIR/required-fields.json"
+)' "$TEMP_SPEC" >"$SCHEMA_DIR/required-fields.json"
 echo "Saved: required-fields.json"
 
 # Cleanup temp file

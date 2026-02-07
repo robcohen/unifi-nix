@@ -4,7 +4,7 @@ set -euo pipefail
 
 CONFIG_FILE="${1:-}"
 
-if [[ -z "$CONFIG_FILE" ]]; then
+if [[ -z $CONFIG_FILE ]]; then
   echo "Usage: unifi-eval <config.nix>"
   echo ""
   echo "Evaluates a UniFi site configuration and outputs JSON for deploy/diff."
@@ -15,7 +15,7 @@ if [[ -z "$CONFIG_FILE" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$CONFIG_FILE" ]]; then
+if [[ ! -f $CONFIG_FILE ]]; then
   echo "Error: Config file not found: $CONFIG_FILE" >&2
   exit 1
 fi

@@ -6,7 +6,7 @@ CONFIG_JSON="${1:-}"
 HOST="${2:-}"
 SSH_USER="${SSH_USER:-root}"
 
-if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
+if [[ -z $CONFIG_JSON ]] || [[ -z $HOST ]]; then
   echo "Usage: unifi-plan <config.json> <host>"
   echo ""
   echo "Shows what changes would be made, including deletions."
@@ -17,7 +17,7 @@ if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$CONFIG_JSON" ]]; then
+if [[ ! -f $CONFIG_JSON ]]; then
   echo "Error: Config file not found: $CONFIG_JSON"
   exit 1
 fi
@@ -73,7 +73,7 @@ done
 # Check for deletes
 for net in $current_networks; do
   # Skip system networks
-  [[ "$net" == "Default" ]] && continue
+  [[ $net == "Default" ]] && continue
 
   if ! echo "$desired_networks" | grep -qx "$net"; then
     echo -e "  ${RED}-${NC} $net (delete)"
@@ -114,8 +114,8 @@ current_rules_json=$(echo "$CURRENT" | jq -c '[.firewallRules[].description // e
 
 # Check creates/updates for desired rules
 echo "$DESIRED" | jq -r '.firewallRules[].description' | while IFS= read -r rule; do
-  [[ -z "$rule" ]] && continue
-  if echo "$current_rules_json" | jq -e --arg r "$rule" 'index($r) != null' > /dev/null; then
+  [[ -z $rule ]] && continue
+  if echo "$current_rules_json" | jq -e --arg r "$rule" 'index($r) != null' >/dev/null; then
     echo -e "  ${YELLOW}~${NC} $rule (update)"
   else
     echo -e "  ${GREEN}+${NC} $rule (create)"
@@ -124,8 +124,8 @@ done
 
 # Check deletes for current rules not in desired
 echo "$CURRENT" | jq -r '.firewallRules[].description // empty' | while IFS= read -r rule; do
-  [[ -z "$rule" ]] && continue
-  if ! echo "$desired_rules_json" | jq -e --arg r "$rule" 'index($r) != null' > /dev/null; then
+  [[ -z $rule ]] && continue
+  if ! echo "$desired_rules_json" | jq -e --arg r "$rule" 'index($r) != null' >/dev/null; then
     echo -e "  ${RED}-${NC} $rule (delete)"
   fi
 done
@@ -144,7 +144,7 @@ for net in $desired_networks; do
   fi
 done
 for net in $current_networks; do
-  [[ "$net" == "Default" ]] && continue
+  [[ $net == "Default" ]] && continue
   if ! echo "$desired_networks" | grep -qx "$net"; then
     ((total_deletes++)) || true
   fi
@@ -166,8 +166,8 @@ done
 
 # Count firewall changes
 while IFS= read -r rule; do
-  [[ -z "$rule" ]] && continue
-  if echo "$current_rules_json" | jq -e --arg r "$rule" 'index($r) != null' > /dev/null; then
+  [[ -z $rule ]] && continue
+  if echo "$current_rules_json" | jq -e --arg r "$rule" 'index($r) != null' >/dev/null; then
     ((total_updates++)) || true
   else
     ((total_creates++)) || true
@@ -175,8 +175,8 @@ while IFS= read -r rule; do
 done < <(echo "$DESIRED" | jq -r '.firewallRules[].description')
 
 while IFS= read -r rule; do
-  [[ -z "$rule" ]] && continue
-  if ! echo "$desired_rules_json" | jq -e --arg r "$rule" 'index($r) != null' > /dev/null; then
+  [[ -z $rule ]] && continue
+  if ! echo "$desired_rules_json" | jq -e --arg r "$rule" 'index($r) != null' >/dev/null; then
     ((total_deletes++)) || true
   fi
 done < <(echo "$CURRENT" | jq -r '.firewallRules[].description // empty')
@@ -188,7 +188,7 @@ echo -e "  ${YELLOW}Updates:${NC} $total_updates"
 echo -e "  ${RED}Deletes:${NC} $total_deletes"
 echo ""
 
-if [[ "$total_deletes" -gt 0 ]]; then
+if [[ $total_deletes -gt 0 ]]; then
   echo -e "${RED}WARNING:${NC} This plan includes deletions!"
   echo "Run with ALLOW_DELETES=true to apply deletions."
 fi

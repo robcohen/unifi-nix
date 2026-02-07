@@ -2,7 +2,7 @@
 # Copy this file and customize for your site
 {
   unifi = {
-    host = "192.168.1.1";  # Your UDM IP
+    host = "192.168.1.1"; # Your UDM IP
     site = "default";
 
     # ==========================================================================
@@ -16,7 +16,10 @@
           enable = true;
           start = "192.168.1.100";
           end = "192.168.1.254";
-          dns = [ "1.1.1.1" "8.8.8.8" ];
+          dns = [
+            "1.1.1.1"
+            "8.8.8.8"
+          ];
         };
       };
 
@@ -30,7 +33,7 @@
           end = "192.168.10.254";
           dns = [ "1.1.1.1" ];
         };
-        isolate = true;  # Block inter-VLAN routing
+        isolate = true; # Block inter-VLAN routing
         mdns = false;
       };
 
@@ -56,7 +59,9 @@
       # Main WiFi - WPA3 with WPA2 fallback
       main = {
         ssid = "MyNetwork";
-        passphrase = { _secret = "wifi/main"; };  # Resolved at deploy time
+        passphrase = {
+          _secret = "wifi/main";
+        }; # Resolved at deploy time
         network = "Default";
         wpa3 = {
           enable = true;
@@ -67,7 +72,9 @@
       # IoT WiFi - hidden, WPA2 for compatibility
       iot = {
         ssid = "MyNetwork-IoT";
-        passphrase = { _secret = "wifi/iot"; };
+        passphrase = {
+          _secret = "wifi/iot";
+        };
         network = "IoT";
         hidden = true;
         wpa3.enable = false;
@@ -76,7 +83,9 @@
       # Guest WiFi
       guest = {
         ssid = "MyNetwork-Guest";
-        passphrase = { _secret = "wifi/guest"; };
+        passphrase = {
+          _secret = "wifi/guest";
+        };
         network = "Guest";
         wpa3.enable = true;
         clientIsolation = true;
@@ -100,7 +109,10 @@
       # Block guests from all private networks
       block-guest-to-private = {
         from = "Guest";
-        to = [ "Default" "IoT" ];
+        to = [
+          "Default"
+          "IoT"
+        ];
         action = "drop";
         description = "Isolate guest network";
         index = 2000;

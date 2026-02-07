@@ -6,7 +6,7 @@ CONFIG_JSON="${1:-}"
 HOST="${2:-}"
 SSH_USER="${SSH_USER:-root}"
 
-if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
+if [[ -z $CONFIG_JSON ]] || [[ -z $HOST ]]; then
   echo "Usage: unifi-diff <config.json> <host>"
   echo ""
   echo "Arguments:"
@@ -19,7 +19,7 @@ if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$CONFIG_JSON" ]]; then
+if [[ ! -f $CONFIG_JSON ]]; then
   echo "Error: Config file not found: $CONFIG_JSON"
   exit 1
 fi
@@ -60,7 +60,7 @@ for net in $(echo "$DESIRED" | jq -r '.networks | keys[]'); do
   desired_net=$(echo "$DESIRED" | jq ".networks[\"$net\"]")
   current_net=$(echo "$CURRENT" | jq ".networks[] | select(.name == \"$net\")" 2>/dev/null || echo "null")
 
-  if [[ "$current_net" == "null" ]] || [[ -z "$current_net" ]]; then
+  if [[ $current_net == "null" ]] || [[ -z $current_net ]]; then
     echo -e "${GREEN}+ $net: NEW${NC}"
     echo "    subnet: $(echo "$desired_net" | jq -r '.ip_subnet')"
     echo "    vlan: $(echo "$desired_net" | jq -r '.vlan // "untagged"')"
@@ -69,21 +69,21 @@ for net in $(echo "$DESIRED" | jq -r '.networks | keys[]'); do
 
     d_subnet=$(echo "$desired_net" | jq -r '.ip_subnet')
     c_subnet=$(echo "$current_net" | jq -r '.ip_subnet // ""')
-    [[ "$d_subnet" != "$c_subnet" ]] && changes+="    subnet: $c_subnet → $d_subnet\n"
+    [[ $d_subnet != "$c_subnet" ]] && changes+="    subnet: $c_subnet → $d_subnet\n"
 
     d_dhcp=$(echo "$desired_net" | jq -r '.dhcpd_enabled')
     c_dhcp=$(echo "$current_net" | jq -r '.dhcpd_enabled // false')
-    [[ "$d_dhcp" != "$c_dhcp" ]] && changes+="    dhcp: $c_dhcp → $d_dhcp\n"
+    [[ $d_dhcp != "$c_dhcp" ]] && changes+="    dhcp: $c_dhcp → $d_dhcp\n"
 
     d_dns1=$(echo "$desired_net" | jq -r '.dhcpd_dns_1')
     c_dns1=$(echo "$current_net" | jq -r '.dhcpd_dns_1 // ""')
-    [[ "$d_dns1" != "$c_dns1" ]] && [[ -n "$d_dns1" ]] && changes+="    dns: $c_dns1 → $d_dns1\n"
+    [[ $d_dns1 != "$c_dns1" ]] && [[ -n $d_dns1 ]] && changes+="    dns: $c_dns1 → $d_dns1\n"
 
     d_iso=$(echo "$desired_net" | jq -r '.network_isolation_enabled')
     c_iso=$(echo "$current_net" | jq -r '.network_isolation_enabled // false')
-    [[ "$d_iso" != "$c_iso" ]] && changes+="    isolation: $c_iso → $d_iso\n"
+    [[ $d_iso != "$c_iso" ]] && changes+="    isolation: $c_iso → $d_iso\n"
 
-    if [[ -n "$changes" ]]; then
+    if [[ -n $changes ]]; then
       echo -e "${YELLOW}~ $net:${NC}"
       echo -e "$changes"
     else
@@ -100,20 +100,20 @@ for wifi in $(echo "$DESIRED" | jq -r '.wifi | keys[]'); do
   ssid=$(echo "$desired_wifi" | jq -r '.name')
   current_wifi=$(echo "$CURRENT" | jq ".wifi[] | select(.name == \"$ssid\")" 2>/dev/null || echo "null")
 
-  if [[ "$current_wifi" == "null" ]] || [[ -z "$current_wifi" ]]; then
+  if [[ $current_wifi == "null" ]] || [[ -z $current_wifi ]]; then
     echo -e "${GREEN}+ $ssid: NEW${NC}"
   else
     changes=""
 
     d_hidden=$(echo "$desired_wifi" | jq -r '.hide_ssid')
     c_hidden=$(echo "$current_wifi" | jq -r '.hide_ssid // false')
-    [[ "$d_hidden" != "$c_hidden" ]] && changes+="    hidden: $c_hidden → $d_hidden\n"
+    [[ $d_hidden != "$c_hidden" ]] && changes+="    hidden: $c_hidden → $d_hidden\n"
 
     d_wpa3=$(echo "$desired_wifi" | jq -r '.wpa3_support')
     c_wpa3=$(echo "$current_wifi" | jq -r '.wpa3_support // false')
-    [[ "$d_wpa3" != "$c_wpa3" ]] && changes+="    wpa3: $c_wpa3 → $d_wpa3\n"
+    [[ $d_wpa3 != "$c_wpa3" ]] && changes+="    wpa3: $c_wpa3 → $d_wpa3\n"
 
-    if [[ -n "$changes" ]]; then
+    if [[ -n $changes ]]; then
       echo -e "${YELLOW}~ $ssid:${NC}"
       echo -e "$changes"
     else
@@ -125,7 +125,7 @@ done
 echo ""
 echo -e "${BLUE}=== Firewall Rules ===${NC}"
 rule_count=$(echo "$DESIRED" | jq '.firewallRules | length')
-if [[ "$rule_count" -gt 0 ]]; then
+if [[ $rule_count -gt 0 ]]; then
   for rule in $(echo "$DESIRED" | jq -r '.firewallRules | keys[]'); do
     r=$(echo "$DESIRED" | jq ".firewallRules[\"$rule\"]")
     action=$(echo "$r" | jq -r '.action')

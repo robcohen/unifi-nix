@@ -17,7 +17,7 @@ echo "Extracting schemas from $HOST..."
 # Get API version from the OpenAPI spec
 VERSION=$(ssh "$SSH_USER@$HOST" 'cat /usr/lib/unifi/webapps/ROOT/api-docs/integration.json 2>/dev/null' | grep -oP '"version"\s*:\s*"\K[^"]+' | head -1 || echo "unknown")
 
-if [[ "$VERSION" == "unknown" ]]; then
+if [[ $VERSION == "unknown" ]]; then
   echo "ERROR: Could not determine API version"
   exit 1
 fi
@@ -30,8 +30,8 @@ mkdir -p "$SCHEMA_DIR"
 # 1. Extract Integration API (OpenAPI 3.1 spec)
 echo ""
 echo "=== Extracting Integration API schema ==="
-ssh "$SSH_USER@$HOST" 'cat /usr/lib/unifi/webapps/ROOT/api-docs/integration.json' > "$SCHEMA_DIR/integration.json"
-echo "Saved: integration.json ($(wc -c < "$SCHEMA_DIR/integration.json") bytes)"
+ssh "$SSH_USER@$HOST" 'cat /usr/lib/unifi/webapps/ROOT/api-docs/integration.json' >"$SCHEMA_DIR/integration.json"
+echo "Saved: integration.json ($(wc -c <"$SCHEMA_DIR/integration.json") bytes)"
 
 # 2. List ALL MongoDB collections (not hardcoded)
 echo ""
@@ -64,7 +64,7 @@ db.getCollectionNames().forEach(function(collName) {
   }
 });
 print(JSON.stringify(result, null, 2));
-"' > "$SCHEMA_DIR/mongodb-fields.json"
+"' >"$SCHEMA_DIR/mongodb-fields.json"
 echo "Saved: mongodb-fields.json"
 
 # 4. Extract full example documents (for understanding types and defaults)
@@ -119,7 +119,7 @@ if (defaultLan) {
 
 // Use JSON.stringify for proper JSON (converts ObjectId to {$oid:...} format)
 print(JSON.stringify(result, null, 2));
-"' > "$SCHEMA_DIR/mongodb-examples.json"
+"' >"$SCHEMA_DIR/mongodb-examples.json"
 echo "Saved: mongodb-examples.json"
 
 # 5. Extract reference IDs needed for creating records
@@ -134,7 +134,7 @@ var refs = {
   devices: db.device.find({}, {_id: 1, mac: 1, name: 1, model: 1}).toArray()
 };
 print(JSON.stringify(refs, null, 2));
-"' > "$SCHEMA_DIR/reference-ids.json"
+"' >"$SCHEMA_DIR/reference-ids.json"
 echo "Saved: reference-ids.json"
 
 # 6. Extract collection statistics (doc counts, indexes)
@@ -153,7 +153,7 @@ db.getCollectionNames().forEach(function(collName) {
   };
 });
 print(JSON.stringify(stats, null, 2));
-"' > "$SCHEMA_DIR/mongodb-stats.json"
+"' >"$SCHEMA_DIR/mongodb-stats.json"
 echo "Saved: mongodb-stats.json"
 
 echo ""

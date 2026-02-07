@@ -1,28 +1,43 @@
 # unifi-nix
 
+[![CI](https://github.com/robcohen/unifi-nix/actions/workflows/ci.yml/badge.svg)](https://github.com/robcohen/unifi-nix/actions/workflows/ci.yml)
+[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/robcohen/unifi-nix/badge)](https://flakehub.com/flake/robcohen/unifi-nix)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Declarative UniFi Dream Machine configuration via Nix.
 
-Define your networks, WiFi, and firewall rules in Nix. Preview changes with `diff`. Apply with `deploy`.
+Define your networks, WiFi, firewall rules, port forwards, and DHCP reservations in Nix. Preview changes with `diff`. Validate before deploy. Apply with `deploy`.
 
 ## Why?
 
-- **Ubiquiti's official API is read-only** (writes "coming soon")
+- **Ubiquiti's official API is limited** - The Integration API doesn't cover all features
 - **The Terraform provider is broken** and poorly maintained
-- **The UI is not declarative** - no GitOps, no version control, no review process
+- **The UI is not declarative** - No GitOps, no version control, no review process
 
-This tool bypasses the API entirely by writing directly to the UDM's MongoDB database via SSH.
+This tool provides a fully declarative approach to UniFi configuration with automatic schema validation.
+
+## Features
+
+- **Declarative configuration** - Define your entire network in Nix
+- **Schema validation** - Automatically validates against UniFi's OpenAPI schema
+- **Diff before deploy** - Preview all changes before applying
+- **Secret management** - Integrates with sops-nix/agenix
+- **Version tracking** - Schemas are versioned per UniFi Network Application version
 
 ## Requirements
 
-- UniFi Dream Machine (UDM, UDM-Pro, UDM-SE, etc.) with SSH access
+- UniFi Dream Machine (UDM, UDM-Pro, UDM-SE, UCG-Ultra, etc.) with SSH access
 - Nix with flakes enabled
 - SSH key authentication to your UDM (`ssh root@<udm-ip>`)
 
 ## Quick Start
 
 ```bash
-# Clone
-git clone https://github.com/yourusername/unifi-nix
+# Add to your flake
+nix flake init -t github:robcohen/unifi-nix
+
+# Or clone directly
+git clone https://github.com/robcohen/unifi-nix
 cd unifi-nix
 
 # Copy and edit the example config
@@ -35,19 +50,23 @@ nix run .#eval -- sites/mysite.nix > config.json
 # Preview changes
 nix run .#diff -- config.json 192.168.1.1
 
+# Validate configuration
+nix run .#validate -- config.json
+
 # Apply (with secrets)
 export WIFI_MAIN="your-password"
-export WIFI_IOT="your-iot-password"
 nix run .#deploy -- config.json 192.168.1.1
 ```
 
-## Usage as a Flake Input
+## Installation
+
+### As a Flake Input
 
 ```nix
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    unifi-nix.url = "github:yourusername/unifi-nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    unifi-nix.url = "github:robcohen/unifi-nix";
   };
 
   outputs = { self, nixpkgs, unifi-nix }: {
@@ -58,6 +77,15 @@ nix run .#deploy -- config.json 192.168.1.1
     };
   };
 }
+```
+
+### Using the Overlay
+
+```nix
+{
+  nixpkgs.overlays = [ unifi-nix.overlays.default ];
+}
+# Then use: pkgs.unifi-nix.deploy, pkgs.unifi-nix.diff, etc.
 ```
 
 ## Configuration Options
@@ -104,14 +132,38 @@ wifi = {
       transition = true;             # WPA2+WPA3 compatibility
     };
 
-    pmf = "optional";                # disabled | optional | required
+    bands = [ "2g" "5g" ];           # 2g | 5g | 6g
     clientIsolation = false;
-    multicastEnhance = false;
     guestMode = false;
+  };
+};
+```
 
-    bands = [ "2g" "5g" ];
-    minRate."2g" = 1000;             # kbps
-    minRate."5g" = 6000;
+### Port Forwards
+
+```nix
+portForwards = {
+  https = {
+    srcPort = 443;
+    dstIP = "192.168.1.100";
+    protocol = "tcp";                # tcp | udp | tcp_udp
+  };
+  minecraft = {
+    srcPort = 25565;
+    dstIP = "192.168.1.50";
+    dstPort = 25565;                 # Optional, defaults to srcPort
+  };
+};
+```
+
+### DHCP Reservations
+
+```nix
+dhcpReservations = {
+  server = {
+    mac = "00:11:22:33:44:55";
+    ip = "192.168.1.100";
+    network = "Default";
   };
 };
 ```
@@ -127,10 +179,21 @@ firewall.rules = {
     protocol = "all";                # all | tcp | udp | icmp
     ports = null;                    # null = all, or [ 80 443 ]
     index = 2000;                    # Priority (lower = higher)
-    description = "Block IoT";
   };
 };
 ```
+
+## Schema Validation
+
+unifi-nix automatically validates your configuration against UniFi's OpenAPI schema:
+
+- **Required fields** - Ensures all mandatory fields are present
+- **Type validation** - Verifies correct types (booleans, integers, strings)
+- **Enum validation** - Checks values against allowed options
+- **Range validation** - Validates VLAN IDs, ports, etc.
+- **Reference validation** - Ensures WiFi networks reference valid VLANs
+
+Schemas are automatically updated via CI when new UniFi versions are released.
 
 ## Secrets
 
@@ -143,33 +206,48 @@ passphrase = { _secret = "wifi/main"; };
 At deploy time, secrets are resolved from:
 
 1. `UNIFI_SECRETS_DIR` environment variable (files at `$UNIFI_SECRETS_DIR/wifi/main`)
-2. Environment variables (e.g., `WIFI_MAIN` for `wifi/main`)
+1. Environment variables (e.g., `WIFI_MAIN` for `wifi/main`)
 
 ### With sops-nix
 
-```nix
-# In your deployment script
-export UNIFI_SECRETS_DIR=$(sops -d secrets.yaml | yq -r '.unifi')
+```bash
+export UNIFI_SECRETS_DIR=$(mktemp -d)
+sops -d secrets.yaml | yq -r '.unifi.wifi_main' > "$UNIFI_SECRETS_DIR/wifi/main"
 nix run .#deploy -- config.json 192.168.1.1
 ```
 
 ## How It Works
 
-1. **Nix evaluation** - Your config is evaluated and converted to MongoDB document format
-2. **SSH connection** - Connects to UDM as root via SSH
-3. **MongoDB queries** - Reads current state from `ace` database on port 27117
-4. **Diff calculation** - Compares current vs desired state
-5. **MongoDB updates** - Applies changes via `updateOne` / `insertOne`
-6. **Controller reload** - UniFi controller watches MongoDB and auto-reloads
+1. **Nix evaluation** - Config is evaluated and converted to MongoDB format
+1. **Schema validation** - Configuration is validated against OpenAPI schema
+1. **SSH connection** - Connects to UDM as root via SSH
+1. **MongoDB queries** - Reads current state from `ace` database (port 27117)
+1. **Diff calculation** - Compares current vs desired state
+1. **MongoDB updates** - Applies changes via `updateOne` / `insertOne`
+1. **Controller reload** - UniFi controller watches MongoDB and auto-reloads
+
+## Development
+
+```bash
+# Enter development shell
+nix develop
+
+# Run checks
+nix flake check
+
+# Format code
+nix fmt
+
+# Run linters
+nix develop .#ci --command statix check .
+nix develop .#ci --command deadnix .
+```
 
 ## Setting Up SSH Access
 
 ```bash
-# On your machine, copy your SSH key to the UDM
+# Copy your SSH key to the UDM
 ssh-copy-id root@192.168.1.1
-
-# Or manually (if ssh-copy-id doesn't work)
-cat ~/.ssh/id_ed25519.pub | ssh root@192.168.1.1 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
 
 # Test
 ssh root@192.168.1.1 hostname
@@ -179,25 +257,13 @@ ssh root@192.168.1.1 hostname
 
 - **Always run `diff` before `deploy`** to preview changes
 - **Use `DRY_RUN=true`** to see commands without executing
-- **Changes are atomic per-resource** - if deploy fails mid-way, partial changes may be applied
+- **Validation runs automatically** before any changes are applied
 - **Backup your UDM** before major changes
-
-## Limitations
-
-- **Firmware updates may reset SSH access** - You may need to re-enable SSH after updates
-- **Some settings not yet supported** - Port profiles, traffic routes, advanced firewall zones
-- **Network names are case-sensitive** - Use exact names from UDM UI (e.g., "Default" not "default")
 
 ## Contributing
 
-PRs welcome! Areas that need work:
-
-- [ ] More complete firewall zone support
-- [ ] Port profile management
-- [ ] Static DHCP reservations
-- [ ] Site-to-site VPN configuration
-- [ ] Better secret management integration
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) for details.

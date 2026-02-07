@@ -43,6 +43,7 @@ Extract from raw firmware `.bin` files (requires binwalk):
 **Produces:** OpenAPI spec (MongoDB schemas are runtime-generated)
 
 Download firmware from:
+
 - https://ui.com/download/releases/firmware
 - https://community.ui.com/releases
 
@@ -90,6 +91,7 @@ The Integration API (`/proxy/network/integration/v1/...`) uses different field n
 ## Required Fields
 
 ### WiFi Broadcast (Integration API)
+
 - `name`
 - `type` (STANDARD or IOT_OPTIMIZED)
 - `enabled`
@@ -103,6 +105,7 @@ The Integration API (`/proxy/network/integration/v1/...`) uses different field n
 - `bssTransitionEnabled`
 
 ### WiFi (MongoDB - auto-populated by controller)
+
 - `site_id`
 - `usergroup_id`
 - `ap_group_ids`
@@ -112,6 +115,7 @@ The Integration API (`/proxy/network/integration/v1/...`) uses different field n
 - Many boolean flags with defaults
 
 ### Network (Integration API)
+
 - `name`
 - `enabled`
 - `management` (GATEWAY, SWITCH, UNMANAGED)
@@ -122,6 +126,7 @@ The Integration API (`/proxy/network/integration/v1/...`) uses different field n
 ### CI Pipeline (OpenAPI Schemas)
 
 The repository includes a GitHub Actions workflow (`.github/workflows/update-schemas.yml`) that:
+
 - Runs every 6 hours
 - Checks Docker Hub for new Network Application versions
 - Extracts OpenAPI schemas and commits them to the repo
@@ -131,11 +136,13 @@ This ensures users always have up-to-date validation rules without manual interv
 ### First-Run Extraction (MongoDB Schemas)
 
 When you run `deploy.sh` for the first time against a device, it automatically:
+
 1. Extracts MongoDB schemas from your device
-2. Caches them in `~/.cache/unifi-nix/devices/<host>/`
-3. Refreshes the cache when version changes or after 24 hours
+1. Caches them in `~/.cache/unifi-nix/devices/<host>/`
+1. Refreshes the cache when version changes or after 24 hours
 
 This captures device-specific runtime data like:
+
 - Reference IDs (site, usergroup, apgroup)
 - Default field values
 - Current configuration examples

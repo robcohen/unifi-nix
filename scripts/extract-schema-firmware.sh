@@ -52,7 +52,7 @@ binwalk -e firmware.bin
 
 # Find the extracted directory
 EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "_*" | head -1)
-if [[ -z "$EXTRACTED_DIR" ]]; then
+if [[ -z $EXTRACTED_DIR ]]; then
   echo "ERROR: binwalk did not extract anything"
   echo "Firmware structure:"
   binwalk firmware.bin
@@ -72,10 +72,10 @@ if [[ -d "$EXTRACTED_DIR/squashfs-root" ]]; then
 fi
 
 # Try nested extraction (some firmware has multiple layers)
-if [[ -z "$SQUASHFS_ROOT" ]]; then
+if [[ -z $SQUASHFS_ROOT ]]; then
   echo "Trying nested extraction..."
   for nested in "$EXTRACTED_DIR"/*; do
-    if [[ -f "$nested" ]] && file "$nested" | grep -q "Squashfs"; then
+    if [[ -f $nested ]] && file "$nested" | grep -q "Squashfs"; then
       echo "Found squashfs: $nested"
       unsquashfs -d "$WORK_DIR/squashfs-root" "$nested" 2>/dev/null || true
       if [[ -d "$WORK_DIR/squashfs-root" ]]; then
@@ -86,7 +86,7 @@ if [[ -z "$SQUASHFS_ROOT" ]]; then
   done
 fi
 
-if [[ -z "$SQUASHFS_ROOT" ]] || [[ ! -d "$SQUASHFS_ROOT" ]]; then
+if [[ -z $SQUASHFS_ROOT ]] || [[ ! -d $SQUASHFS_ROOT ]]; then
   echo "ERROR: Could not find squashfs filesystem"
   echo "Directory structure:"
   find "$EXTRACTED_DIR" -maxdepth 3 -type d
@@ -100,12 +100,12 @@ echo ""
 echo "=== Searching for OpenAPI spec ==="
 SPEC_FILE=$(find "$SQUASHFS_ROOT" -name "integration.json" -path "*api-docs*" 2>/dev/null | head -1 || echo "")
 
-if [[ -z "$SPEC_FILE" ]]; then
+if [[ -z $SPEC_FILE ]]; then
   # Try alternate locations
   SPEC_FILE=$(find "$SQUASHFS_ROOT" -name "integration.json" 2>/dev/null | head -1 || echo "")
 fi
 
-if [[ -z "$SPEC_FILE" ]]; then
+if [[ -z $SPEC_FILE ]]; then
   echo "ERROR: Could not find integration.json"
   echo ""
   echo "Searching for any JSON API files..."
@@ -150,20 +150,20 @@ jq '{
   firmwareFile: $firmware,
   deviceType: $device,
   extractedAt: now | strftime("%Y-%m-%dT%H:%M:%SZ")
-}' --arg firmware "$FIRMWARE_NAME" --arg device "$DEVICE_TYPE" "$SPEC_FILE" > "$SCHEMA_DIR/metadata.json"
+}' --arg firmware "$FIRMWARE_NAME" --arg device "$DEVICE_TYPE" "$SPEC_FILE" >"$SCHEMA_DIR/metadata.json"
 echo "Saved: metadata.json"
 
 # Extract schema names
 echo ""
 echo "=== Extracting schema definitions ==="
-jq '.components.schemas | keys' "$SPEC_FILE" > "$SCHEMA_DIR/schema-names.json"
+jq '.components.schemas | keys' "$SPEC_FILE" >"$SCHEMA_DIR/schema-names.json"
 SCHEMA_COUNT=$(jq 'length' "$SCHEMA_DIR/schema-names.json")
 echo "Found $SCHEMA_COUNT schema definitions"
 
 # Extract API paths
 echo ""
 echo "=== Extracting API paths ==="
-jq '.paths | keys' "$SPEC_FILE" > "$SCHEMA_DIR/api-paths.json"
+jq '.paths | keys' "$SPEC_FILE" >"$SCHEMA_DIR/api-paths.json"
 PATH_COUNT=$(jq 'length' "$SCHEMA_DIR/api-paths.json")
 echo "Found $PATH_COUNT API paths"
 
@@ -178,14 +178,14 @@ jq '
     required: .value.required,
     properties: (.value.properties | keys)
   }
-)' "$SPEC_FILE" > "$SCHEMA_DIR/required-fields.json"
+)' "$SPEC_FILE" >"$SCHEMA_DIR/required-fields.json"
 echo "Saved: required-fields.json"
 
 # Look for MongoDB-related files
 echo ""
 echo "=== Searching for MongoDB schemas ==="
 MONGO_FILES=$(find "$SQUASHFS_ROOT" -name "*.bson" -o -name "*mongo*" -o -name "*schema*" 2>/dev/null | head -20 || echo "")
-if [[ -n "$MONGO_FILES" ]]; then
+if [[ -n $MONGO_FILES ]]; then
   echo "Found potential MongoDB files:"
   echo "$MONGO_FILES"
 else

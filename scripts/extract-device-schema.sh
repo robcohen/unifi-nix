@@ -17,7 +17,7 @@ DEVICE_CACHE_DIR="$CACHE_DIR/devices/$HOST"
 # Check if we have cached schemas for this device
 get_device_version() {
   ssh -o ConnectTimeout=10 -o BatchMode=yes "$SSH_USER@$HOST" \
-    'cat /usr/lib/unifi/webapps/ROOT/api-docs/integration.json 2>/dev/null' | \
+    'cat /usr/lib/unifi/webapps/ROOT/api-docs/integration.json 2>/dev/null' |
     grep -oP '"version"\s*:\s*"\K[^"]+' | head -1 || echo "unknown"
 }
 
@@ -25,7 +25,7 @@ echo "Checking device schema cache for $HOST..."
 
 # Get current version from device
 DEVICE_VERSION=$(get_device_version)
-if [[ "$DEVICE_VERSION" == "unknown" ]]; then
+if [[ $DEVICE_VERSION == "unknown" ]]; then
   echo "ERROR: Could not determine UniFi version on $HOST"
   echo "Make sure SSH access is configured and the device is running UniFi OS"
   exit 1
@@ -37,11 +37,11 @@ echo "Device version: $DEVICE_VERSION"
 CACHE_VERSION_FILE="$DEVICE_CACHE_DIR/version"
 CACHE_VALID=false
 
-if [[ -f "$CACHE_VERSION_FILE" ]]; then
+if [[ -f $CACHE_VERSION_FILE ]]; then
   CACHED_VERSION=$(cat "$CACHE_VERSION_FILE")
-  if [[ "$CACHED_VERSION" == "$DEVICE_VERSION" ]]; then
+  if [[ $CACHED_VERSION == "$DEVICE_VERSION" ]]; then
     # Check cache age (refresh if older than 24 hours)
-    CACHE_AGE=$(( $(date +%s) - $(stat -c %Y "$CACHE_VERSION_FILE" 2>/dev/null || echo 0) ))
+    CACHE_AGE=$(($(date +%s) - $(stat -c %Y "$CACHE_VERSION_FILE" 2>/dev/null || echo 0)))
     if [[ $CACHE_AGE -lt 86400 ]]; then
       echo "Using cached schemas (age: ${CACHE_AGE}s)"
       CACHE_VALID=true
@@ -53,7 +53,7 @@ if [[ -f "$CACHE_VERSION_FILE" ]]; then
   fi
 fi
 
-if [[ "$CACHE_VALID" == "true" ]]; then
+if [[ $CACHE_VALID == "true" ]]; then
   echo "$DEVICE_CACHE_DIR"
   exit 0
 fi
@@ -81,7 +81,7 @@ db.getCollectionNames().forEach(function(collName) {
   }
 });
 print(JSON.stringify(result, null, 2));
-"' > "$DEVICE_CACHE_DIR/mongodb-fields.json"
+"' >"$DEVICE_CACHE_DIR/mongodb-fields.json"
 
 # Extract example documents
 echo "  Extracting example documents..."
@@ -103,7 +103,7 @@ if (vlanNet) result[\"networkconf_vlan\"] = vlanNet;
 var defaultLan = db.networkconf.findOne({attr_hidden_id: \"LAN\"});
 if (defaultLan) result[\"networkconf_lan\"] = defaultLan;
 print(JSON.stringify(result, null, 2));
-"' > "$DEVICE_CACHE_DIR/mongodb-examples.json"
+"' >"$DEVICE_CACHE_DIR/mongodb-examples.json"
 
 # Extract reference IDs
 echo "  Extracting reference IDs..."
@@ -116,10 +116,10 @@ var refs = {
   devices: db.device.find({}, {_id: 1, mac: 1, name: 1, model: 1}).toArray()
 };
 print(JSON.stringify(refs, null, 2));
-"' > "$DEVICE_CACHE_DIR/reference-ids.json"
+"' >"$DEVICE_CACHE_DIR/reference-ids.json"
 
 # Save version marker
-echo "$DEVICE_VERSION" > "$CACHE_VERSION_FILE"
+echo "$DEVICE_VERSION" >"$CACHE_VERSION_FILE"
 
 # Validate extraction
 if ! jq empty "$DEVICE_CACHE_DIR/mongodb-fields.json" 2>/dev/null; then

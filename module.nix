@@ -3,18 +3,25 @@
 { lib, config, ... }:
 
 let
-  inherit (lib) mkOption mkEnableOption types literalExpression;
+  inherit (lib)
+    mkOption
+    mkEnableOption
+    types
+    literalExpression
+    ;
 
   # Secret reference type - can be a plain string or { _secret = "path"; }
-  secretType = types.either types.str (types.submodule {
-    options._secret = mkOption {
-      type = types.str;
-      description = "Path to secret (resolved at deploy time via sops/agenix)";
-    };
-  });
+  secretType = types.either types.str (
+    types.submodule {
+      options._secret = mkOption {
+        type = types.str;
+        description = "Path to secret (resolved at deploy time via sops/agenix)";
+      };
+    }
+  );
 
   # Network configuration options
-  networkOpts = { name, ... }: {
+  networkOpts = _: {
     options = {
       enable = mkOption {
         type = types.bool;
@@ -36,13 +43,24 @@ let
       };
 
       purpose = mkOption {
-        type = types.enum [ "corporate" "guest" "wan" "vlan-only" "remote-user-vpn" "site-vpn" ];
+        type = types.enum [
+          "corporate"
+          "guest"
+          "wan"
+          "vlan-only"
+          "remote-user-vpn"
+          "site-vpn"
+        ];
         default = "corporate";
         description = "Network purpose/type";
       };
 
       networkGroup = mkOption {
-        type = types.enum [ "LAN" "WAN" "WAN2" ];
+        type = types.enum [
+          "LAN"
+          "WAN"
+          "WAN2"
+        ];
         default = "LAN";
         description = "Network group (LAN for internal networks, WAN/WAN2 for uplinks)";
       };
@@ -66,9 +84,12 @@ let
 
         dns = mkOption {
           type = types.listOf types.str;
-          default = [];
+          default = [ ];
           description = "DNS servers to advertise via DHCP";
-          example = [ "76.76.2.44" "76.76.10.44" ];
+          example = [
+            "76.76.2.44"
+            "76.76.10.44"
+          ];
         };
 
         leasetime = mkOption {
@@ -105,7 +126,7 @@ let
   };
 
   # WiFi network configuration options
-  wifiOpts = { name, ... }: {
+  wifiOpts = _: {
     options = {
       enable = mkOption {
         type = types.bool;
@@ -138,7 +159,12 @@ let
       };
 
       security = mkOption {
-        type = types.enum [ "wpapsk" "wpa2" "wpa3" "open" ];
+        type = types.enum [
+          "wpapsk"
+          "wpa2"
+          "wpa3"
+          "open"
+        ];
         default = "wpapsk";
         description = "Security mode";
       };
@@ -158,7 +184,11 @@ let
       };
 
       pmf = mkOption {
-        type = types.enum [ "disabled" "optional" "required" ];
+        type = types.enum [
+          "disabled"
+          "optional"
+          "required"
+        ];
         default = "optional";
         description = "Protected Management Frames mode";
       };
@@ -176,8 +206,17 @@ let
       };
 
       bands = mkOption {
-        type = types.listOf (types.enum [ "2g" "5g" "6g" ]);
-        default = [ "2g" "5g" ];
+        type = types.listOf (
+          types.enum [
+            "2g"
+            "5g"
+            "6g"
+          ]
+        );
+        default = [
+          "2g"
+          "5g"
+        ];
         description = "WiFi bands to broadcast on";
       };
 
@@ -220,112 +259,126 @@ let
         };
 
         policy = mkOption {
-          type = types.enum [ "allow" "deny" ];
+          type = types.enum [
+            "allow"
+            "deny"
+          ];
           default = "allow";
           description = "MAC filter policy (allow = whitelist, deny = blacklist)";
         };
 
         list = mkOption {
           type = types.listOf types.str;
-          default = [];
+          default = [ ];
           description = "List of MAC addresses to filter";
-          example = [ "00:11:22:33:44:55" "AA:BB:CC:DD:EE:FF" ];
+          example = [
+            "00:11:22:33:44:55"
+            "AA:BB:CC:DD:EE:FF"
+          ];
         };
       };
 
       apGroups = mkOption {
         type = types.listOf types.str;
-        default = [];
+        default = [ ];
         description = "AP groups to broadcast this SSID (empty = all)";
       };
     };
   };
 
   # Port forward options
-  portForwardOpts = { name, ... }: {
-    options = {
-      enable = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Whether this port forward is enabled";
-      };
+  portForwardOpts =
+    { name, ... }:
+    {
+      options = {
+        enable = mkOption {
+          type = types.bool;
+          default = true;
+          description = "Whether this port forward is enabled";
+        };
 
-      name = mkOption {
-        type = types.str;
-        default = name;
-        description = "Name/description of the port forward";
-      };
+        name = mkOption {
+          type = types.str;
+          default = name;
+          description = "Name/description of the port forward";
+        };
 
-      protocol = mkOption {
-        type = types.enum [ "tcp" "udp" "tcp_udp" ];
-        default = "tcp_udp";
-        description = "Protocol to forward";
-      };
+        protocol = mkOption {
+          type = types.enum [
+            "tcp"
+            "udp"
+            "tcp_udp"
+          ];
+          default = "tcp_udp";
+          description = "Protocol to forward";
+        };
 
-      srcPort = mkOption {
-        type = types.either types.int types.str;
-        description = "External port or port range (e.g., 80 or \"8000-8100\")";
-        example = 443;
-      };
+        srcPort = mkOption {
+          type = types.either types.int types.str;
+          description = "External port or port range (e.g., 80 or \"8000-8100\")";
+          example = 443;
+        };
 
-      dstIP = mkOption {
-        type = types.str;
-        description = "Internal destination IP address";
-        example = "192.168.1.100";
-      };
+        dstIP = mkOption {
+          type = types.str;
+          description = "Internal destination IP address";
+          example = "192.168.1.100";
+        };
 
-      dstPort = mkOption {
-        type = types.nullOr (types.either types.int types.str);
-        default = null;
-        description = "Internal destination port (null = same as srcPort)";
-      };
+        dstPort = mkOption {
+          type = types.nullOr (types.either types.int types.str);
+          default = null;
+          description = "Internal destination port (null = same as srcPort)";
+        };
 
-      srcIP = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-        description = "Limit to source IP/CIDR (null = any)";
-        example = "0.0.0.0/0";
-      };
+        srcIP = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "Limit to source IP/CIDR (null = any)";
+          example = "0.0.0.0/0";
+        };
 
-      log = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Log forwarded packets";
+        log = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Log forwarded packets";
+        };
       };
     };
-  };
 
   # DHCP reservation options
-  dhcpReservationOpts = { name, ... }: {
-    options = {
-      mac = mkOption {
-        type = types.str;
-        description = "MAC address of the device";
-        example = "00:11:22:33:44:55";
-      };
+  dhcpReservationOpts =
+    { name, ... }:
+    {
+      options = {
+        mac = mkOption {
+          type = types.str;
+          description = "MAC address of the device";
+          example = "00:11:22:33:44:55";
+        };
 
-      ip = mkOption {
-        type = types.str;
-        description = "Fixed IP address to assign";
-        example = "192.168.1.100";
-      };
+        ip = mkOption {
+          type = types.str;
+          description = "Fixed IP address to assign";
+          example = "192.168.1.100";
+        };
 
-      name = mkOption {
-        type = types.str;
-        default = name;
-        description = "Friendly name for the device";
-      };
+        name = mkOption {
+          type = types.str;
+          default = name;
+          description = "Friendly name for the device";
+        };
 
-      network = mkOption {
-        type = types.str;
-        description = "Network this reservation belongs to";
-        example = "Default";
+        network = mkOption {
+          type = types.str;
+          description = "Network this reservation belongs to";
+          example = "Default";
+        };
       };
     };
-  };
 
   # Firewall rule options
-  firewallRuleOpts = { name, ... }: {
+  firewallRuleOpts = _: {
     options = {
       enable = mkOption {
         type = types.bool;
@@ -338,7 +391,11 @@ let
       };
 
       action = mkOption {
-        type = types.enum [ "accept" "drop" "reject" ];
+        type = types.enum [
+          "accept"
+          "drop"
+          "reject"
+        ];
         default = "drop";
       };
 
@@ -355,7 +412,13 @@ let
       };
 
       protocol = mkOption {
-        type = types.enum [ "all" "tcp" "udp" "icmp" "tcp_udp" ];
+        type = types.enum [
+          "all"
+          "tcp"
+          "udp"
+          "icmp"
+          "tcp_udp"
+        ];
         default = "all";
       };
 
@@ -363,7 +426,10 @@ let
         type = types.nullOr (types.listOf types.int);
         default = null;
         description = "Destination ports (null = all)";
-        example = [ 80 443 ];
+        example = [
+          80
+          443
+        ];
       };
 
       index = mkOption {
@@ -392,7 +458,9 @@ let
 
   # Check firewall rule network references
   flattenNetworks = nets: if builtins.isList nets then nets else [ nets ];
-  firewallFromRefs = lib.flatten (lib.mapAttrsToList (_: r: flattenNetworks r.from) cfg.firewall.rules);
+  firewallFromRefs = lib.flatten (
+    lib.mapAttrsToList (_: r: flattenNetworks r.from) cfg.firewall.rules
+  );
   firewallToRefs = lib.flatten (lib.mapAttrsToList (_: r: flattenNetworks r.to) cfg.firewall.rules);
   allFirewallRefs = firewallFromRefs ++ firewallToRefs;
   invalidFirewallRefs = lib.filter (n: n != "any" && !(lib.elem n networkNames)) allFirewallRefs;
@@ -401,46 +469,59 @@ let
   pow2 = n: if n == 0 then 1 else 2 * pow2 (n - 1);
 
   # Parse subnet to get network address for overlap detection
-  parseSubnetForOverlap = subnet:
+  parseSubnetForOverlap =
+    subnet:
     let
       parts = lib.splitString "/" subnet;
       ip = builtins.elemAt parts 0;
       prefix = lib.toInt (builtins.elemAt parts 1);
       ipParts = map lib.toInt (lib.splitString "." ip);
       # Convert IP to integer for comparison
-      ipInt = (builtins.elemAt ipParts 0) * 16777216 +
-              (builtins.elemAt ipParts 1) * 65536 +
-              (builtins.elemAt ipParts 2) * 256 +
-              (builtins.elemAt ipParts 3);
+      ipInt =
+        (builtins.elemAt ipParts 0) * 16777216
+        + (builtins.elemAt ipParts 1) * 65536
+        + (builtins.elemAt ipParts 2) * 256
+        + (builtins.elemAt ipParts 3);
       # Calculate network size
       hostBits = 32 - prefix;
       networkSize = if hostBits >= 32 then 4294967296 else pow2 hostBits;
-    in { inherit ipInt networkSize prefix; };
+    in
+    {
+      inherit ipInt networkSize prefix;
+    };
 
   # Get all subnets with their parsed info
-  subnetInfos = lib.mapAttrsToList (name: n:
-    { inherit name; info = parseSubnetForOverlap n.subnet; subnet = n.subnet; }
-  ) cfg.networks;
+  subnetInfos = lib.mapAttrsToList (name: n: {
+    inherit name;
+    info = parseSubnetForOverlap n.subnet;
+    inherit (n) subnet;
+  }) cfg.networks;
 
   # Check if two subnets overlap
-  subnetsOverlap = a: b:
+  subnetsOverlap =
+    a: b:
     let
       aStart = a.info.ipInt;
       aEnd = a.info.ipInt + a.info.networkSize - 1;
       bStart = b.info.ipInt;
       bEnd = b.info.ipInt + b.info.networkSize - 1;
-    in (aStart <= bEnd && bStart <= aEnd);
+    in
+    aStart <= bEnd && bStart <= aEnd;
 
   # Find overlapping subnet pairs
-  findOverlaps = subnets:
+  findOverlaps =
+    subnets:
     let
-      pairs = lib.filter (p: p.a.name < p.b.name)
-        (lib.concatMap (a: map (b: { inherit a b; }) subnets) subnets);
-    in lib.filter (p: subnetsOverlap p.a p.b) pairs;
+      pairs = lib.filter (p: p.a.name < p.b.name) (
+        lib.concatMap (a: map (b: { inherit a b; }) subnets) subnets
+      );
+    in
+    lib.filter (p: subnetsOverlap p.a p.b) pairs;
 
   overlappingSubnets = findOverlaps subnetInfos;
 
-in {
+in
+{
   options.unifi = {
     host = mkOption {
       type = types.str;
@@ -456,7 +537,7 @@ in {
 
     networks = mkOption {
       type = types.attrsOf (types.submodule networkOpts);
-      default = {};
+      default = { };
       description = "Network (VLAN) configurations";
       example = literalExpression ''
         {
@@ -472,7 +553,7 @@ in {
 
     wifi = mkOption {
       type = types.attrsOf (types.submodule wifiOpts);
-      default = {};
+      default = { };
       description = "WiFi network configurations";
       example = literalExpression ''
         {
@@ -490,12 +571,12 @@ in {
     _validation = mkOption {
       type = types.attrsOf types.unspecified;
       internal = true;
-      default = {};
+      default = { };
     };
 
     portForwards = mkOption {
       type = types.attrsOf (types.submodule portForwardOpts);
-      default = {};
+      default = { };
       description = "Port forwarding rules (NAT)";
       example = literalExpression ''
         {
@@ -514,7 +595,7 @@ in {
 
     dhcpReservations = mkOption {
       type = types.attrsOf (types.submodule dhcpReservationOpts);
-      default = {};
+      default = { };
       description = "Static DHCP reservations (fixed IPs)";
       example = literalExpression ''
         {
@@ -530,7 +611,7 @@ in {
     firewall = {
       rules = mkOption {
         type = types.attrsOf (types.submodule firewallRuleOpts);
-        default = {};
+        default = { };
         description = "Firewall/traffic rules";
         example = literalExpression ''
           {
@@ -547,6 +628,12 @@ in {
 
   # Export validation results for use in to-mongo.nix
   config.unifi._validation = {
-    inherit duplicateVlans invalidWifiRefs invalidFirewallRefs overlappingSubnets networkNames;
+    inherit
+      duplicateVlans
+      invalidWifiRefs
+      invalidFirewallRefs
+      overlappingSubnets
+      networkNames
+      ;
   };
 }
