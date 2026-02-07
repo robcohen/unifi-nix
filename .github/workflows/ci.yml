@@ -94,8 +94,6 @@ jobs:
             experimental-features = nix-command flakes
       - name: Evaluate example configuration
         run: |
-          nix eval --json .#lib.mkSite --apply 'mkSite: mkSite {
-            pkgs = import <nixpkgs> {};
-            config = import ./examples/home.nix;
-          }' > /dev/null
+          # Build the example-eval check from the flake
+          nix build .#checks.x86_64-linux.example-eval --print-build-logs
           echo "Example configuration evaluated successfully"

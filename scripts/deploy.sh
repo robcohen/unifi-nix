@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # unifi-deploy: Apply UniFi configuration to UDM via SSH+MongoDB
+# shellcheck disable=SC2029  # Variables are intentionally expanded client-side for SSH
+# shellcheck disable=SC2154  # $oid is a MongoDB field name, not a shell variable
 set -euo pipefail
 
 CONFIG_JSON="${1:-}"
