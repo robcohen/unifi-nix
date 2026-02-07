@@ -127,6 +127,9 @@
               diffutils
             ];
             text = builtins.readFile ./scripts/diff.sh;
+            excludeShellChecks = [
+              "SC2034" # Color variables defined for potential future use
+            ];
             inherit meta;
           };
 
@@ -149,6 +152,9 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/validate-config.sh;
+            excludeShellChecks = [
+              "SC2034" # Variables defined for schema validation
+            ];
             inherit meta;
           };
 
@@ -161,6 +167,9 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/extract-schema.sh;
+            excludeShellChecks = [
+              "SC2029" # Variables intentionally expanded client-side for SSH
+            ];
             inherit meta;
           };
         in
