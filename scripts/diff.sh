@@ -38,7 +38,7 @@ NC='\033[0m'
 echo "Fetching current configuration..."
 CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$HOST" 'mongo --quiet --port 27117 ace --eval "
 JSON.stringify({
-  networks: db.networkconf.find({purpose: {\$in: [\"corporate\", \"guest\"]}}, {
+  networks: db.networkconf.find({}, {
     _id: 0, name: 1, vlan: 1, ip_subnet: 1, dhcpd_enabled: 1,
     dhcpd_start: 1, dhcpd_stop: 1, dhcpd_dns_1: 1, dhcpd_dns_2: 1,
     internet_access_enabled: 1, network_isolation_enabled: 1, enabled: 1
