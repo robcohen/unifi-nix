@@ -1,0 +1,944 @@
+{
+  "account": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "email_1_site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "acl_rule": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "admin": {
+    "count": 2,
+    "size": 21150,
+    "avgObjSize": 10575,
+    "indexes": [
+      "_id_",
+      "email_1",
+      "uid_1",
+      "ubic_uuid_1"
+    ]
+  },
+  "admin_activity_log": {
+    "count": 50,
+    "size": 56398,
+    "avgObjSize": 1127,
+    "indexes": [
+      "_id_",
+      "time_-1_site_id_1_key_1",
+      "site_id_1_admin_admin_id_1",
+      "time_-1_site_id_1_key_1_change_key_1",
+      "meta_custom_id_1_collection_key_name_1_value_1"
+    ]
+  },
+  "alarm": {
+    "count": 4,
+    "size": 1688,
+    "avgObjSize": 422,
+    "indexes": [
+      "_id_",
+      "datetime_1",
+      "site_id_1_archived_1",
+      "key_1"
+    ]
+  },
+  "alert": {
+    "count": 334,
+    "size": 431449,
+    "avgObjSize": 1291,
+    "indexes": [
+      "_id_",
+      "time_-1_key_1_site_id_1_status_1",
+      "parameters.DEVICE.target_id_1",
+      "parameters.CLIENT.target_id_1",
+      "parameters.ADMIN_ACTIVITY_ID.target_id_1",
+      "parameters_device_target_id_1_port_name_1"
+    ]
+  },
+  "alert_setting": {
+    "count": 1,
+    "size": 5633,
+    "avgObjSize": 5633,
+    "indexes": [
+      "_id_",
+      "site_id_1_admin_id_1"
+    ]
+  },
+  "apgroup": {
+    "count": 1,
+    "size": 123,
+    "avgObjSize": 123,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "external_id"
+    ]
+  },
+  "api_key": {
+    "count": 1,
+    "size": 106,
+    "avgObjSize": 106,
+    "indexes": [
+      "_id_",
+      "uid",
+      "admin_id"
+    ]
+  },
+  "api_key_privilege": {
+    "count": 2,
+    "size": 270,
+    "avgObjSize": 135,
+    "indexes": [
+      "_id_",
+      "api_key_id",
+      "site_id"
+    ]
+  },
+  "appstate_log": {
+    "count": 1,
+    "size": 65,
+    "avgObjSize": 65,
+    "indexes": [
+      "_id_",
+      "time"
+    ]
+  },
+  "av_group": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "backup_device": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "bgp_router": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "channelplan": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "config_meta": {
+    "count": 1,
+    "size": 2486,
+    "avgObjSize": 2486,
+    "indexes": [
+      "_id_",
+      "site_id_1_mac_1"
+    ]
+  },
+  "content_filtering": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "crashlog": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "dashboard": {
+    "count": 1,
+    "size": 119,
+    "avgObjSize": 119,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "device": {
+    "count": 1,
+    "size": 7806,
+    "avgObjSize": 7806,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "mac_1_site_id_1"
+    ]
+  },
+  "dhcp_option": {
+    "count": 3,
+    "size": 594,
+    "avgObjSize": 198,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "dhcpoption": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "diagnostics_config": {
+    "count": 1,
+    "size": 48547,
+    "avgObjSize": 48547,
+    "indexes": [
+      "_id_",
+      "mac"
+    ]
+  },
+  "doh_servers": {
+    "count": 1,
+    "size": 15529,
+    "avgObjSize": 15529,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "dpiapp": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "dpigroup": {
+    "count": 1,
+    "size": 123,
+    "avgObjSize": 123,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "dynamicdns": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "event": {
+    "count": 18,
+    "size": 7935,
+    "avgObjSize": 440,
+    "indexes": [
+      "_id_",
+      "subsystem_1_site_id_1",
+      "site_id_1",
+      "datetime_1_key_1"
+    ]
+  },
+  "featuremigration": {
+    "count": 14,
+    "size": 1227,
+    "avgObjSize": 87,
+    "indexes": [
+      "_id_",
+      "name_1"
+    ]
+  },
+  "firewall_policy": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "short_id"
+    ]
+  },
+  "firewall_zone": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "firewallgroup": {
+    "count": 3,
+    "size": 637,
+    "avgObjSize": 212,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "firewallrule": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "floorplan": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "floorplan_file": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "floorplan_shape": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "uuid",
+      "plan_id"
+    ]
+  },
+  "guest": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "end_1_site_id_1",
+      "authorized_by_1_site_id_1",
+      "site_id_1",
+      "mac_1_site_id_1",
+      "start_1_site_id_1",
+      "unauthorized_by_1_site_id_1"
+    ]
+  },
+  "heatmap": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "map_id_1_site_id_1",
+      "type_1_site_id_1"
+    ]
+  },
+  "heatmappoint": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "heatmap_id_1_site_id_1"
+    ]
+  },
+  "hotspot2conf": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "hotspotop": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "hotspotpackage": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "ipsalert": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "timestamp_1"
+    ]
+  },
+  "managed_shadow_mode": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "map": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "mclag_group": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "nat_rule": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "network_members_groups": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "networkconf": {
+    "count": 5,
+    "size": 10472,
+    "avgObjSize": 2094,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "object_oriented_network_config": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "ospf_router": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "payment": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "within_1_site_id_1",
+      "time_1_site_id_1",
+      "site_id_1"
+    ]
+  },
+  "portalfile": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "portconf": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "portforward": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "predefined_firewall_rule": {
+    "count": 1,
+    "size": 147,
+    "avgObjSize": 147,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "privilege": {
+    "count": 4,
+    "size": 532,
+    "avgObjSize": 133,
+    "indexes": [
+      "_id_",
+      "admin_id_1"
+    ]
+  },
+  "qos_rule": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "short_id"
+    ]
+  },
+  "radiusprofile": {
+    "count": 2,
+    "size": 456,
+    "avgObjSize": 228,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "reference_name_history": {
+    "count": 591,
+    "size": 91803,
+    "avgObjSize": 155,
+    "indexes": [
+      "_id_",
+      "site_id_1_type_1_reference_id_1"
+    ]
+  },
+  "rogue": {
+    "count": 5600,
+    "size": 2273035,
+    "avgObjSize": 405,
+    "indexes": [
+      "_id_",
+      "ap_mac_1_site_id_1",
+      "bssid_1_site_id_1",
+      "site_id_1",
+      "rssi_1_site_id_1",
+      "last_seen_1_site_id_1"
+    ]
+  },
+  "rogueknown": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "routing": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "scheduletask": {
+    "count": 3,
+    "size": 509,
+    "avgObjSize": 169,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "setting": {
+    "count": 36,
+    "size": 11788,
+    "avgObjSize": 327,
+    "indexes": [
+      "_id_",
+      "key_1_site_id_1",
+      "site_id_1"
+    ]
+  },
+  "simple_app_block": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "short_id"
+    ]
+  },
+  "site": {
+    "count": 2,
+    "size": 372,
+    "avgObjSize": 186,
+    "indexes": [
+      "_id_",
+      "name_1",
+      "attr_hidden_id_1"
+    ]
+  },
+  "spatialrecord": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "ssl_inspection_application_catalog": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "ssl_inspection_certificate": {
+    "count": 1,
+    "size": 4702,
+    "avgObjSize": 4702,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "ssl_inspection_profile": {
+    "count": 1,
+    "size": 664,
+    "avgObjSize": 664,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "ssooauthtoken": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "ssooauthtoken_1"
+    ]
+  },
+  "stat": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "datetime_1_site_id_1",
+      "wlan_1_site_id_1",
+      "site_id_1",
+      "ap_1_site_id_1",
+      "user_1_site_id_1",
+      "o_1_site_id_1"
+    ]
+  },
+  "static_dns": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "switch_stacking": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "systemevent": {
+    "count": 1,
+    "size": 82,
+    "avgObjSize": 82,
+    "indexes": [
+      "_id_"
+    ]
+  },
+  "tag": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "task": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "device_id_1",
+      "site_id_1"
+    ]
+  },
+  "teleport_client": {
+    "count": 2,
+    "size": 441,
+    "avgObjSize": 220,
+    "indexes": [
+      "_id_",
+      "external_client_id",
+      "last_seen_timestamp"
+    ]
+  },
+  "teleport_token": {
+    "count": 5,
+    "size": 1953,
+    "avgObjSize": 390,
+    "indexes": [
+      "_id_",
+      "token"
+    ]
+  },
+  "threat_log_view": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "time-1_site_id_1_client_mac_1_threat_type_1_threat_direction_1",
+      "search_text_1"
+    ]
+  },
+  "traffic_route": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "short_id"
+    ]
+  },
+  "traffic_rule": {
+    "count": 4,
+    "size": 1568,
+    "avgObjSize": 392,
+    "indexes": [
+      "_id_",
+      "site_id",
+      "short_id"
+    ]
+  },
+  "trigger_log": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "time_-1_site_id_1_trigger_type_1_source_mac_1",
+      "time_1_trigger_trigger_id_1_key_1_source_mac_1_source_ip_1"
+    ]
+  },
+  "user": {
+    "count": 114,
+    "size": 82746,
+    "avgObjSize": 725,
+    "indexes": [
+      "_id_",
+      "is_guest_1_site_id_1",
+      "blocked_1_site_id_1",
+      "fixed_ap_enabled_1_site_id_1",
+      "blocked_1_use_fixedip_1_noted_1_last_seen_1_first_seen_1",
+      "fingerprint_override_1_site_id_1",
+      "use_fixedip_1_site_id_1",
+      "noted_1_site_id_1",
+      "fixed_ap_mac_1_site_id_1",
+      "unifi_device_info_from_ucore.product_line_1_site_id_1",
+      "site_id_1",
+      "mac_1_site_id_1",
+      "last_seen_1_site_id_1",
+      "fingerprint_source_1_product_line_1",
+      "last_1x_identities_1_site_id_1"
+    ]
+  },
+  "usergroup": {
+    "count": 1,
+    "size": 167,
+    "avgObjSize": 167,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "verification": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "email_1",
+      "token_1"
+    ]
+  },
+  "version_history": {
+    "count": 6,
+    "size": 340,
+    "avgObjSize": 56,
+    "indexes": [
+      "_id_",
+      "time"
+    ]
+  },
+  "virtualdevice": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1"
+    ]
+  },
+  "voucher": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "code_1_site_id_1",
+      "site_id_1",
+      "create_time_1_site_id_1",
+      "end_time_1_site_id_1",
+      "external_id_1_site_id_1",
+      "site_id_1__id_1"
+    ]
+  },
+  "wall": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "map_id_1_site_id_1"
+    ]
+  },
+  "wan_sla": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "wifiman_feedback": {
+    "count": 2,
+    "size": 1815,
+    "avgObjSize": 907,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "wireguard_user": {
+    "count": 0,
+    "size": 0,
+    "avgObjSize": 0,
+    "indexes": [
+      "_id_",
+      "site_id"
+    ]
+  },
+  "wlanconf": {
+    "count": 5,
+    "size": 7610,
+    "avgObjSize": 1522,
+    "indexes": [
+      "_id_",
+      "usergroup_id_1_site_id_1",
+      "attr_hidden_id_1_site_id_1",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  },
+  "wlangroup": {
+    "count": 2,
+    "size": 267,
+    "avgObjSize": 133,
+    "indexes": [
+      "_id_",
+      "site_id_1",
+      "name_1_site_id_1"
+    ]
+  }
+}

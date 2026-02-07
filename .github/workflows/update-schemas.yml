@@ -1,0 +1,180 @@
+name: Update UniFi Schemas
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force extraction even if version exists'
+        required: false
+        default: 'false'
+
+jobs:
+  check-and-extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      - name: Check for new UniFi Network Application version
+        id: check-version
+        run: |
+          # Get latest version from Docker Hub
+          LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/linuxserver/unifi-network-application/tags?page_size=100" | \
+            jq -r '.results[].name' | \
+            grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V | \
+            tail -1)
+
+          echo "Latest Docker tag: $LATEST_TAG"
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+          # Check if we already have this version
+          if [[ -d "schemas/$LATEST_TAG" ]] && [[ "${{ github.event.inputs.force }}" != "true" ]]; then
+            echo "Schema for version $LATEST_TAG already exists"
+            echo "needs_extraction=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version detected or force extraction requested"
+            echo "needs_extraction=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Start MongoDB container
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          docker network create unifi-extract
+          docker run -d --name mongo \
+            --network unifi-extract \
+            -e MONGO_INITDB_DATABASE=unifi \
+            mongo:7.0
+
+          echo "Waiting for MongoDB to start..."
+          sleep 10
+
+      - name: Start UniFi Network Application
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          VERSION="${{ steps.check-version.outputs.latest_tag }}"
+
+          docker run -d --name unifi \
+            --network unifi-extract \
+            -e PUID=1000 \
+            -e PGID=1000 \
+            -e MONGO_HOST=mongo \
+            -e MONGO_PORT=27017 \
+            -e MONGO_DBNAME=unifi \
+            -p 8443:8443 \
+            "linuxserver/unifi-network-application:${VERSION}"
+
+          echo "Waiting for UniFi Network Application to initialize..."
+          echo "This may take 2-3 minutes..."
+
+          MAX_WAIT=180
+          WAITED=0
+          while [[ $WAITED -lt $MAX_WAIT ]]; do
+            if curl -sk "https://localhost:8443/api-docs/integration.json" 2>/dev/null | jq -e '.info.version' &>/dev/null; then
+              echo "Application is ready!"
+              break
+            fi
+            sleep 10
+            WAITED=$((WAITED + 10))
+            echo "  Waiting... ($WAITED seconds)"
+          done
+
+          if [[ $WAITED -ge $MAX_WAIT ]]; then
+            echo "ERROR: Timeout waiting for UniFi Network Application"
+            docker logs unifi | tail -100
+            exit 1
+          fi
+
+      - name: Extract OpenAPI schema
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          # Fetch the OpenAPI spec
+          curl -sk "https://localhost:8443/api-docs/integration.json" > /tmp/integration.json
+
+          # Get version from spec
+          SPEC_VERSION=$(jq -r '.info.version' /tmp/integration.json)
+          echo "Extracted version: $SPEC_VERSION"
+
+          # Create schema directory
+          SCHEMA_DIR="schemas/$SPEC_VERSION"
+          mkdir -p "$SCHEMA_DIR"
+
+          # Save the spec
+          cp /tmp/integration.json "$SCHEMA_DIR/integration.json"
+
+          # Extract metadata
+          jq '{
+            version: .info.version,
+            title: .info.title,
+            description: .info.description,
+            paths: (.paths | keys | length),
+            schemas: (.components.schemas | keys | length),
+            source: "github-actions",
+            extractedAt: now | strftime("%Y-%m-%dT%H:%M:%SZ")
+          }' /tmp/integration.json > "$SCHEMA_DIR/metadata.json"
+
+          # Extract schema names
+          jq '.components.schemas | keys' /tmp/integration.json > "$SCHEMA_DIR/schema-names.json"
+
+          # Extract API paths
+          jq '.paths | keys' /tmp/integration.json > "$SCHEMA_DIR/api-paths.json"
+
+          # Extract required fields
+          jq '
+          .components.schemas | to_entries | map(
+            select(.value.required != null) |
+            {
+              name: .key,
+              required: .value.required,
+              properties: (.value.properties | keys)
+            }
+          )' /tmp/integration.json > "$SCHEMA_DIR/required-fields.json"
+
+          echo "schema_dir=$SCHEMA_DIR" >> $GITHUB_OUTPUT
+          echo "spec_version=$SPEC_VERSION" >> $GITHUB_OUTPUT
+        id: extract
+
+      - name: Cleanup containers
+        if: always() && steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          docker rm -f unifi mongo || true
+          docker network rm unifi-extract || true
+
+      - name: Commit and push changes
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          SPEC_VERSION="${{ steps.extract.outputs.spec_version }}"
+
+          git add schemas/
+          git diff --staged --quiet || git commit -m "chore: add schema for UniFi Network Application $SPEC_VERSION
+
+          Automatically extracted from Docker image.
+
+          🤖 Generated by GitHub Actions"
+
+          git push
+
+      - name: Create summary
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          SPEC_VERSION="${{ steps.extract.outputs.spec_version }}"
+          echo "## Schema Extraction Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** $SPEC_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Files created:**" >> $GITHUB_STEP_SUMMARY
+          ls -la "schemas/$SPEC_VERSION" >> $GITHUB_STEP_SUMMARY

@@ -11,6 +11,7 @@ secrets/
 # Generated config files
 *.json
 !examples/*.json
+!schemas/**/*.json
 
 # Editor
 .vscode/

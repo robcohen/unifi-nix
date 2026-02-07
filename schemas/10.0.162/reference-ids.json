@@ -1,0 +1,36 @@
+{
+  "site": {
+    "_id": {
+      "$oid": "60369e42db15be056fc4b426"
+    },
+    "name": "super"
+  },
+  "usergroup_default": {
+    "_id": {
+      "$oid": "60369e47db15be056fc4b43a"
+    },
+    "name": "Default"
+  },
+  "apgroup_default": {
+    "_id": {
+      "$oid": "60369e47db15be056fc4b444"
+    },
+    "name": "All APs"
+  },
+  "wlangroup_default": {
+    "_id": {
+      "$oid": "60369e47db15be056fc4b43b"
+    },
+    "name": "Default"
+  },
+  "devices": [
+    {
+      "_id": {
+        "$oid": "6668f902812ae429aef68896"
+      },
+      "model": "UDM",
+      "mac": "e0:63:da:8e:08:a9",
+      "name": "700-River-Router"
+    }
+  ]
+}

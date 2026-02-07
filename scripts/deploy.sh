@@ -7,6 +7,9 @@ HOST="${2:-}"
 DRY_RUN="${DRY_RUN:-false}"
 SSH_USER="${SSH_USER:-root}"
 ALLOW_DELETES="${ALLOW_DELETES:-false}"
+SKIP_SCHEMA_CACHE="${SKIP_SCHEMA_CACHE:-false}"
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "Usage: unifi-deploy <config.json> <host>"
@@ -16,10 +19,12 @@ if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "  host         UDM IP address or hostname"
   echo ""
   echo "Environment:"
-  echo "  DRY_RUN=true           Show commands without executing"
-  echo "  SSH_USER=root          SSH username (default: root)"
-  echo "  ALLOW_DELETES=true     Delete resources not in config"
-  echo "  UNIFI_SECRETS_DIR=path Directory containing secret files"
+  echo "  DRY_RUN=true                  Show commands without executing"
+  echo "  SSH_USER=root                 SSH username (default: root)"
+  echo "  ALLOW_DELETES=true            Delete resources not in config"
+  echo "  UNIFI_SECRETS_DIR=path        Directory containing secret files"
+  echo "  SKIP_SCHEMA_CACHE=true        Skip device schema caching"
+  echo "  SKIP_SCHEMA_VALIDATION=true   Deploy even if OpenAPI schema missing"
   echo ""
   echo "Example:"
   echo "  unifi-eval ./sites/mysite.nix > config.json"
@@ -36,6 +41,64 @@ echo "=== UniFi Declarative Deploy ==="
 echo "Host: $HOST"
 [[ "$DRY_RUN" == "true" ]] && echo "Mode: DRY RUN"
 echo ""
+
+# Extract and cache device schemas on first run
+if [[ "$SKIP_SCHEMA_CACHE" != "true" ]] && [[ -x "$SCRIPT_DIR/extract-device-schema.sh" ]]; then
+  DEVICE_SCHEMA_DIR=$("$SCRIPT_DIR/extract-device-schema.sh" "$HOST" "$SSH_USER" 2>/dev/null | tail -1) || true
+  if [[ -n "$DEVICE_SCHEMA_DIR" ]] && [[ -d "$DEVICE_SCHEMA_DIR" ]]; then
+    echo "Device schemas: $DEVICE_SCHEMA_DIR"
+    export UNIFI_DEVICE_SCHEMA_DIR="$DEVICE_SCHEMA_DIR"
+
+    # Check if OpenAPI schema exists for this version
+    DEVICE_VERSION=$(cat "$DEVICE_SCHEMA_DIR/version" 2>/dev/null || echo "unknown")
+    OPENAPI_SCHEMA_DIR="$SCRIPT_DIR/../schemas/$DEVICE_VERSION"
+
+    if [[ ! -f "$OPENAPI_SCHEMA_DIR/integration.json" ]]; then
+      echo ""
+      echo "ERROR: OpenAPI schema not found for version $DEVICE_VERSION"
+      echo ""
+      echo "Your device is running a version that isn't in the schema repository yet."
+      echo "This can happen if:"
+      echo "  1. Your device was recently upgraded"
+      echo "  2. The CI pipeline hasn't extracted the new schema yet"
+      echo ""
+      echo "Options:"
+      echo "  1. Wait for CI to extract the schema (runs every 6 hours)"
+      echo "  2. Extract manually: ./scripts/extract-schema.sh $HOST"
+      echo "  3. Skip validation: SKIP_SCHEMA_VALIDATION=true ./scripts/deploy.sh ..."
+      echo ""
+
+      if [[ "${SKIP_SCHEMA_VALIDATION:-false}" != "true" ]]; then
+        exit 1
+      else
+        echo "WARNING: Proceeding without OpenAPI validation (SKIP_SCHEMA_VALIDATION=true)"
+      fi
+    else
+      echo "OpenAPI schema: $OPENAPI_SCHEMA_DIR"
+      export UNIFI_OPENAPI_SCHEMA_DIR="$OPENAPI_SCHEMA_DIR"
+    fi
+  fi
+  echo ""
+fi
+
+# Validate configuration before deploying
+if [[ -n "${UNIFI_OPENAPI_SCHEMA_DIR:-}" ]] && [[ -n "${UNIFI_DEVICE_SCHEMA_DIR:-}" ]]; then
+  if [[ -x "$SCRIPT_DIR/validate-config.sh" ]]; then
+    echo "=== Validating Configuration ==="
+    if ! "$SCRIPT_DIR/validate-config.sh" "$CONFIG_JSON" "$UNIFI_OPENAPI_SCHEMA_DIR" "$UNIFI_DEVICE_SCHEMA_DIR"; then
+      echo ""
+      echo "Configuration validation failed. Fix the errors above before deploying."
+      echo ""
+      echo "To skip validation (not recommended):"
+      echo "  SKIP_SCHEMA_VALIDATION=true ./scripts/deploy.sh ..."
+      exit 1
+    fi
+    echo ""
+  fi
+elif [[ "${SKIP_SCHEMA_VALIDATION:-false}" != "true" ]]; then
+  echo "WARNING: Skipping validation (schemas not available)"
+  echo ""
+fi
 
 DESIRED=$(cat "$CONFIG_JSON")
 
