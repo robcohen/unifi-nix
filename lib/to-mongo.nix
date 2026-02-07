@@ -119,6 +119,29 @@ let
     setting_preference = "manual";
   };
 
+  # Convert a port forward to MongoDB portforward document
+  portForwardToMongo = name: cfg: {
+    name = cfg.name;
+    enabled = cfg.enable;
+    pfwd_interface = "wan";
+    src = if cfg.srcIP != null then cfg.srcIP else "any";
+    dst_port = toString cfg.srcPort;
+    fwd = cfg.dstIP;
+    fwd_port = toString (if cfg.dstPort != null then cfg.dstPort else cfg.srcPort);
+    proto = cfg.protocol;
+    log = cfg.log;
+    setting_preference = "manual";
+  };
+
+  # Convert a DHCP reservation to MongoDB dhcp_option document
+  dhcpReservationToMongo = name: cfg: {
+    mac = cfg.mac;
+    ip = cfg.ip;
+    name = cfg.name;
+    _network_name = cfg.network;
+    setting_preference = "manual";
+  };
+
   # Convert a firewall rule to MongoDB traffic_rule document
   firewallRuleToMongo = name: cfg: {
     description = if cfg.description != "" then cfg.description else name;
@@ -144,7 +167,27 @@ let
     setting_preference = "manual";
   };
 
-in config: {
+  # Validation checks - throw on errors
+  validate = config:
+    let
+      v = config._validation;
+      errors = lib.concatLists [
+        (lib.optional (v.duplicateVlans != [])
+          "Duplicate VLAN IDs: ${toString (lib.unique v.duplicateVlans)}")
+        (lib.optional (v.invalidWifiRefs != [])
+          "WiFi networks reference undefined networks: ${toString v.invalidWifiRefs}. Valid: ${toString v.networkNames}")
+        (lib.optional (v.invalidFirewallRefs != [])
+          "Firewall rules reference undefined networks: ${toString (lib.unique v.invalidFirewallRefs)}. Valid: ${toString v.networkNames} (or 'any')")
+        (lib.optional (v.overlappingSubnets != [])
+          "Overlapping subnets: ${lib.concatMapStringsSep ", " (p: "${p.a.name} overlaps ${p.b.name}") v.overlappingSubnets}")
+      ];
+    in
+      if errors != [] then
+        throw "Validation failed:\n  - ${lib.concatStringsSep "\n  - " errors}"
+      else
+        true;
+
+in config: assert validate config; {
   # Convert all networks
   networks = mapAttrs networkToMongo config.networks;
 
@@ -153,6 +196,12 @@ in config: {
 
   # Convert all firewall rules
   firewallRules = mapAttrs firewallRuleToMongo config.firewall.rules;
+
+  # Convert all port forwards
+  portForwards = mapAttrs portForwardToMongo config.portForwards;
+
+  # Convert all DHCP reservations
+  dhcpReservations = mapAttrs dhcpReservationToMongo config.dhcpReservations;
 
   # Metadata
   _meta = {

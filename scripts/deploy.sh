@@ -6,6 +6,7 @@ CONFIG_JSON="${1:-}"
 HOST="${2:-}"
 DRY_RUN="${DRY_RUN:-false}"
 SSH_USER="${SSH_USER:-root}"
+ALLOW_DELETES="${ALLOW_DELETES:-false}"
 
 if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "Usage: unifi-deploy <config.json> <host>"
@@ -17,6 +18,7 @@ if [[ -z "$CONFIG_JSON" ]] || [[ -z "$HOST" ]]; then
   echo "Environment:"
   echo "  DRY_RUN=true           Show commands without executing"
   echo "  SSH_USER=root          SSH username (default: root)"
+  echo "  ALLOW_DELETES=true     Delete resources not in config"
   echo "  UNIFI_SECRETS_DIR=path Directory containing secret files"
   echo ""
   echo "Example:"
@@ -179,6 +181,134 @@ if [[ "$rule_count" -gt 0 ]]; then
   done
 else
   echo "  (none defined)"
+fi
+
+echo ""
+echo "=== Applying Port Forwards ==="
+
+pf_count=$(echo "$DESIRED" | jq '.portForwards | length')
+if [[ "$pf_count" -gt 0 ]]; then
+  for pf in $(echo "$DESIRED" | jq -r '.portForwards | keys[]'); do
+    desired_pf=$(echo "$DESIRED" | jq -c ".portForwards[\"$pf\"]")
+    name=$(echo "$desired_pf" | jq -r '.name')
+    echo "Processing: $name"
+
+    pf_doc=$(echo "$desired_pf" | jq -c ". + {site_id: \"$SITE_ID\"}")
+
+    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
+      JSON.stringify(db.portforward.findOne({name: \"$name\"}, {_id: 1}))
+    '" 2>/dev/null || echo "null")
+
+    if [[ "$existing" == "null" ]] || [[ -z "$existing" ]]; then
+      echo "  Creating new port forward"
+      run_mongo "db.portforward.insertOne($pf_doc)"
+    else
+      existing_id=$(echo "$existing" | jq -r '._id."$oid"')
+      echo "  Updating (id: ${existing_id:0:8}...)"
+      update_doc=$(echo "$pf_doc" | jq -c 'del(.name, .site_id)')
+      run_mongo "db.portforward.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $update_doc})"
+    fi
+  done
+else
+  echo "  (none defined)"
+fi
+
+echo ""
+echo "=== Applying DHCP Reservations ==="
+
+dhcp_count=$(echo "$DESIRED" | jq '.dhcpReservations | length')
+if [[ "$dhcp_count" -gt 0 ]]; then
+  for res in $(echo "$DESIRED" | jq -r '.dhcpReservations | keys[]'); do
+    desired_res=$(echo "$DESIRED" | jq -c ".dhcpReservations[\"$res\"]")
+    mac=$(echo "$desired_res" | jq -r '.mac')
+    name=$(echo "$desired_res" | jq -r '.name')
+    echo "Processing: $name ($mac)"
+
+    # Resolve network reference
+    net_name=$(echo "$desired_res" | jq -r '._network_name')
+    net_id=$(echo "$NETWORK_MAP" | jq -r ".[\"$net_name\"] // empty")
+
+    if [[ -z "$net_id" ]]; then
+      echo "  WARNING: Network '$net_name' not found, skipping"
+      continue
+    fi
+
+    res_doc=$(echo "$desired_res" | jq -c "
+      del(._network_name) |
+      .network_id = \"$net_id\" |
+      .site_id = \"$SITE_ID\"
+    ")
+
+    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
+      JSON.stringify(db.dhcp_option.findOne({mac: \"$mac\"}, {_id: 1}))
+    '" 2>/dev/null || echo "null")
+
+    if [[ "$existing" == "null" ]] || [[ -z "$existing" ]]; then
+      echo "  Creating new reservation"
+      run_mongo "db.dhcp_option.insertOne($res_doc)"
+    else
+      existing_id=$(echo "$existing" | jq -r '._id."$oid"')
+      echo "  Updating"
+      run_mongo "db.dhcp_option.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $res_doc})"
+    fi
+  done
+else
+  echo "  (none defined)"
+fi
+
+# Handle deletions if enabled
+if [[ "$ALLOW_DELETES" == "true" ]]; then
+  echo ""
+  echo "=== Cleaning Up Orphaned Resources ==="
+
+  # Get desired resource names
+  desired_networks=$(echo "$DESIRED" | jq -r '.networks | keys[]')
+  desired_ssids=$(echo "$DESIRED" | jq -r '.wifi[].name')
+  desired_rules=$(echo "$DESIRED" | jq -r '.firewallRules[].description')
+
+  # Delete orphaned networks (except Default which is system-managed)
+  echo "Checking networks..."
+  current_networks=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
+    JSON.stringify(db.networkconf.find({}, {name: 1}).toArray())
+  "')
+
+  for net in $(echo "$current_networks" | jq -r '.[].name'); do
+    [[ "$net" == "Default" ]] && continue
+    if ! echo "$desired_networks" | grep -qxF "$net"; then
+      net_id=$(echo "$current_networks" | jq -r ".[] | select(.name == \"$net\") | ._id[\"\\$oid\"] // ._id.str")
+      echo "  Deleting network: $net"
+      run_mongo "db.networkconf.deleteOne({_id: ObjectId(\"$net_id\")})"
+    fi
+  done
+
+  # Delete orphaned WiFi networks
+  echo "Checking WiFi..."
+  current_wifi=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
+    JSON.stringify(db.wlanconf.find({}, {name: 1}).toArray())
+  "')
+
+  for ssid in $(echo "$current_wifi" | jq -r '.[].name'); do
+    if ! echo "$desired_ssids" | grep -qxF "$ssid"; then
+      wifi_id=$(echo "$current_wifi" | jq -r ".[] | select(.name == \"$ssid\") | ._id[\"\\$oid\"] // ._id.str")
+      echo "  Deleting WiFi: $ssid"
+      run_mongo "db.wlanconf.deleteOne({_id: ObjectId(\"$wifi_id\")})"
+    fi
+  done
+
+  # Delete orphaned firewall rules
+  echo "Checking firewall rules..."
+  current_rules=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
+    JSON.stringify(db.traffic_rule.find({}, {description: 1}).toArray())
+  "')
+
+  for desc in $(echo "$current_rules" | jq -r '.[].description // empty'); do
+    [[ -z "$desc" ]] && continue
+    if ! echo "$desired_rules" | grep -qxF "$desc"; then
+      rule_id=$(echo "$current_rules" | jq -r ".[] | select(.description == \"$desc\") | ._id[\"\\$oid\"] // ._id.str")
+      echo "  Deleting rule: $desc"
+      run_mongo "db.traffic_rule.deleteOne({_id: ObjectId(\"$rule_id\")})"
+    fi
+  done
 fi
 
 echo ""

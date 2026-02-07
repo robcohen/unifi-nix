@@ -241,6 +241,89 @@ let
     };
   };
 
+  # Port forward options
+  portForwardOpts = { name, ... }: {
+    options = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether this port forward is enabled";
+      };
+
+      name = mkOption {
+        type = types.str;
+        default = name;
+        description = "Name/description of the port forward";
+      };
+
+      protocol = mkOption {
+        type = types.enum [ "tcp" "udp" "tcp_udp" ];
+        default = "tcp_udp";
+        description = "Protocol to forward";
+      };
+
+      srcPort = mkOption {
+        type = types.either types.int types.str;
+        description = "External port or port range (e.g., 80 or \"8000-8100\")";
+        example = 443;
+      };
+
+      dstIP = mkOption {
+        type = types.str;
+        description = "Internal destination IP address";
+        example = "192.168.1.100";
+      };
+
+      dstPort = mkOption {
+        type = types.nullOr (types.either types.int types.str);
+        default = null;
+        description = "Internal destination port (null = same as srcPort)";
+      };
+
+      srcIP = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Limit to source IP/CIDR (null = any)";
+        example = "0.0.0.0/0";
+      };
+
+      log = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Log forwarded packets";
+      };
+    };
+  };
+
+  # DHCP reservation options
+  dhcpReservationOpts = { name, ... }: {
+    options = {
+      mac = mkOption {
+        type = types.str;
+        description = "MAC address of the device";
+        example = "00:11:22:33:44:55";
+      };
+
+      ip = mkOption {
+        type = types.str;
+        description = "Fixed IP address to assign";
+        example = "192.168.1.100";
+      };
+
+      name = mkOption {
+        type = types.str;
+        default = name;
+        description = "Friendly name for the device";
+      };
+
+      network = mkOption {
+        type = types.str;
+        description = "Network this reservation belongs to";
+        example = "Default";
+      };
+    };
+  };
+
   # Firewall rule options
   firewallRuleOpts = { name, ... }: {
     options = {
@@ -291,6 +374,72 @@ let
     };
   };
 
+  # Validation helpers
+  cfg = config.unifi;
+
+  # Get all VLAN IDs that are set
+  vlanIds = lib.filter (v: v != null) (lib.mapAttrsToList (_: n: n.vlan) cfg.networks);
+
+  # Check for duplicate VLANs
+  duplicateVlans = lib.filter (v: lib.count (x: x == v) vlanIds > 1) vlanIds;
+
+  # Get all network names
+  networkNames = lib.attrNames cfg.networks;
+
+  # Check WiFi network references
+  wifiNetworkRefs = lib.mapAttrsToList (_: w: w.network) cfg.wifi;
+  invalidWifiRefs = lib.filter (n: !(lib.elem n networkNames)) wifiNetworkRefs;
+
+  # Check firewall rule network references
+  flattenNetworks = nets: if builtins.isList nets then nets else [ nets ];
+  firewallFromRefs = lib.flatten (lib.mapAttrsToList (_: r: flattenNetworks r.from) cfg.firewall.rules);
+  firewallToRefs = lib.flatten (lib.mapAttrsToList (_: r: flattenNetworks r.to) cfg.firewall.rules);
+  allFirewallRefs = firewallFromRefs ++ firewallToRefs;
+  invalidFirewallRefs = lib.filter (n: n != "any" && !(lib.elem n networkNames)) allFirewallRefs;
+
+  # Power of 2 helper
+  pow2 = n: if n == 0 then 1 else 2 * pow2 (n - 1);
+
+  # Parse subnet to get network address for overlap detection
+  parseSubnetForOverlap = subnet:
+    let
+      parts = lib.splitString "/" subnet;
+      ip = builtins.elemAt parts 0;
+      prefix = lib.toInt (builtins.elemAt parts 1);
+      ipParts = map lib.toInt (lib.splitString "." ip);
+      # Convert IP to integer for comparison
+      ipInt = (builtins.elemAt ipParts 0) * 16777216 +
+              (builtins.elemAt ipParts 1) * 65536 +
+              (builtins.elemAt ipParts 2) * 256 +
+              (builtins.elemAt ipParts 3);
+      # Calculate network size
+      hostBits = 32 - prefix;
+      networkSize = if hostBits >= 32 then 4294967296 else pow2 hostBits;
+    in { inherit ipInt networkSize prefix; };
+
+  # Get all subnets with their parsed info
+  subnetInfos = lib.mapAttrsToList (name: n:
+    { inherit name; info = parseSubnetForOverlap n.subnet; subnet = n.subnet; }
+  ) cfg.networks;
+
+  # Check if two subnets overlap
+  subnetsOverlap = a: b:
+    let
+      aStart = a.info.ipInt;
+      aEnd = a.info.ipInt + a.info.networkSize - 1;
+      bStart = b.info.ipInt;
+      bEnd = b.info.ipInt + b.info.networkSize - 1;
+    in (aStart <= bEnd && bStart <= aEnd);
+
+  # Find overlapping subnet pairs
+  findOverlaps = subnets:
+    let
+      pairs = lib.filter (p: p.a.name < p.b.name)
+        (lib.concatMap (a: map (b: { inherit a b; }) subnets) subnets);
+    in lib.filter (p: subnetsOverlap p.a p.b) pairs;
+
+  overlappingSubnets = findOverlaps subnetInfos;
+
 in {
   options.unifi = {
     host = mkOption {
@@ -337,6 +486,47 @@ in {
       '';
     };
 
+    # Internal validation results (not user-facing)
+    _validation = mkOption {
+      type = types.attrsOf types.unspecified;
+      internal = true;
+      default = {};
+    };
+
+    portForwards = mkOption {
+      type = types.attrsOf (types.submodule portForwardOpts);
+      default = {};
+      description = "Port forwarding rules (NAT)";
+      example = literalExpression ''
+        {
+          https = {
+            srcPort = 443;
+            dstIP = "192.168.1.100";
+            protocol = "tcp";
+          };
+          minecraft = {
+            srcPort = 25565;
+            dstIP = "192.168.1.50";
+          };
+        }
+      '';
+    };
+
+    dhcpReservations = mkOption {
+      type = types.attrsOf (types.submodule dhcpReservationOpts);
+      default = {};
+      description = "Static DHCP reservations (fixed IPs)";
+      example = literalExpression ''
+        {
+          server = {
+            mac = "00:11:22:33:44:55";
+            ip = "192.168.1.100";
+            network = "Default";
+          };
+        }
+      '';
+    };
+
     firewall = {
       rules = mkOption {
         type = types.attrsOf (types.submodule firewallRuleOpts);
@@ -353,5 +543,10 @@ in {
         '';
       };
     };
+  };
+
+  # Export validation results for use in to-mongo.nix
+  config.unifi._validation = {
+    inherit duplicateVlans invalidWifiRefs invalidFirewallRefs overlappingSubnets networkNames;
   };
 }
