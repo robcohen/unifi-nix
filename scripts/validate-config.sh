@@ -78,9 +78,10 @@ for net_name in $(echo "$CONFIG" | jq -r '.networks // {} | keys[]'); do
     fi
   done
 
-  # Validate VLAN range
+  # Validate VLAN range (only if VLAN is enabled)
+  vlan_enabled=$(echo "$net" | jq -r '.vlan_enabled // false')
   vlan=$(echo "$net" | jq -r '.vlan // empty')
-  if [[ -n $vlan ]] && [[ $vlan != "null" ]]; then
+  if [[ $vlan_enabled == "true" ]] && [[ -n $vlan ]] && [[ $vlan != "null" ]]; then
     if [[ $vlan -lt 1 ]] || [[ $vlan -gt 4094 ]]; then
       error "Network '$net_name': VLAN $vlan out of range (1-4094)"
     fi
@@ -274,14 +275,14 @@ for res_name in $(echo "$CONFIG" | jq -r '.dhcpReservations // {} | keys[]'); do
 
   # Check required fields
   mac=$(echo "$res" | jq -r '.mac // empty')
-  ip=$(echo "$res" | jq -r '.fixed_ip // empty')
+  ip=$(echo "$res" | jq -r '.ip // empty')
 
   if [[ -z $mac ]] || [[ $mac == "null" ]]; then
     error "DHCP reservation '$res_name': missing required field 'mac'"
   fi
 
   if [[ -z $ip ]] || [[ $ip == "null" ]]; then
-    error "DHCP reservation '$res_name': missing required field 'fixed_ip'"
+    error "DHCP reservation '$res_name': missing required field 'ip'"
   fi
 
   # Validate MAC address format
