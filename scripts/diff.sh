@@ -39,7 +39,7 @@ NC='\033[0m'
 show_spinner() {
   local pid=$1
   local delay=0.1
-  local spinstr='|/-\'
+  local spinstr='|/-\\'
   while kill -0 "$pid" 2>/dev/null; do
     local temp=${spinstr#?}
     printf " %c " "$spinstr"
@@ -55,7 +55,7 @@ echo -n "Fetching current configuration..."
 
 # Run SSH in background
 TEMP_FILE=$(mktemp)
-trap "rm -f $TEMP_FILE" EXIT
+trap 'rm -f "$TEMP_FILE"' EXIT
 
 ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
 JSON.stringify({
