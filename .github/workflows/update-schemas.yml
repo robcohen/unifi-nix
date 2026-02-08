@@ -305,17 +305,24 @@ jobs:
           SCHEMA_DIR="schemas/$VERSION"
 
           echo "Running generators for version $VERSION..."
+          echo "Schema files present:"
+          ls -la "$SCHEMA_DIR/" || echo "No schema dir yet"
 
-          # Build and run generate-schema
-          nix build .#generate-schema
+          # Run generators directly (the Nix derivation expects schemas in flake source)
+          mkdir -p "$SCHEMA_DIR/generated"
 
-          # The generators are built into the package, copy generated output
-          GEN_OUT=$(nix build .#generate-schema --print-out-paths)
-          if [[ -d "$GEN_OUT/share/unifi-nix/generated" ]]; then
-            mkdir -p "$SCHEMA_DIR/generated"
-            cp -r "$GEN_OUT/share/unifi-nix/generated/"* "$SCHEMA_DIR/generated/"
-            echo "Generated files:"
-            ls -la "$SCHEMA_DIR/generated/"
+          # Run each generator
+          nix-shell -p jq --run "bash scripts/generators/extract-enums.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/enums.json'" || echo "Warning: enum extraction failed"
+          nix-shell -p jq --run "bash scripts/generators/extract-defaults.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/defaults.json'" || echo "Warning: defaults extraction failed"
+          nix-shell -p jq --run "bash scripts/generators/extract-validation.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/validation.json'" || echo "Warning: validation extraction failed"
+          nix-shell -p jq --run "bash scripts/generators/generate-json-schema.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/json-schema'" || echo "Warning: JSON schema generation failed"
+
+          echo "Generated files:"
+          ls -la "$SCHEMA_DIR/generated/" || echo "No generated files"
+
+          if [[ -d "$SCHEMA_DIR/generated/json-schema" ]]; then
+            echo "JSON schemas:"
+            ls "$SCHEMA_DIR/generated/json-schema/" | head -10
           fi
       - name: Run flake check
         run: |
