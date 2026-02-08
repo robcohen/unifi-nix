@@ -1,0 +1,48 @@
+{
+  "zone_keys": [],
+  "network_purposes": [
+    "corporate"
+  ],
+  "network_groups": [
+    "LAN"
+  ],
+  "wifi_security": [
+    "wpapsk"
+  ],
+  "wifi_wpa_modes": [
+    "wpa2"
+  ],
+  "wifi_pmf_modes": [],
+  "policy_actions": [],
+  "setting_keys": [
+    "connectivity",
+    "dashboard",
+    "doh",
+    "dpi",
+    "element_adopt",
+    "ether_lighting",
+    "global_nat",
+    "global_switch",
+    "guest_access",
+    "ips",
+    "lcm",
+    "magic_site_to_site_vpn",
+    "mdns",
+    "mgmt",
+    "netflow",
+    "ntp",
+    "peer_to_peer",
+    "radio_ai",
+    "roaming_assistant",
+    "rsyslogd",
+    "security_posture",
+    "super_cloudaccess",
+    "super_fingerbank",
+    "super_identity",
+    "super_mgmt",
+    "teleport",
+    "traffic_flow",
+    "ugw",
+    "usg"
+  ]
+}

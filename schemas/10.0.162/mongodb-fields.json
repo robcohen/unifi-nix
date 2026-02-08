@@ -1,0 +1,129 @@
+{
+  "dashboard": [
+    "_id",
+    "attr_hidden_id",
+    "attr_no_edit",
+    "attr_no_delete",
+    "name",
+    "is_public"
+  ],
+  "dpigroup": [
+    "_id",
+    "attr_no_delete",
+    "attr_hidden_id",
+    "name",
+    "site_id"
+  ],
+  "setting": [
+    "_id",
+    "key",
+    "name",
+    "hostname"
+  ],
+  "apgroup": [
+    "_id",
+    "site_id",
+    "attr_hidden_id",
+    "attr_no_delete",
+    "name",
+    "for_wlanconf"
+  ],
+  "networkconf": [
+    "_id",
+    "dhcpd_enabled",
+    "dhcpguard_enabled",
+    "domain_name",
+    "igmp_snooping",
+    "mdns_enabled",
+    "is_nat",
+    "purpose",
+    "ipv6_interface_type",
+    "ipv6_setting_preference",
+    "ipv6_client_address_assignment",
+    "dhcpdv6_enabled",
+    "ipv6_ra_preferred_lifetime",
+    "ipv6_ra_enabled",
+    "ipv6_ra_priority",
+    "dhcpdv6_dns_auto",
+    "dhcpdv6_leasetime",
+    "ipv6_pd_start",
+    "ipv6_pd_stop",
+    "dhcpdv6_start",
+    "dhcpdv6_stop",
+    "site_id",
+    "auto_scale_enabled",
+    "attr_no_delete",
+    "attr_hidden_id",
+    "ip_subnet",
+    "name",
+    "dhcpd_start",
+    "dhcpd_stop",
+    "vlan_enabled",
+    "external_id",
+    "networkgroup"
+  ],
+  "wlanconf": [
+    "_id",
+    "attr_no_delete",
+    "attr_no_edit",
+    "attr_hidden_id",
+    "site_id",
+    "enabled",
+    "security",
+    "wpa_mode",
+    "wpa_enc",
+    "hide_ssid",
+    "element_adopt",
+    "name",
+    "x_passphrase",
+    "minrate_ng_enabled",
+    "minrate_ng_data_rate_kbps"
+  ],
+  "wlangroup": [
+    "_id",
+    "name",
+    "site_id",
+    "attr_no_delete",
+    "attr_hidden_id"
+  ],
+  "site": [
+    "_id",
+    "anonymous_id",
+    "name",
+    "key",
+    "attr_hidden_id",
+    "attr_hidden",
+    "attr_no_delete",
+    "attr_no_edit"
+  ],
+  "scheduletask": [
+    "_id",
+    "name",
+    "action",
+    "execute_only_once",
+    "cron_expr",
+    "timezone",
+    "site_id"
+  ],
+  "usergroup": [
+    "_id",
+    "site_id",
+    "name",
+    "attr_hidden_id",
+    "attr_no_delete",
+    "qos_rate_max_up",
+    "qos_rate_max_down"
+  ],
+  "radiusprofile": [
+    "_id",
+    "external_id",
+    "attr_no_delete",
+    "attr_no_edit",
+    "attr_hidden_id",
+    "name",
+    "site_id",
+    "use_usg_auth_server",
+    "auth_servers",
+    "acct_servers"
+  ]
+}
