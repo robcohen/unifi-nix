@@ -70,12 +70,23 @@ jobs:
             -p 27017:27017 \
             mongo:7.0
 
-          echo "Waiting for MongoDB..."
+          echo "Waiting for MongoDB to be ready..."
           for i in {1..30}; do
             if docker exec mongo mongosh --eval "db.adminCommand('ping')" &>/dev/null; then
-              echo "MongoDB is ready"
+              echo "MongoDB ping successful"
               break
             fi
+            sleep 2
+          done
+
+          # Wait for authentication to be ready (root user created)
+          echo "Waiting for MongoDB authentication..."
+          for i in {1..30}; do
+            if docker exec mongo mongosh -u $MONGO_USER -p $MONGO_PASS --authenticationDatabase admin --eval "db.adminCommand('ping')" &>/dev/null; then
+              echo "MongoDB authentication ready"
+              break
+            fi
+            echo "  Auth not ready yet, waiting... ($i)"
             sleep 2
           done
       - name: Initialize MongoDB for UniFi
