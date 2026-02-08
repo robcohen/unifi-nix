@@ -1,1 +1,1384 @@
-{}
+{
+  "amount": {
+    "pattern": "^([\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "anqp_domain_id": {
+    "pattern": "^0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]|$",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "baresip_auth_user": {
+    "pattern": "^\\+?[a-zA-Z0-9_.\\-!~*'()]*",
+    "collections": [
+      "Device"
+    ]
+  },
+  "baresip_extension": {
+    "pattern": "^\\+?[a-zA-Z0-9_.\\-!~*'()]*",
+    "collections": [
+      "Device"
+    ]
+  },
+  "code": {
+    "pattern": "^(?!(?:15|42|43|44|51|66|67|252)$)([7-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-4])$",
+    "collections": [
+      "DhcpOption"
+    ]
+  },
+  "currency": {
+    "pattern": "[A-Z]{3}",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "custom_service": {
+    "pattern": "^[^\"' ]+$",
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "date": {
+    "pattern": "^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$",
+    "collections": [
+      "ChannelPlan"
+    ]
+  },
+  "deauth_req_timeout": {
+    "pattern": "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "destination_ip": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^any$",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "dhcpd_boot_filename": {
+    "pattern": ".{1,256}",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_boot_server": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$|(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|[a-zA-Z0-9-]{1,63}|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_dns_1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_dns_2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_dns_3": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_dns_4": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_gateway": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_gateway_enabled": {
+    "pattern": "^true|false$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ip_1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ip_2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ip_3": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_leasetime": {
+    "pattern": "[\\d]+",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_mac_1": {
+    "pattern": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_mac_2": {
+    "pattern": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_mac_3": {
+    "pattern": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ntp_1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ntp_2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_start": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_stop": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_time_offset": {
+    "pattern": "^0$|^-?([1-9]([0-9]{1,3})?|[1-7][0-9]{4}|[8][0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_unifi_controller": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_wins_1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_wins_2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpdv6_leasetime": {
+    "pattern": "[\\d]+",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "domain_name": {
+    "pattern": "(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|^$|[a-zA-Z0-9-]{1,63}",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dot1x_fallback_networkconf_id": {
+    "pattern": "[\\d\\w]+|",
+    "collections": [
+      "Device"
+    ]
+  },
+  "dot1x_idle_timeout": {
+    "pattern": "[0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "download_speed": {
+    "pattern": "[-+]?[0-9]*\\.?[0-9]+",
+    "collections": [
+      "HeatMapPoint"
+    ]
+  },
+  "dpigroup_id": {
+    "pattern": "[\\d\\w]+|^$",
+    "collections": [
+      "NetworkConf",
+      "WlanConf"
+    ]
+  },
+  "dst_networkconf_id": {
+    "pattern": "[\\d\\w]+|^$",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "dst_port": {
+    "pattern": "(([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]))+(,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])){0,14}",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "dtim_6e": {
+    "pattern": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "dtim_na": {
+    "pattern": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "dtim_ng": {
+    "pattern": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "egress_rate_limit_kbps": {
+    "pattern": "6[4-9]|[7-9][0-9]|[1-9][0-9]{2,6}",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "fixed_ap_mac": {
+    "pattern": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+    "collections": [
+      "User"
+    ]
+  },
+  "fwd": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "fwd_port": {
+    "pattern": "(([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]))+(,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])){0,14}",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "gas_comeback_delay": {
+    "pattern": "[0-9]{0,4}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "gas_frag_limit": {
+    "pattern": "[0-9]{0,5}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "gateway_device": {
+    "pattern": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "collections": [
+      "NetworkConf",
+      "Routing"
+    ]
+  },
+  "gateway_vrrp_priority": {
+    "pattern": "[1-9][0-9]|[1-9][0-9][0-9]",
+    "collections": [
+      "Device"
+    ]
+  },
+  "group_rekey": {
+    "pattern": "^(0|[6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "heightInMeters": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "Device",
+      "VirtualDevice",
+      "Wall"
+    ]
+  },
+  "hessid": {
+    "pattern": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$|^$",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "host_name": {
+    "pattern": "^[^\"' ]+$",
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "hostname": {
+    "pattern": ".{1,128}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "hours": {
+    "pattern": "[\\d]+|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "icmp_typename": {
+    "pattern": "^$|address-mask-reply|address-mask-request|any|communication-prohibited|destination-unreachable|echo-reply|echo-request|fragmentation-needed|host-precedence-violation|host-prohibited|host-redirect|host-unknown|host-unreachable|ip-header-bad|network-prohibited|network-redirect|network-unknown|network-unreachable|parameter-problem|port-unreachable|precedence-cutoff|protocol-unreachable|redirect|required-option-missing|router-advertisement|router-solicitation|source-quench|source-route-failed|time-exceeded|timestamp-reply|timestamp-request|TOS-host-redirect|TOS-host-unreachable|TOS-network-redirect|TOS-network-unreachable|ttl-zero-during-reassembly|ttl-zero-during-transit",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "icmpv6_typename": {
+    "pattern": "^$|address-unreachable|bad-header|beyond-scope|communication-prohibited|destination-unreachable|echo-reply|echo-request|failed-policy|neighbor-advertisement|neighbor-solicitation|no-route|packet-too-big|parameter-problem|port-unreachable|redirect|reject-route|router-advertisement|router-solicitation|time-exceeded|ttl-zero-during-reassembly|ttl-zero-during-transit|unknown-header-type|unknown-option",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "igmp_groupmembership": {
+    "pattern": "[2-9]|[1-9][0-9]{1,2}|[1-2][0-9]{3}|3[0-5][0-9]{2}|3600|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_maxresponse": {
+    "pattern": "[1-9]|1[0-9]|2[0-5]|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_mcrtrexpiretime": {
+    "pattern": "[0-9]|[1-9][0-9]{1,2}|[1-2][0-9]{3}|3[0-5][0-9]{2}|3600|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "index": {
+    "pattern": "[\\d]+",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "interface_mtu": {
+    "pattern": "^(6[89]|[7-9][0-9]|[1-9][0-9]{2,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|65500)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "interim_update_interval": {
+    "pattern": "^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$",
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "ip": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "Account"
+    ]
+  },
+  "ip_subnet": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec": {
+    "pattern": "match-ipsec|match-none|^$",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "ipsec_esp_lifetime": {
+    "pattern": "^(?:3[0-9]|[4-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_ike_lifetime": {
+    "pattern": "^(?:3[0-9]|[4-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_local_ip": {
+    "pattern": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_tunnel_ip": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_pd_interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_pd_prefixid": {
+    "pattern": "^$|[a-fA-F0-9]{1,4}",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_ra_preferred_lifetime": {
+    "pattern": "^([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-8][0-9]{4}|9[0-8][0-9]{3}|99[0-8][0-9]{2}|999[0-8][0-9]|9999[0-9]|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[0-8][0-9]{3}|999[0-8][0-9]{2}|9999[0-8][0-9]|99999[0-9]|[1-8][0-9]{6}|9[0-8][0-9]{5}|99[0-8][0-9]{4}|999[0-8][0-9]{3}|9999[0-8][0-9]{2}|99999[0-8][0-9]|999999[0-9]|[12][0-9]{7}|30[0-9]{6}|31[0-4][0-9]{5}|315[0-2][0-9]{4}|3153[0-5][0-9]{3}|31536000)$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_ra_valid_lifetime": {
+    "pattern": "^([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-8][0-9]{4}|9[0-8][0-9]{3}|99[0-8][0-9]{2}|999[0-8][0-9]|9999[0-9]|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[0-8][0-9]{3}|999[0-8][0-9]{2}|9999[0-8][0-9]|99999[0-9]|[1-8][0-9]{6}|9[0-8][0-9]{5}|99[0-8][0-9]{4}|999[0-8][0-9]{3}|9999[0-8][0-9]{2}|99999[0-8][0-9]|999999[0-9]|[12][0-9]{7}|30[0-9]{6}|31[0-4][0-9]{5}|315[0-2][0-9]{4}|3153[0-5][0-9]{3}|31536000)$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "l2tp_interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "l2tp_local_wan_ip": {
+    "pattern": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "lat": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*([eE][-+]?[\\d]+)?)$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "lcm_brightness": {
+    "pattern": "[1-9]|[1-9][0-9]|100",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_idle_timeout": {
+    "pattern": "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_night_mode_begins": {
+    "pattern": "(^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_night_mode_ends": {
+    "pattern": "(^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_tracker_seed": {
+    "pattern": ".{0,50}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "led_override_color": {
+    "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+    "collections": [
+      "Device"
+    ]
+  },
+  "led_override_color_brightness": {
+    "pattern": "^[0-9][0-9]?$|^100$",
+    "collections": [
+      "Device"
+    ]
+  },
+  "limit_down": {
+    "pattern": "[\\d]+|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "limit_quota": {
+    "pattern": "[\\d]+|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "limit_up": {
+    "pattern": "[\\d]+|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "lng": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*([eE][-+]?[\\d]+)?)$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "local_port": {
+    "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "login": {
+    "pattern": "^[^\"' ]+$",
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "lte_apn": {
+    "pattern": ".{1,128}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_hard_limit": {
+    "pattern": "\\d+",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_sim_pin": {
+    "pattern": "[0-9]{4,8}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_soft_limit": {
+    "pattern": "\\d+",
+    "collections": [
+      "Device"
+    ]
+  },
+  "mac": {
+    "pattern": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+    "collections": [
+      "User"
+    ]
+  },
+  "mac_override": {
+    "pattern": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "metrics_downlink_load": {
+    "pattern": "[0-9]{1,3}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_downlink_speed": {
+    "pattern": "[0-9]{1,10}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_measurement": {
+    "pattern": "[0-9]{1,5}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_uplink_load": {
+    "pattern": "[0-9]{1,3}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_uplink_speed": {
+    "pattern": "[0-9]{1,10}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "mgmt_network_id": {
+    "pattern": "[\\d\\w]+",
+    "collections": [
+      "Device"
+    ]
+  },
+  "minrate_na_data_rate_kbps": {
+    "pattern": "^[0-9]*$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "minrate_ng_data_rate_kbps": {
+    "pattern": "^[0-9]*$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "name": {
+    "pattern": "^[^\"' ]+$",
+    "collections": [
+      "Account",
+      "Device",
+      "DhcpOption",
+      "DpiApp",
+      "DpiGroup",
+      "FirewallGroup",
+      "FirewallRule",
+      "HeatMap",
+      "Hotspot2Conf",
+      "HotspotOp",
+      "NetworkConf",
+      "PortForward",
+      "RadiusProfile",
+      "Routing",
+      "SpatialRecord",
+      "UserGroup",
+      "WlanConf",
+      "WlanGroup"
+    ]
+  },
+  "name_combine_suffix": {
+    "pattern": ".{0,8}",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "nas_identifier": {
+    "pattern": ".{0,48}",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "networkgroup": {
+    "pattern": "LAN[2-8]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "offset_left": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "offset_top": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "opacity": {
+    "pattern": "^(0(\\.[\\d]{1,2})?|1)$|^$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "openvpn_interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_local_address": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_local_port": {
+    "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_local_wan_ip": {
+    "pattern": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_remote_address": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_remote_host": {
+    "pattern": "[^\\\"\\' ]+|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_remote_port": {
+    "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "password": {
+    "pattern": ".{1,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "pfwd_interface": {
+    "pattern": "wan[2-9]?|both|all",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "power_source_ctrl_budget": {
+    "pattern": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9][0-9]",
+    "collections": [
+      "Device"
+    ]
+  },
+  "pptpc_route_distance": {
+    "pattern": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "pptpc_server_ip": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|^[a-zA-Z0-9-]{1,63}$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "pptpc_username": {
+    "pattern": "[^\\\"\\' ]+",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "priority": {
+    "pattern": "[1-4]",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "priority_queue1_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "priority_queue2_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "priority_queue3_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "priority_queue4_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "protocol": {
+    "pattern": "^$|all|([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|tcp_udp|ah|ax.25|dccp|ddp|egp|eigrp|encap|esp|etherip|fc|ggp|gre|hip|hmp|icmp|idpr-cmtp|idrp|igmp|igp|ip|ipcomp|ipencap|ipip|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|iso-tp4|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|pup|rdp|rohc|rspf|rsvp|sctp|shim6|skip|st|tcp|udp|udplite|vmtp|vrrp|wesp|xns-idp|xtp",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "protocol_v6": {
+    "pattern": "^$|([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|ah|all|dccp|eigrp|esp|gre|icmpv6|ipcomp|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|rsvp|sctp|shim6|tcp|tcp_udp|udp|vrrp",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "ptmp_ap_mac": {
+    "pattern": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$",
+    "collections": [
+      "Device"
+    ]
+  },
+  "ptp_ap_mac": {
+    "pattern": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$",
+    "collections": [
+      "Device"
+    ]
+  },
+  "qos_rate_max_down": {
+    "pattern": "-1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400",
+    "collections": [
+      "DpiApp",
+      "UserGroup"
+    ]
+  },
+  "qos_rate_max_up": {
+    "pattern": "-1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400",
+    "collections": [
+      "DpiApp",
+      "UserGroup"
+    ]
+  },
+  "roam_cluster_id": {
+    "pattern": "[0-9]|[1-2][0-9]|[3][0-1]|^$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "route_distance": {
+    "pattern": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "rule_index": {
+    "pattern": "2[0-9]{3,4}|4[0-9]{3,4}",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "sae_anti_clogging": {
+    "pattern": "^[0-9]{0,5}$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "sae_sync": {
+    "pattern": "^[0-9]{0,5}$",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "server": {
+    "pattern": "^[^\"' ]+$|^$",
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "signed": {
+    "pattern": "^(true|false)$",
+    "collections": [
+      "DhcpOption"
+    ]
+  },
+  "site_name": {
+    "pattern": ".{0,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "snmp_contact": {
+    "pattern": ".{0,255}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "snmp_location": {
+    "pattern": ".{0,255}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "src": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/([0-9]|[1-2][0-9]|3[0-2])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/([0-9]|[1-2][0-9]|3[0-2])$|^any$",
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "src_mac_address": {
+    "pattern": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$|^$",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "src_networkconf_id": {
+    "pattern": "[\\d\\w]+|^$",
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "sso_token": {
+    "pattern": ".{0,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "static-route_distance": {
+    "pattern": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "collections": [
+      "Routing"
+    ]
+  },
+  "static-route_interface": {
+    "pattern": "WAN[1-9]?|[\\d\\w]+|^$",
+    "collections": [
+      "Routing"
+    ]
+  },
+  "static-route_network": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$|^([a-fA-F0-9:]+\\/(([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])))$",
+    "collections": [
+      "Routing"
+    ]
+  },
+  "static-route_nexthop": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^([a-fA-F0-9:]+)$|^$",
+    "collections": [
+      "Routing"
+    ]
+  },
+  "stormctrl_bcast_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_bcast_rate": {
+    "pattern": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_mcast_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_mcast_rate": {
+    "pattern": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_ucast_level": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_ucast_rate": {
+    "pattern": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "t_c_filename": {
+    "pattern": ".{1,256}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "t_c_timestamp": {
+    "pattern": "[0-9]{1,12}",
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "thicknessInMeters": {
+    "pattern": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "Wall"
+    ]
+  },
+  "tilt": {
+    "pattern": "[\\d]+",
+    "collections": [
+      "Map"
+    ]
+  },
+  "trial_duration_minutes": {
+    "pattern": "[\\d]+|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "trial_reset": {
+    "pattern": "^([\\d]+[.]?[\\d]*)$|^$",
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "tunnel_config_type": {
+    "pattern": "vpn|802.1x|custom",
+    "collections": [
+      "Account"
+    ]
+  },
+  "tunnel_medium_type": {
+    "pattern": "[1-9]|1[0-5]|^$",
+    "collections": [
+      "Account"
+    ]
+  },
+  "tunnel_type": {
+    "pattern": "[1-9]|1[0-3]|^$",
+    "collections": [
+      "Account"
+    ]
+  },
+  "type": {
+    "pattern": "^(boolean|hexarray|integer|ipaddress|macaddress|text)$",
+    "collections": [
+      "DhcpOption"
+    ]
+  },
+  "ubb_pair_name": {
+    "pattern": ".{1,128}",
+    "collections": [
+      "Device"
+    ]
+  },
+  "ubic_2fa_token": {
+    "pattern": ".{0,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "ubic_uuid": {
+    "pattern": ".{0,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "uid_public_gateway_port": {
+    "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "uid_vpn_max_connection_time_seconds": {
+    "pattern": "^[1-9][0-9]*$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "upload_speed": {
+    "pattern": "[-+]?[0-9]*\\.?[0-9]+",
+    "collections": [
+      "HeatMapPoint"
+    ]
+  },
+  "upp": {
+    "pattern": "^([\\d]+[.]?[\\d]*)$",
+    "collections": [
+      "Map"
+    ]
+  },
+  "username": {
+    "pattern": ".{1,256}",
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "vlan": {
+    "pattern": "[2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|400[0-9]|^$",
+    "collections": [
+      "Account",
+      "NetworkConf",
+      "WlanConf"
+    ]
+  },
+  "volume": {
+    "pattern": "[0-9]|[1-9][0-9]|100",
+    "collections": [
+      "Device"
+    ]
+  },
+  "vrrp_ip_subnet_gw1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|30)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vrrp_ip_subnet_gw2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|30)$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vrrp_vrid": {
+    "pattern": "[1-9]|[1-9][0-9]",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dhcp_cos": {
+    "pattern": "[0-7]|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dhcpv6_cos": {
+    "pattern": "[0-7]|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dhcpv6_pd_size": {
+    "pattern": "^(4[89]|5[0-9]|6[0-4])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dns1": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dns2": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dns3": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dns4": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_egress_qos": {
+    "pattern": "[1-7]|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_failover_priority": {
+    "pattern": "[1-9]",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_gateway": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_gateway_v6": {
+    "pattern": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_ip": {
+    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_ipv6": {
+    "pattern": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_ipv6_dns1": {
+    "pattern": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_ipv6_dns2": {
+    "pattern": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_load_balance_weight": {
+    "pattern": "^$|[1-9]|[1-9][0-9]",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_netmask": {
+    "pattern": "^((128|192|224|240|248|252|254)\\.0\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0)|255\\.(0|128|192|224|240|248|252|254)))))$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_networkgroup": {
+    "pattern": "WAN[2-9]?|WAN_LTE_FAILOVER",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_prefixlen": {
+    "pattern": "^([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])$|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_smartq_down_rate": {
+    "pattern": "[0-9]{1,9}|1000000000",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_smartq_up_rate": {
+    "pattern": "[0-9]{1,9}|1000000000",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_username": {
+    "pattern": "[^\"' ]+|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_vlan": {
+    "pattern": "[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-4]|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wep_idx": {
+    "pattern": "[1-4]",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "width": {
+    "pattern": "^(8|16|32)$",
+    "collections": [
+      "DhcpOption"
+    ]
+  },
+  "wireguard_client_peer_port": {
+    "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wireguard_interface": {
+    "pattern": "wan[2-9]?",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wireguard_local_wan_ip": {
+    "pattern": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "x": {
+    "pattern": "[-+]?[0-9]*\\.?[0-9]+",
+    "collections": [
+      "HeatMapPoint"
+    ]
+  },
+  "x_baresip_password": {
+    "pattern": "^[a-zA-Z0-9_.\\-!~*'()]*",
+    "collections": [
+      "Device"
+    ]
+  },
+  "x_iapp_key": {
+    "pattern": "[0-9A-Fa-f]{32}",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "x_ipsec_pre_shared_key": {
+    "pattern": "[^\\\"\\' ]+",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "x_openvpn_shared_secret_key": {
+    "pattern": "[0-9A-Fa-f]{512}",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "x_passphrase": {
+    "pattern": "[\\x20-\\x7E]{8,255}|[0-9a-fA-F]{64}",
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "x_password": {
+    "pattern": "^[^\"' ]+$",
+    "collections": [
+      "DynamicDNS",
+      "HotspotOp"
+    ]
+  },
+  "x_pptpc_password": {
+    "pattern": "[^\\\"\\' ]+",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "x_wan_password": {
+    "pattern": "[^\"' ]+|^$",
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "y": {
+    "pattern": "[-+]?[0-9]*\\.?[0-9]+",
+    "collections": [
+      "HeatMapPoint"
+    ]
+  },
+  "zoom": {
+    "pattern": "[\\d]+",
+    "collections": [
+      "Map"
+    ]
+  }
+}

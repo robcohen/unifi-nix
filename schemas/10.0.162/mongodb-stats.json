@@ -16,18 +16,6 @@
     "count": 2
   },
   {
-    "name": "dashboard",
-    "count": 1
-  },
-  {
-    "name": "apgroup",
-    "count": 1
-  },
-  {
-    "name": "wlanconf",
-    "count": 1
-  },
-  {
     "name": "networkconf",
     "count": 1
   },
@@ -36,15 +24,27 @@
     "count": 1
   },
   {
-    "name": "version_history",
-    "count": 1
-  },
-  {
     "name": "dpigroup",
     "count": 1
   },
   {
+    "name": "dashboard",
+    "count": 1
+  },
+  {
+    "name": "version_history",
+    "count": 1
+  },
+  {
+    "name": "apgroup",
+    "count": 1
+  },
+  {
     "name": "usergroup",
+    "count": 1
+  },
+  {
+    "name": "wlanconf",
     "count": 1
   }
 ]

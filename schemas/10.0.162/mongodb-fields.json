@@ -1,50 +1,4 @@
 {
-  "setting": [
-    "_id",
-    "key",
-    "name",
-    "hostname"
-  ],
-  "dashboard": [
-    "_id",
-    "attr_hidden_id",
-    "attr_no_edit",
-    "attr_no_delete",
-    "name",
-    "is_public"
-  ],
-  "wlangroup": [
-    "_id",
-    "name",
-    "site_id",
-    "attr_no_delete",
-    "attr_hidden_id"
-  ],
-  "apgroup": [
-    "_id",
-    "site_id",
-    "attr_hidden_id",
-    "attr_no_delete",
-    "name",
-    "for_wlanconf"
-  ],
-  "wlanconf": [
-    "_id",
-    "attr_no_delete",
-    "attr_no_edit",
-    "attr_hidden_id",
-    "site_id",
-    "enabled",
-    "security",
-    "wpa_mode",
-    "wpa_enc",
-    "hide_ssid",
-    "element_adopt",
-    "name",
-    "x_passphrase",
-    "minrate_ng_enabled",
-    "minrate_ng_data_rate_kbps"
-  ],
   "networkconf": [
     "_id",
     "dhcpd_enabled",
@@ -91,6 +45,28 @@
     "auth_servers",
     "acct_servers"
   ],
+  "dpigroup": [
+    "_id",
+    "attr_no_delete",
+    "attr_hidden_id",
+    "name",
+    "site_id"
+  ],
+  "dashboard": [
+    "_id",
+    "attr_hidden_id",
+    "attr_no_edit",
+    "attr_no_delete",
+    "name",
+    "is_public"
+  ],
+  "wlangroup": [
+    "_id",
+    "name",
+    "site_id",
+    "attr_no_delete",
+    "attr_hidden_id"
+  ],
   "version_history": [
     "_id",
     "time",
@@ -105,12 +81,19 @@
     "timezone",
     "site_id"
   ],
-  "dpigroup": [
+  "apgroup": [
     "_id",
-    "attr_no_delete",
+    "site_id",
     "attr_hidden_id",
+    "attr_no_delete",
     "name",
-    "site_id"
+    "for_wlanconf"
+  ],
+  "setting": [
+    "_id",
+    "key",
+    "name",
+    "hostname"
   ],
   "usergroup": [
     "_id",
@@ -120,6 +103,23 @@
     "attr_no_delete",
     "qos_rate_max_up",
     "qos_rate_max_down"
+  ],
+  "wlanconf": [
+    "_id",
+    "attr_no_delete",
+    "attr_no_edit",
+    "attr_hidden_id",
+    "site_id",
+    "enabled",
+    "security",
+    "wpa_mode",
+    "wpa_enc",
+    "hide_ssid",
+    "element_adopt",
+    "name",
+    "x_passphrase",
+    "minrate_ng_enabled",
+    "minrate_ng_data_rate_kbps"
   ],
   "site": [
     "_id",

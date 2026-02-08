@@ -12,10 +12,29 @@
       "type": "string"
     },
     "action": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "accept",
+          "drop",
+          "reject"
+        ],
+        "collections": [
+          "FirewallRule"
+        ]
+      }
     },
     "execute_only_once": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "ScheduleTask"
+        ]
+      }
     },
     "cron_expr": {
       "type": "string"

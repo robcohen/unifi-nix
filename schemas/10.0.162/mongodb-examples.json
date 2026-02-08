@@ -1,6 +1,6 @@
 {
   "networkconf": {
-    "_id": "6988c79097f5fa6abc9199f4",
+    "_id": "6988cd86b911b11ebfb4ab4e",
     "dhcpd_enabled": true,
     "dhcpguard_enabled": false,
     "domain_name": "localdomain",
@@ -21,7 +21,7 @@
     "ipv6_pd_stop": "::7d1",
     "dhcpdv6_start": "::2",
     "dhcpdv6_stop": "::7d1",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "auto_scale_enabled": true,
     "attr_no_delete": true,
     "attr_hidden_id": "LAN",
@@ -30,54 +30,54 @@
     "dhcpd_start": "192.168.1.6",
     "dhcpd_stop": "192.168.1.254",
     "vlan_enabled": false,
-    "external_id": "56afca07-2241-47c4-a449-c73336e01d9f",
+    "external_id": "d8e96bef-0540-48b4-9a0d-704ddb77b400",
     "networkgroup": "LAN"
   },
   "wlanconf": {
-    "_id": "6988c79097f5fa6abc9199e3",
+    "_id": "6988cd86b911b11ebfb4ab3d",
     "attr_no_delete": true,
     "attr_no_edit": true,
     "attr_hidden_id": "element_wlan",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "enabled": true,
     "security": "wpapsk",
     "wpa_mode": "wpa2",
     "wpa_enc": "ccmp",
     "hide_ssid": true,
     "element_adopt": true,
-    "name": "element-43a7f274fec3c597",
+    "name": "element-0f8ff83be4e6d9ec",
     "minrate_ng_enabled": true,
     "minrate_ng_data_rate_kbps": 1000
   },
   "radiusprofile": {
-    "_id": "6988c79097f5fa6abc9199ee",
-    "external_id": "21c2bf62-5270-4d6b-98cf-648bc575ea7f",
+    "_id": "6988cd86b911b11ebfb4ab48",
+    "external_id": "de893028-38b0-48f9-9668-7d75f6834f98",
     "attr_no_delete": true,
     "attr_no_edit": false,
     "attr_hidden_id": "Default",
     "name": "Default",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "use_usg_auth_server": true,
     "auth_servers": [
       {
         "ip": "192.168.1.1",
         "port": 1812,
-        "x_secret": "h9tx7GQBrf9FY9HC"
+        "x_secret": "ReM2fCP0SMnfBrQ3"
       }
     ],
     "acct_servers": []
   },
   "apgroup": {
-    "_id": "6988c79097f5fa6abc9199f9",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "_id": "6988cd86b911b11ebfb4ab53",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "attr_hidden_id": "default",
     "attr_no_delete": true,
     "name": "All APs",
     "for_wlanconf": false
   },
   "usergroup": {
-    "_id": "6988c79097f5fa6abc9199f5",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "_id": "6988cd86b911b11ebfb4ab4f",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "name": "Default",
     "attr_hidden_id": "Default",
     "attr_no_delete": true,
@@ -85,37 +85,37 @@
     "qos_rate_max_down": -1
   },
   "dpigroup": {
-    "_id": "6988c79097f5fa6abc9199f8",
+    "_id": "6988cd86b911b11ebfb4ab52",
     "attr_no_delete": true,
     "attr_hidden_id": "Default",
     "name": "Default",
-    "site_id": "6988c77997f5fa6abc9199dc"
+    "site_id": "6988cd70b911b11ebfb4ab36"
   },
   "scheduletask": {
-    "_id": "6988c79097f5fa6abc9199e0",
+    "_id": "6988cd86b911b11ebfb4ab3a",
     "name": "backup",
     "action": "backup",
     "execute_only_once": false,
     "cron_expr": "30 0 1 * *",
     "timezone": "UTC",
-    "site_id": "6988c77997f5fa6abc9199db"
+    "site_id": "6988cd70b911b11ebfb4ab35"
   },
   "wlangroup": {
-    "_id": "6988c79097f5fa6abc9199f6",
+    "_id": "6988cd86b911b11ebfb4ab50",
     "name": "Default",
-    "site_id": "6988c77997f5fa6abc9199dc",
+    "site_id": "6988cd70b911b11ebfb4ab36",
     "attr_no_delete": true,
     "attr_hidden_id": "Default"
   },
   "setting": {
-    "_id": "6988c79097f5fa6abc9199de",
+    "_id": "6988cd86b911b11ebfb4ab38",
     "key": "super_identity",
     "name": "UniFi",
     "hostname": "example-domain.ui.com"
   },
   "site": {
-    "_id": "6988c77997f5fa6abc9199db",
-    "anonymous_id": "1e0af4c6-a6cf-4386-91c5-552c183d4484",
+    "_id": "6988cd70b911b11ebfb4ab35",
+    "anonymous_id": "691321cc-61a7-45b6-a438-ea8c154f733e",
     "name": "super",
     "key": "super",
     "attr_hidden_id": "super",

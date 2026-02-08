@@ -123,7 +123,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -177,7 +177,7 @@
     {
       "name": "external_id",
       "type": "string",
-      "default": "56afca07-2241-47c4-a449-c73336e01d9f",
+      "default": "d8e96bef-0540-48b4-9a0d-704ddb77b400",
       "optional": false
     },
     {
@@ -209,7 +209,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -251,7 +251,7 @@
     {
       "name": "name",
       "type": "string",
-      "default": "element-43a7f274fec3c597",
+      "default": "element-0f8ff83be4e6d9ec",
       "optional": false
     },
     {
@@ -271,7 +271,7 @@
     {
       "name": "external_id",
       "type": "string",
-      "default": "21c2bf62-5270-4d6b-98cf-648bc575ea7f",
+      "default": "de893028-38b0-48f9-9668-7d75f6834f98",
       "optional": false
     },
     {
@@ -301,7 +301,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -317,7 +317,7 @@
         {
           "ip": "192.168.1.1",
           "port": 1812,
-          "x_secret": "h9tx7GQBrf9FY9HC"
+          "x_secret": "ReM2fCP0SMnfBrQ3"
         }
       ],
       "optional": false
@@ -333,7 +333,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -365,7 +365,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -421,7 +421,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     }
   ],
@@ -459,7 +459,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199db",
+      "default": "6988cd70b911b11ebfb4ab35",
       "optional": false
     }
   ],
@@ -473,7 +473,7 @@
     {
       "name": "site_id",
       "type": "string",
-      "default": "6988c77997f5fa6abc9199dc",
+      "default": "6988cd70b911b11ebfb4ab36",
       "optional": false
     },
     {
@@ -513,7 +513,7 @@
     {
       "name": "anonymous_id",
       "type": "string",
-      "default": "1e0af4c6-a6cf-4386-91c5-552c183d4484",
+      "default": "691321cc-61a7-45b6-a438-ea8c154f733e",
       "optional": false
     },
     {

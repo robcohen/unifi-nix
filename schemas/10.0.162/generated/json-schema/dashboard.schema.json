@@ -22,7 +22,16 @@
       "type": "string"
     },
     "is_public": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "Dashboard"
+        ]
+      }
     }
   },
   "additionalProperties": true

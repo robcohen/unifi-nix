@@ -23,22 +23,89 @@
       "pattern": "^[0-9a-f]{24}$"
     },
     "enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "DpiApp",
+          "DpiGroup",
+          "FirewallRule",
+          "NetworkConf",
+          "PortForward",
+          "Routing",
+          "WlanConf"
+        ]
+      }
     },
     "security": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "open",
+          "osen",
+          "wep",
+          "wpaeap",
+          "wpapsk"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "wpa_mode": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "auto",
+          "wpa1",
+          "wpa2"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "wpa_enc": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "auto",
+          "ccmp",
+          "ccmp-256",
+          "gcmp",
+          "gcmp-256"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "hide_ssid": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "element_adopt": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "name": {
       "type": "string"
@@ -47,7 +114,16 @@
       "type": "string"
     },
     "minrate_ng_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "WlanConf"
+        ]
+      }
     },
     "minrate_ng_data_rate_kbps": {
       "type": "integer"

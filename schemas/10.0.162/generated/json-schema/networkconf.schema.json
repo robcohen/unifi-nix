@@ -9,49 +9,174 @@
       "pattern": "^[0-9a-f]{24}$"
     },
     "dhcpd_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "dhcpguard_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "domain_name": {
       "type": "string"
     },
     "igmp_snooping": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "mdns_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "is_nat": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "purpose": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "corporate",
+          "guest",
+          "remote-user-vpn",
+          "site-vpn",
+          "vlan-only",
+          "vpn-client",
+          "wan"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "ipv6_interface_type": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "none",
+          "pd",
+          "single_network",
+          "static"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "ipv6_setting_preference": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "auto",
+          "manual"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "ipv6_client_address_assignment": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "dhcpv6",
+          "slaac"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "dhcpdv6_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "ipv6_ra_preferred_lifetime": {
       "type": "integer"
     },
     "ipv6_ra_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "ipv6_ra_priority": {
-      "type": "string"
+      "type": "string",
+      "enum": {
+        "values": [
+          "high",
+          "low",
+          "medium"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "dhcpdv6_dns_auto": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "dhcpdv6_leasetime": {
       "type": "integer"
@@ -73,7 +198,16 @@
       "pattern": "^[0-9a-f]{24}$"
     },
     "auto_scale_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf"
+        ]
+      }
     },
     "attr_no_delete": {
       "type": "boolean"
@@ -96,7 +230,18 @@
       "type": "string"
     },
     "vlan_enabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "enum": {
+        "values": [
+          "false",
+          "true"
+        ],
+        "collections": [
+          "NetworkConf",
+          "RadiusProfile",
+          "WlanConf"
+        ]
+      }
     },
     "external_id": {
       "type": "string",

@@ -1,1 +1,2819 @@
-{}
+{
+  "accounting_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "action": {
+    "values": [
+      "accept",
+      "drop",
+      "reject"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "afc_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "ap_group_mode": {
+    "values": [
+      "all",
+      "devices",
+      "groups"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "atf_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "auth_cache": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "auto_scale_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "autoneg": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "b_supported": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "bandsteering_mode": {
+    "values": [
+      "equal",
+      "off",
+      "prefer_5g"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "baresip_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "bc_filter_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "blocked": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "DpiApp"
+    ]
+  },
+  "bss_transition": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "country_beacon": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "custom_payment_fields_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "dhcp_relay_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_boot_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_conflict_checking": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_dns_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_ntp_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_time_offset_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpd_wins_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpdv6_allow_slaac": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpdv6_dns_auto": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpdv6_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "dhcpguard_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "disable_dgaf": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "disabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "dot1x_ctrl": {
+    "values": [
+      "auto",
+      "force_authorized",
+      "force_unauthorized",
+      "mac_based",
+      "multi_host"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "dot1x_portctrl_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "dpi_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device",
+      "NetworkConf",
+      "WlanConf"
+    ]
+  },
+  "dst_networkconf_type": {
+    "values": [
+      "ADDRv4",
+      "NETv4"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "dtim_mode": {
+    "values": [
+      "custom",
+      "default"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "eav_bridge_role": {
+    "values": [
+      "client",
+      "host"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "egress_rate_limit_kbps_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "element_adopt": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "DpiApp",
+      "DpiGroup",
+      "FirewallRule",
+      "NetworkConf",
+      "PortForward",
+      "Routing",
+      "WlanConf"
+    ]
+  },
+  "enhanced_iot": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "execute_only_once": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "ScheduleTask"
+    ]
+  },
+  "exposed_to_site_vpn": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "fan_mode_override": {
+    "values": [
+      "default",
+      "quiet"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "fast_roaming_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "fec_mode": {
+    "values": [
+      "default",
+      "disabled",
+      "fc-fec",
+      "rs-fec"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "fixed_ap_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "User"
+    ]
+  },
+  "flowctrl_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "for_hotspot": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "for_sso": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "forward": {
+    "values": [
+      "all",
+      "customize",
+      "disabled",
+      "native"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "full_duplex": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "gas_advanced": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "gateway_type": {
+    "values": [
+      "default",
+      "switch"
+    ],
+    "collections": [
+      "NetworkConf",
+      "Routing"
+    ]
+  },
+  "gateway_vrrp_mode": {
+    "values": [
+      "primary",
+      "secondary"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "green_ap_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "group_type": {
+    "values": [
+      "address-group",
+      "ipv6-address-group",
+      "port-group"
+    ],
+    "collections": [
+      "FirewallGroup"
+    ]
+  },
+  "hardware_offload": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "hessid_used": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "hide_ssid": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "hotspot2conf_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "iapp_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "igmp_fastleave": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_flood_unknown_multicast": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_proxy_for": {
+    "values": [
+      "all",
+      "none",
+      "some"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_proxy_upstream": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_snooping": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "igmp_supression": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "interface_mtu_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "interim_update_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "internet_access_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipaddr_type_avail_v4": {
+    "values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "ipaddr_type_avail_v6": {
+    "values": [
+      "0",
+      "1",
+      "2"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "ipsec_dh_group": {
+    "values": [
+      "14",
+      "15",
+      "16",
+      "19",
+      "2",
+      "20",
+      "21",
+      "25",
+      "26",
+      "5"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_dynamic_routing": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_encryption": {
+    "values": [
+      "3des",
+      "aes128",
+      "aes192",
+      "aes256"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_esp_dh_group": {
+    "values": [
+      "1",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "2",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "5"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_esp_encryption": {
+    "values": [
+      "3des",
+      "aes128",
+      "aes192",
+      "aes256"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_esp_hash": {
+    "values": [
+      "md5",
+      "sha1",
+      "sha256",
+      "sha384",
+      "sha512"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_hash": {
+    "values": [
+      "md5",
+      "sha1",
+      "sha256",
+      "sha384",
+      "sha512"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_ike_dh_group": {
+    "values": [
+      "1",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "2",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "5"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_ike_encryption": {
+    "values": [
+      "3des",
+      "aes128",
+      "aes192",
+      "aes256"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_ike_hash": {
+    "values": [
+      "md5",
+      "sha1",
+      "sha256",
+      "sha384",
+      "sha512"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_key_exchange": {
+    "values": [
+      "ikev1",
+      "ikev2"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_local_identifier_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_pfs": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_profile": {
+    "values": [
+      "azure_dynamic",
+      "azure_static",
+      "customized"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_remote_identifier_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_separate_ikev2_networks": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipsec_tunnel_ip_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_client_address_assignment": {
+    "values": [
+      "dhcpv6",
+      "slaac"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_interface_type": {
+    "values": [
+      "none",
+      "pd",
+      "single_network",
+      "static"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_pd_auto_prefixid_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_ra_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_ra_priority": {
+    "values": [
+      "high",
+      "low",
+      "medium"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_setting_preference": {
+    "values": [
+      "auto",
+      "manual"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "ipv6_wan_delegation_type": {
+    "values": [
+      "none",
+      "pd",
+      "single_network"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "is_guest": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "is_nat": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "is_public": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Dashboard"
+    ]
+  },
+  "isolation": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "jumboframe_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "l2_isolation": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "l2tp_allow_weak_ciphers": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "lcm_brightness_override": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_idle_timeout_override": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_orientation_override": {
+    "values": [
+      "0",
+      "180",
+      "270",
+      "90"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_settings_restricted_access": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lcm_tracker_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "led_override": {
+    "values": [
+      "default",
+      "off",
+      "on"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "limit_overwrite": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "lldpmed_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "lldpmed_notify_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "local_dns_record_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "User"
+    ]
+  },
+  "locked": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device",
+      "VirtualDevice"
+    ]
+  },
+  "log": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "DpiApp",
+      "PortForward"
+    ]
+  },
+  "logging": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "loopback_override": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lowpfmode_override": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_auth_type": {
+    "values": [
+      "CHAP",
+      "NONE",
+      "PAP",
+      "PAP-CHAP"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_data_limit_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_data_warning_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_ext_ant": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_lan_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "lte_poe": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "lte_roaming_allowed": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "mac_filter_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "mac_filter_policy": {
+    "values": [
+      "allow",
+      "deny"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "mac_override_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "mapTypeId": {
+    "values": [
+      "hybrid",
+      "roadmap",
+      "satellite",
+      "terrain"
+    ],
+    "collections": [
+      "Map"
+    ]
+  },
+  "mcastenhance_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "mdns_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "mdns_proxy_mode": {
+    "values": [
+      "auto",
+      "custom",
+      "off"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "mesh_sta_vap_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "metrics_downlink_load_set": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_downlink_speed_set": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_info_at_capacity": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_info_link_status": {
+    "values": [
+      "down",
+      "test",
+      "up"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_info_symmetric": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_measurement_set": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_status": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_uplink_load_set": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "metrics_uplink_speed_set": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "minrate_na_advertising_rates": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "minrate_na_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "minrate_ng_advertising_rates": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "minrate_ng_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "minrate_setting_preference": {
+    "values": [
+      "auto",
+      "manual"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "mlo_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "name_combine_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "nas_identifier_type": {
+    "values": [
+      "ap_mac",
+      "ap_name",
+      "bssid",
+      "custom",
+      "site_name"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "network_access_asra": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "network_access_esr": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "network_access_internet": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "network_access_uesa": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "network_auth_type": {
+    "values": [
+      "-1",
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "network_isolation_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "network_type": {
+    "values": [
+      "0",
+      "1",
+      "14",
+      "15",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "no2ghz_oui": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "openvpn_encryption_cipher": {
+    "values": [
+      "AES_256_CBC",
+      "AES_256_GCM",
+      "BF_CBC"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "openvpn_mode": {
+    "values": [
+      "client",
+      "server",
+      "site-to-site"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "optimize_iot_wifi_connectivity": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "outdoor_mode_override": {
+    "values": [
+      "default",
+      "off",
+      "on"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "outlet_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "outlet_power_cycle_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "outlet_power_cycle_on_ac_recovery_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "p2p": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "p2p_cross_connect": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "payment_fields_address_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_address_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_city_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_city_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_country_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_country_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_email_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_email_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_first_name_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_first_name_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_last_name_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_last_name_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_state_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_state_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_zip_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "payment_fields_zip_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "HotspotPackage"
+    ]
+  },
+  "peer_to_peer_mode": {
+    "values": [
+      "ap",
+      "sta"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "pmf_cipher": {
+    "values": [
+      "aes-128-cmac",
+      "auto",
+      "bip-gmac-256"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "pmf_mode": {
+    "values": [
+      "disabled",
+      "optional",
+      "required"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "poe_mode": {
+    "values": [
+      "auto",
+      "off",
+      "passthrough",
+      "pasv24"
+    ],
+    "collections": [
+      "Device",
+      "PortConf"
+    ]
+  },
+  "poll_login": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "port_keepalive_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "port_security_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "power_source_ctrl": {
+    "values": [
+      "8023af",
+      "8023at",
+      "8023bt-type3",
+      "8023bt-type4",
+      "ac",
+      "adapter",
+      "auto",
+      "dc",
+      "pasv24",
+      "poe-injector",
+      "rps"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "power_source_ctrl_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "pptpc_require_mppe": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "priority": {
+    "values": [
+      "high",
+      "low",
+      "medium"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "private_preshared_keys_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "proto": {
+    "values": [
+      "tcp",
+      "tcp_udp",
+      "udp"
+    ],
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "protocol_match_excepted": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "proxy_arp": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "purpose": {
+    "values": [
+      "corporate",
+      "guest",
+      "remote-user-vpn",
+      "site-vpn",
+      "vlan-only",
+      "vpn-client",
+      "wan"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "qos_map_status": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "radius_das_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "radius_mac_auth_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "radius_macacl_empty_password": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "radius_macacl_format": {
+    "values": [
+      "colon_lower",
+      "colon_upper",
+      "hyphen_lower",
+      "hyphen_upper",
+      "none_lower",
+      "none_upper"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "remember": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "remote_vpn_dynamic_subnets_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "report_wan_event": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "require_mschapv2": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "resetbtn_enabled": {
+    "values": [
+      "off",
+      "on"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "rrm_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "ruleset": {
+    "values": [
+      "GUEST_IN",
+      "GUEST_LOCAL",
+      "GUEST_OUT",
+      "GUESTv6_IN",
+      "GUESTv6_LOCAL",
+      "GUESTv6_OUT",
+      "LAN_IN",
+      "LAN_LOCAL",
+      "LAN_OUT",
+      "LANv6_IN",
+      "LANv6_LOCAL",
+      "LANv6_OUT",
+      "WAN_IN",
+      "WAN_LOCAL",
+      "WAN_OUT",
+      "WANv6_IN",
+      "WANv6_LOCAL",
+      "WANv6_OUT"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "sae_psk_vlan_required": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "schedule_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "schedule_reversed": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "security": {
+    "values": [
+      "open",
+      "osen",
+      "wep",
+      "wpaeap",
+      "wpapsk"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "selected": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Map"
+    ]
+  },
+  "service": {
+    "values": [
+      "afraid",
+      "changeip",
+      "cloudflare",
+      "cloudxns",
+      "custom",
+      "ddnss",
+      "dhis",
+      "dnsexit",
+      "dnsomatic",
+      "dnspark",
+      "dnspod",
+      "dslreports",
+      "dtdns",
+      "duckdns",
+      "duiadns",
+      "dyn",
+      "dyndns",
+      "dynv6",
+      "easydns",
+      "freemyip",
+      "googledomains",
+      "loopia",
+      "namecheap",
+      "noip",
+      "nsupdate",
+      "ovh",
+      "sitelutions",
+      "spdyn",
+      "strato",
+      "tunnelbroker",
+      "zoneedit"
+    ],
+    "collections": [
+      "DynamicDNS"
+    ]
+  },
+  "setting_preference": {
+    "values": [
+      "auto",
+      "manual"
+    ],
+    "collections": [
+      "FirewallRule",
+      "NetworkConf",
+      "PortConf",
+      "WlanConf"
+    ]
+  },
+  "speed": {
+    "values": [
+      "10",
+      "100",
+      "1000",
+      "10000",
+      "100000",
+      "20000",
+      "2500",
+      "25000",
+      "40000",
+      "5000",
+      "50000"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "src_limiting_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "src_limiting_type": {
+    "values": [
+      "firewall_group",
+      "ip"
+    ],
+    "collections": [
+      "PortForward"
+    ]
+  },
+  "src_networkconf_type": {
+    "values": [
+      "ADDRv4",
+      "NETv4"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "state_established": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "state_invalid": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "state_new": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "state_related": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "FirewallRule"
+    ]
+  },
+  "static-route_type": {
+    "values": [
+      "blackhole",
+      "interface-route",
+      "nexthop-route"
+    ],
+    "collections": [
+      "Routing"
+    ]
+  },
+  "station_mode": {
+    "values": [
+      "ptmp",
+      "ptp",
+      "wifi"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "stormctrl_bcast_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_mcast_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_type": {
+    "values": [
+      "level",
+      "rate"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stormctrl_ucast_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stp_port_mode": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "stp_priority": {
+    "values": [
+      "0",
+      "12288",
+      "16384",
+      "20480",
+      "24576",
+      "28672",
+      "32768",
+      "36864",
+      "4096",
+      "40960",
+      "45056",
+      "49152",
+      "53248",
+      "57344",
+      "61440",
+      "8192"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "stp_version": {
+    "values": [
+      "disabled",
+      "rstp",
+      "stp"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "strict": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "AuthenticationRequest"
+    ]
+  },
+  "switch_vlan_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "Device"
+    ]
+  },
+  "tagged_vlan_mgmt": {
+    "values": [
+      "auto",
+      "block_all",
+      "custom"
+    ],
+    "collections": [
+      "PortConf"
+    ]
+  },
+  "tdls_prohibit": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "tls_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "type": {
+    "values": [
+      "designerMap",
+      "download",
+      "googleMap",
+      "imageMap",
+      "uap",
+      "upload",
+      "usg",
+      "usw"
+    ],
+    "collections": [
+      "HeatMap",
+      "Map",
+      "VirtualDevice"
+    ]
+  },
+  "uapsd_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "uid_policy_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "uid_traffic_rules_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "uid_vpn_masquerade_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "uid_vpn_sync_public_ip": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "uid_vpn_type": {
+    "values": [
+      "openvpn",
+      "wireguard"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "unit": {
+    "values": [
+      "f",
+      "m"
+    ],
+    "collections": [
+      "Map"
+    ]
+  },
+  "upnp_lan_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "use_fixedip": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "User"
+    ]
+  },
+  "use_usg_acct_server": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "use_usg_auth_server": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "venue_group": {
+    "values": [
+      "0",
+      "1",
+      "10",
+      "11",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "venue_type": {
+    "values": [
+      "0",
+      "1",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "collections": [
+      "Hotspot2Conf"
+    ]
+  },
+  "virtual_network_override_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "User"
+    ]
+  },
+  "vlan_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf",
+      "RadiusProfile",
+      "WlanConf"
+    ]
+  },
+  "vlan_wlan_mode": {
+    "values": [
+      "disabled",
+      "optional",
+      "required"
+    ],
+    "collections": [
+      "RadiusProfile"
+    ]
+  },
+  "vpn_client_configuration_remote_ip_override_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vpn_client_default_route": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vpn_client_pull_dns": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vpn_protocol": {
+    "values": [
+      "TCP",
+      "UDP"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "vpn_type": {
+    "values": [
+      "auto",
+      "ipsec-vpn",
+      "l2tp-server",
+      "openvpn-client",
+      "openvpn-server",
+      "openvpn-vpn",
+      "pptp-client",
+      "pptp-server",
+      "sdwan-hub-spoke-tunnel",
+      "sdwan-mesh-tunnel",
+      "uid-server",
+      "wireguard-client",
+      "wireguard-server"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dhcpv6_pd_size_auto": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dns_preference": {
+    "values": [
+      "auto",
+      "manual"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_dslite_remote_host_auto": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_ipv6_dns_preference": {
+    "values": [
+      "auto",
+      "manual"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_load_balance_type": {
+    "values": [
+      "failover-only",
+      "weighted"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_pppoe_password_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_pppoe_username_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_smartq_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_type_v6": {
+    "values": [
+      "dhcpv6",
+      "disabled",
+      "slaac",
+      "static"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wan_vlan_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wireguard_client_mode": {
+    "values": [
+      "file",
+      "manual"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wireguard_client_preshared_key_enabled": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "NetworkConf"
+    ]
+  },
+  "wlan_band": {
+    "values": [
+      "2g",
+      "5g",
+      "both"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa3_enhanced_192": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa3_fast_roaming": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa3_support": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa3_transition": {
+    "values": [
+      "false",
+      "true"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa_enc": {
+    "values": [
+      "auto",
+      "ccmp",
+      "ccmp-256",
+      "gcmp",
+      "gcmp-256"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa_mode": {
+    "values": [
+      "auto",
+      "wpa1",
+      "wpa2"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  },
+  "wpa_psk_radius": {
+    "values": [
+      "disabled",
+      "optional",
+      "required"
+    ],
+    "collections": [
+      "WlanConf"
+    ]
+  }
+}

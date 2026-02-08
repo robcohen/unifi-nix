@@ -1,0 +1,1796 @@
+{
+"Account": {
+  "name": "^[^\"' ]+$",
+  "x_password": "",
+  "vlan": "[2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|400[0-9]|^$",
+  "ip":"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+  "tunnel_config_type": "vpn|802.1x|custom",
+  "tunnel_type": "[1-9]|1[0-3]|^$",
+  "tunnel_medium_type": "[1-9]|1[0-5]|^$",
+  "networkconf_id": "",
+  "ulp_user_id": "",
+  "filter_ids": [""]
+},
+"AuthenticationRequest": {
+  "username": ".{1,256}",
+  "password": ".{1,256}",
+  "poll_login": "true|false",
+  "remember": "true|false",
+  "strict": "true|false",
+  "site_name": ".{0,256}",
+  "sso_token": ".{0,256}",
+  "for_hotspot": "true|false",
+  "for_sso": "true|false",
+  "ubic_2fa_token": ".{0,256}",
+  "ubic_uuid": ".{0,256}"
+},
+"BroadcastGroup": {
+    "name": "",
+    "member_table": [""]
+},
+"ChannelPlan": {
+  "date": "^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$",
+  "radio_table": [{
+    "device_mac": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+    "name": "[a-z]*[0-9]*",
+    "channel": "[0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto",
+    "width": "20|40|80|160",
+    "tx_power": "[\\d]+|auto",
+    "tx_power_mode": "auto|medium|high|low|custom"
+  }]
+},
+"Dashboard": {
+  "name": "",
+  "desc": "",
+  "is_public": "true|false",
+  "controller_version": "",
+  "modules":[{
+    "id": "",
+    "module_id": "",
+    "config": "",
+    "restrictions": ""
+  }]
+},
+"Device": {
+    "name": ".{0,128}",
+    "hostname": ".{1,128}",
+    "x": "",
+    "y": "",
+    "heightInMeters": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "locked": "true|false",
+    "map_id": "",
+    "disabled": "true|false",
+    "led_override": "default|on|off",
+    "led_override_color": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+    "led_override_color_brightness": "^[0-9][0-9]?$|^100$",
+    "outdoor_mode_override": "default|on|off",
+    "mesh_sta_vap_enabled": "true|false",
+    "config_network": {
+        "bonding_enabled": "true|false",
+        "type": "dhcp|static",
+        "ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+        "netmask": "^((128|192|224|240|248|252|254)\\.0\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0)|255\\.(0|128|192|224|240|248|252|254)))))$",
+        "gateway": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+        "dns1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+        "dns2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+        "dnssuffix": ""
+    },
+    "radio_table": [{
+        "radio_identifiers": [{
+            "device_id": "",
+            "radio_name": ""
+        }],
+        "radio": "ng|na|ad|6e",
+        "dfs": "true|false",
+        "channel": "[0-9]|[1][0-4]|1.5|2.5|3.5|4.5|5.5|6.5|5|16|17|21|25|29|33|34|36|37|38|40|41|42|44|45|46|48|49|52|53|56|57|60|61|64|65|69|73|77|81|85|89|93|97|100|101|104|105|108|109|112|113|117|116|120|121|124|125|128|129|132|133|136|137|140|141|144|145|149|153|157|161|165|169|173|177|181|183|184|185|187|188|189|192|193|196|197|201|205|209|213|217|221|225|229|233|auto",
+        "ht": "20|40|80|160|240|320|1080|2160|4320",
+        "tx_power_mode": "auto|medium|high|low|custom|disabled",
+        "tx_power": "[\\d]+|auto",
+        "min_rssi_enabled": "true|false",
+        "min_rssi": "^-(6[7-9]|[7-8][0-9]|90)$",
+        "name": "",
+        "hard_noise_floor_enabled": "true|false",
+        "sens_level_enabled": "true|false",
+        "sens_level": "^-([5-8][0-9]|90)$",
+        "antenna_gain": "^-?([0-9]|[1-9][0-9])",
+        "antenna_id": "-1|[0-9]",
+        "vwire_enabled":"true|false",
+        "loadbalance_enabled": "true|false",
+        "maxsta": "[1-9]|[1-9][0-9]|1[0-9]{2}|200|^$",
+        "assisted_roaming_enabled": "true|false",
+        "assisted_roaming_rssi": "^-([6-7][0-9]|80)$"
+    }],
+    "outlet_overrides": [{
+        "index": "[0-9]{1,2}",
+        "name":".{0,128}",
+        "relay_state": "true|false",
+        "cycle_enabled": "true|false"
+    }],
+    "outlet_enabled": "true|false",
+    "ethernet_overrides": [{
+        "ifname": "eth[0-9]{1,2}",
+        "networkgroup": "LAN[2-8]?|WAN[2-9]?",
+        "disabled": "true|false"
+    }],
+    "jumboframe_enabled": "true|false",
+    "flowctrl_enabled": "true|false",
+    "stp_version": "stp|rstp|disabled",
+    "stp_priority": "0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440",
+    "dot1x_portctrl_enabled": "true|false",
+    "dot1x_fallback_networkconf_id": "[\\d\\w]+|",
+    "radiusprofile_id": "",
+    "atf_enabled": "true|false",
+    "afc_enabled": "true|false",
+    "bandsteering_mode": "off|equal|prefer_5g",
+    "dpi_enabled": "true|false",
+    "resetbtn_enabled": "on|off",
+    "mgmt_network_id": "[\\d\\w]+",
+    "switch_vlan_enabled": "false|true",
+    "poe_mode":"auto|pasv24|passthrough|off",
+    "port_overrides": [{
+        "port_idx":"[1-9]|[1-4][0-9]|5[0-6]",
+        "name":".{0,128}",
+        "forward": "all|native|customize|disabled",
+        "fec_mode": "rs-fec|fc-fec|default|disabled",
+        "native_networkconf_id": "",
+        "tagged_vlan_mgmt": "auto|block_all|custom",
+        "excluded_networkconf_ids": [""],
+        "voice_networkconf_id": "",
+        "op_mode":"switch|mirror|aggregate",
+        "autoneg":"true|false",
+        "speed":"10|100|1000|2500|5000|10000|20000|25000|40000|50000|100000",
+        "full_duplex":"true|false",
+        "poe_mode":"auto|pasv24|passthrough|off",
+        "isolation":"true|false",
+        "flow_control_enabled": "true|false",
+        "dot1x_ctrl":"auto|force_authorized|force_unauthorized|mac_based|multi_host",
+        "dot1x_idle_timeout":"[0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]",
+        "stormctrl_type": "level|rate",
+        "stormctrl_ucast_enabled": "true|false",
+        "stormctrl_ucast_level": "[0-9]|[1-9][0-9]|100",
+        "stormctrl_ucast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+        "stormctrl_mcast_enabled": "true|false",
+        "stormctrl_mcast_level": "[0-9]|[1-9][0-9]|100",
+        "stormctrl_mcast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+        "stormctrl_bcast_enabled": "true|false",
+        "stormctrl_bcast_level": "[0-9]|[1-9][0-9]|100",
+        "stormctrl_bcast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+        "priority_queue1_level": "[0-9]|[1-9][0-9]|100",
+        "priority_queue2_level": "[0-9]|[1-9][0-9]|100",
+        "priority_queue3_level": "[0-9]|[1-9][0-9]|100",
+        "priority_queue4_level": "[0-9]|[1-9][0-9]|100",
+        "portconf_id":"[\\d\\w]+",
+        "mirror_port_idx":"[1-9]|[1-4][0-9]|5[0-6]",
+        "lldpmed_enabled": "true|false",
+        "lldpmed_notify_enabled": "true|false",
+        "stp_port_mode": "true|false",
+        "egress_rate_limit_kbps_enabled": "true|false",
+        "egress_rate_limit_kbps": "6[4-9]|[7-9][0-9]|[1-9][0-9]{2,6}",
+        "aggregate_members": ["[1-9]|[1-4][0-9]|5[0-6]"],
+        "port_security_enabled": "true|false",
+        "port_security_mac_address": ["^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"],
+        "port_keepalive_enabled": "true|false",
+        "setting_preference": "auto|manual",
+        "qos_profile": {
+            "qos_profile_mode": "custom|unifi_play|aes67_audio|crestron_audio_video|dante_audio|ndi_aes67_audio|ndi_dante_audio|qsys_audio_video|qsys_video_dante_audio|sdvoe_aes67_audio|sdvoe_dante_audio|shure_audio",
+            "qos_policies": [{
+                "qos_matching": {
+                    "dscp_code": "[0-9]|[1-5][0-9]|6[0-3]",
+                    "cos_code": "[0-7]",
+                    "ip_precedence_code": "[0-7]",
+                    "protocol": "([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|ah|ax.25|dccp|ddp|egp|eigrp|encap|esp|etherip|fc|ggp|gre|hip|hmp|icmp|idpr-cmtp|idrp|igmp|igp|ip|ipcomp|ipencap|ipip|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|iso-tp4|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|pup|rdp|rohc|rspf|rsvp|sctp|shim6|skip|st|tcp|udp|udplite|vmtp|vrrp|wesp|xns-idp|xtp",
+                    "src_port": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-4]|65535",
+                    "dst_port": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-4]|65535"
+                },
+                "qos_marking": {
+                    "queue": "[0-7]",
+                    "dscp_code": "0|8|16|24|32|40|48|56|10|12|14|18|20|22|26|28|30|34|36|38|44|46",
+                    "cos_code": "[0-7]",
+                    "ip_precedence_code": "[0-7]"
+                }
+            }]
+        },
+        "multicast_router_networkconf_ids": [""]
+    }],
+    "oob_port_config": {
+        "enabled": "true|false",
+        "ipv4": {
+            "type": "dhcp|static",
+            "ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+            "netmask": "^(0|[1-9]|1[0-9]|2[0-9]|3[0-2])$|^$"
+        },
+        "ipv6": {
+            "type": "slaac|dhcp|static|none",
+            "ip": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+            "netmask": "^(0|[1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])$|^$"
+        }
+    },
+    "ether_lighting": {
+        "led_mode": "standard|etherlighting",
+        "mode": "speed|network",
+        "brightness": "[1-9]|[1-9][0-9]|100",
+        "behavior": "breath|steady"
+    },
+    "nut_server": {
+        "enabled": "true|false",
+        "id": "",
+        "port": "[0-9]{1,5}",
+        "credential_required": "true|false",
+        "username": "",
+        "password": ""
+    },
+    "power_source_ctrl_enabled": "true|false",
+    "power_source_ctrl": "auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps",
+    "power_source_ctrl_budget": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9][0-9]",
+    "sma_port_config": {
+        "clock_source": "gps|external",
+        "delay_ns": "^([\\d]+[.]?[\\d]*)$",
+        "display": "ns|m|ft"
+    },
+    "snmp_location": ".{0,255}",
+    "snmp_contact": ".{0,255}",
+    "baresip_enabled": "true|false",
+    "baresip_extension": "^\\+?[a-zA-Z0-9_.\\-!~*'()]*",
+    "baresip_auth_user": "^\\+?[a-zA-Z0-9_.\\-!~*'()]*",
+    "x_baresip_password": "^[a-zA-Z0-9_.\\-!~*'()]*",
+    "volume": "[0-9]|[1-9][0-9]|100",
+    "lte_ext_ant": "true|false",
+    "lte_poe": "true|false",
+    "lte_soft_limit": "\\d+",
+    "lte_hard_limit": "\\d+",
+    "lte_data_limit_enabled": "true|false",
+    "lte_data_warning_enabled": "true|false",
+    "lte_username": "",
+    "lte_password": "",
+    "lte_auth_type": "PAP|CHAP|PAP-CHAP|NONE",
+    "lcm_brightness_override": "true|false",
+    "lcm_brightness": "[1-9]|[1-9][0-9]|100",
+    "lcm_idle_timeout_override": "true|false",
+    "lcm_idle_timeout": "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600",
+    "lcm_orientation_override": "0|90|180|270",
+    "rps_override": {
+        "power_management_mode": "dynamic|static",
+        "rps_port_table": [{
+            "port_idx": "[1-8]",
+            "name": ".{0,32}",
+            "port_mode":"auto|force_active|manual|disabled"
+        }]
+    },
+    "lcm_tracker_seed": ".{0,50}",
+    "lcm_tracker_enabled": "true|false",
+    "lcm_settings_restricted_access": "true|false",
+    "lcm_night_mode_begins": "(^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)",
+    "lcm_night_mode_ends": "(^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)",
+    "ubb_pair_name": ".{1,128}",
+    "lte_sim_pin": "[0-9]{4,8}",
+    "lte_apn": ".{1,128}",
+    "lte_roaming_allowed": "true|false",
+    "outlet_power_cycle_enabled": "true|false",
+    "outlet_power_cycle_on_ac_recovery_enabled": "true|false",
+    "lowpfmode_override": "true|false",
+    "gateway_vrrp_mode": "primary|secondary",
+    "gateway_vrrp_priority": "[1-9][0-9]|[1-9][0-9][0-9]",
+    "peer_to_peer_mode": "ap|sta",
+    "station_mode": "ptp|ptmp|wifi",
+    "ptp_ap_mac": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$",
+    "ptmp_ap_mac": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$",
+    "green_ap_enabled": "true|false",
+    "mbb_overrides": {
+        "primary_slot": "1|2",
+        "sim": [
+            {
+                "slot": "1|2",
+                "use_custom_apn": "true|false",
+                "current_apn": {
+                    "apn": "",
+                    "auth_type": "PAP|CHAP|PAP-CHAP|NONE",
+                    "password": "",
+                    "username": "",
+                    "roaming": "true|false",
+                    "pdp_type": "IPv4|IPv6|IPv4v6"
+                },
+                "data_soft_limit_bytes": "\\d+",
+                "data_hard_limit_bytes": "\\d+",
+                "data_soft_limit_display_unit": "MB|GB",
+                "data_limit_enabled": "true|false",
+                "data_warning_threshold": "[0-9]|[1-9][0-9]|100",
+                "reset_policy": "day|week|month",
+                "reset_date": "[0-9]|[1-2][0-9]|3[0-1]"
+            }
+        ]
+    },
+    "fan_mode_override": "default|quiet",
+    "hardware_offload": "true|false",
+    "eav_bridge_role": "host|client",
+    "video_info": {
+        "channel": "[2-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]",
+        "role": "host|client",
+        "refresh_rate": "",
+        "audio_enabled": "true|false",
+        "audio_mode": "auto|pcm",
+        "color_format": "rgb|ycbcr444|ycbcr422",
+        "mode": "unicast|multicast",
+        "resolution": "auto|1080p|1440p|4k",
+        "tvwall_layout_x": "[1-4]",
+        "tvwall_layout_y": "[1-4]",
+        "tvwall_start_x": "[2-5]",
+        "tvwall_start_y": "[2-5]",
+        "tvwall_end_x":  "[2-5]",
+        "tvwall_end_y": "[2-5]"
+    },
+    "audio_info": {
+        "channel": "[2-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]",
+        "role": "host|client"
+    },
+    "loopback_override": "true|false"
+},
+"DhcpOption": {
+    "type": "^(boolean|hexarray|integer|ipaddress|macaddress|text)$",
+    "code": "^(?!(?:15|42|43|44|51|66|67|252)$)([7-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-4])$",
+    "name": "^[A-Za-z0-9-_]{1,25}$",
+    "signed": "^(true|false)$",
+    "width": "^(8|16|32)$"
+},
+"DpiApp": {
+    "name": ".{1,128}",
+    "enabled": "false|true",
+    "apps": [ "[0-9]{1,8}" ],
+    "cats": [ "[0-9]{1,3}" ],
+    "blocked": "false|true",
+    "log": "false|true",
+    "qos_rate_max_up": "-1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400",
+    "qos_rate_max_down": "-1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400"
+},
+"DpiGroup": {
+    "name":".{1,128}",
+    "enabled": "false|true",
+    "dpiapp_ids": [ "[\\d\\w]+" ]
+},
+"DynamicDNS": {
+    "interface": "wan[2-9]?",
+    "service": "afraid|changeip|cloudflare|cloudxns|ddnss|dhis|dnsexit|dnsomatic|dnspark|dnspod|dslreports|dtdns|duckdns|duiadns|dyn|dyndns|dynv6|easydns|freemyip|googledomains|loopia|namecheap|noip|nsupdate|ovh|sitelutions|spdyn|strato|tunnelbroker|zoneedit|cloudflare|custom",
+    "custom_service": "^[^\"' ]+$",
+    "host_name": "^[^\"' ]+$",
+    "login": "^[^\"' ]+$",
+    "x_password": "^[^\"' ]+$",
+    "server": "^[^\"' ]+$|^$",
+    "options": ["^[^\"' ]+$"]
+},
+"FirewallGroup": {
+    "name": ".{1,64}",
+    "group_type": "address-group|port-group|ipv6-address-group",
+    "group_members": [ "" ]
+},
+"FirewallRule": {
+    "name": ".{1,128}",
+    "ruleset": "WAN_IN|WAN_OUT|WAN_LOCAL|LAN_IN|LAN_OUT|LAN_LOCAL|GUEST_IN|GUEST_OUT|GUEST_LOCAL|WANv6_IN|WANv6_OUT|WANv6_LOCAL|LANv6_IN|LANv6_OUT|LANv6_LOCAL|GUESTv6_IN|GUESTv6_OUT|GUESTv6_LOCAL",
+    "rule_index": "2[0-9]{3,4}|4[0-9]{3,4}",
+
+    "enabled": "true|false",
+    "action": "drop|reject|accept",
+    "protocol": "^$|all|([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|tcp_udp|ah|ax.25|dccp|ddp|egp|eigrp|encap|esp|etherip|fc|ggp|gre|hip|hmp|icmp|idpr-cmtp|idrp|igmp|igp|ip|ipcomp|ipencap|ipip|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|iso-tp4|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|pup|rdp|rohc|rspf|rsvp|sctp|shim6|skip|st|tcp|udp|udplite|vmtp|vrrp|wesp|xns-idp|xtp",
+    "protocol_v6": "^$|([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|ah|all|dccp|eigrp|esp|gre|icmpv6|ipcomp|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|rsvp|sctp|shim6|tcp|tcp_udp|udp|vrrp",
+    "protocol_match_excepted": "false|true",
+
+    "state_established": "false|true",
+    "state_invalid": "false|true",
+    "state_new": "false|true",
+    "state_related": "false|true",
+
+    "ipsec": "match-ipsec|match-none|^$",
+    "icmp_typename" : "^$|address-mask-reply|address-mask-request|any|communication-prohibited|destination-unreachable|echo-reply|echo-request|fragmentation-needed|host-precedence-violation|host-prohibited|host-redirect|host-unknown|host-unreachable|ip-header-bad|network-prohibited|network-redirect|network-unknown|network-unreachable|parameter-problem|port-unreachable|precedence-cutoff|protocol-unreachable|redirect|required-option-missing|router-advertisement|router-solicitation|source-quench|source-route-failed|time-exceeded|timestamp-reply|timestamp-request|TOS-host-redirect|TOS-host-unreachable|TOS-network-redirect|TOS-network-unreachable|ttl-zero-during-reassembly|ttl-zero-during-transit",
+    "icmpv6_typename" : "^$|address-unreachable|bad-header|beyond-scope|communication-prohibited|destination-unreachable|echo-reply|echo-request|failed-policy|neighbor-advertisement|neighbor-solicitation|no-route|packet-too-big|parameter-problem|port-unreachable|redirect|reject-route|router-advertisement|router-solicitation|time-exceeded|ttl-zero-during-reassembly|ttl-zero-during-transit|unknown-header-type|unknown-option",
+
+    "dst_address": "",
+    "dst_address_ipv6": "",
+    "dst_port": "",
+    "dst_firewallgroup_ids": [ "[\\d\\w]+" ],
+    "dst_networkconf_id": "[\\d\\w]+|^$",
+    "dst_networkconf_type": "ADDRv4|NETv4",
+
+    "src_address": "",
+    "src_address_ipv6": "",
+    "src_port": "",
+    "src_firewallgroup_ids": [ "[\\d\\w]+" ],
+    "src_networkconf_id": "[\\d\\w]+|^$",
+    "src_networkconf_type": "ADDRv4|NETv4",
+    "src_mac_address": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$|^$",
+
+    "logging": "false|true",
+
+    "setting_preference": "auto|manual"
+},
+"HeatMap": {
+    "map_id": "",
+    "type": "download|upload",
+    "name": ".*[^\\s]+.*",
+    "description": ""
+},
+"HeatMapPoint": {
+    "heatmap_id": "",
+    "x": "[-+]?[0-9]*\\.?[0-9]+",
+    "y": "[-+]?[0-9]*\\.?[0-9]+",
+    "upload_speed": "[-+]?[0-9]*\\.?[0-9]+",
+    "download_speed": "[-+]?[0-9]*\\.?[0-9]+"
+},
+"Hotspot2Conf": {
+  "name": ".{1,128}",
+  "venue_name": [
+    {
+      "language": "[a-z]{3}",
+      "name": "",
+      "url": ""
+    }
+  ],
+  "venue_group": "0|1|2|3|4|5|6|7|8|9|10|11",
+  "venue_type": "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15",
+  "network_type": "0|1|2|3|4|5|14|15",
+  "network_access_internet": "true|false",
+  "network_access_asra": "true|false",
+  "network_access_esr": "true|false",
+  "network_access_uesa": "true|false",
+  "ipaddr_type_avail_v4": "0|1|2|3|4|5|6|7",
+  "ipaddr_type_avail_v6": "0|1|2",
+  "hessid_used" : "true|false",
+  "hessid": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$|^$",
+  "anqp_domain_id": "^0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]|$",
+  "network_auth_type": "-1|0|1|2|3",
+  "network_auth_url": "",
+  "disable_dgaf": "true|false",
+  "deauth_req_timeout" : "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600",
+  "osu_ssid": "",
+  "nai_realm_list": [
+    {
+      "name": ".{1,128}",
+      "status": "true|false",
+      "encoding": "0|1",
+      "eap_method": "13|21|18|23|50",
+      "auth_ids": "",
+      "auth_vals": ""
+    }
+  ],
+  "domain_name_list": [".{1,128}"],
+  "roaming_consortium_list": [
+    {
+      "name": ".{1,128}",
+      "oid": ".{1,128}"
+    }
+  ],
+  "cellular_network_list": [
+    {
+      "name": ".{1,128}",
+      "mcc": "[0-9]{3}",
+      "mnc": "[0-9]{3}"
+    }
+  ],
+  "friendly_name" : [
+     {
+      "language": "[a-z]{3}",
+      "text": ".{1,128}"
+     }
+  ],
+  "t_c_filename" : ".{1,256}",
+  "t_c_timestamp" : "[0-9]{1,12}",
+  "icons" : [
+    {
+      "name" : ".{1,256}",
+      "width": "[0-9]{1,8}",
+      "height": "[0-9]{1,8}",
+      "media": ".{1,256}",
+      "language": "[a-z]{3}",
+      "filename": ".{1,256}",
+      "data": "",
+      "size": "[0-9]{1,8}"
+    }
+  ],
+  "metrics_status" : "true|false",
+  "metrics_info_link_status" : "up|down|test",
+  "metrics_info_symmetric" : "true|false",
+  "metrics_info_at_capacity" : "true|false",
+  "metrics_downlink_speed_set": "true|false",
+  "metrics_downlink_speed": "[0-9]{1,10}",
+  "metrics_uplink_speed_set": "true|false",
+  "metrics_uplink_speed": "[0-9]{1,10}",
+  "metrics_downlink_load_set": "true|false",
+  "metrics_downlink_load": "[0-9]{1,3}",
+  "metrics_uplink_load_set": "true|false",
+  "metrics_uplink_load": "[0-9]{1,3}",
+  "metrics_measurement_set": "true|false",
+  "metrics_measurement": "[0-9]{1,5}",
+  "capab" : [
+    {
+      "protocol" : "icmp|tcp_udp|tcp|udp|esp",
+      "port": "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])|$",
+      "status" : "closed|open|unknown"
+    }
+  ],
+  "osu" : [
+    {
+      "server_uri": "",
+      "friendly_name" : [
+        {
+          "language": "[a-z]{3}",
+          "text": ".{1,128}"
+        }
+      ],
+      "description" : [
+        {
+          "language": "[a-z]{3}",
+          "text": ".{1,128}"
+        }
+      ],
+      "nai" : "",
+      "nai2" : "",
+      "operating_class" : "[0-9A-Fa-f]{12}",
+      "method_soap_xml_spp": "true|false",
+      "method_oma_dm": "true|false",
+      "icon" : [
+        {
+          "name": ".{1,128}"
+        }
+      ]
+    }
+  ],
+  "gas_advanced": "true|false",
+  "gas_frag_limit" : "[0-9]{0,5}",
+  "gas_comeback_delay" : "[0-9]{0,4}",
+  "qos_map_status" : "true|false",
+  "qos_map_exceptions" : [
+    {
+      "dcsp" : "[0-9]{1,2}",
+      "up" : "[0-7]"
+    }
+  ],
+  "qos_map_dcsp" : [
+    {
+      "low" : "[0-9]{1,3}",
+      "high" : "[0-9]{1,3}"
+    }
+  ],
+  "save_timestamp": ""
+},
+"HotspotOp": {
+    "name": ".{1,256}",
+    "x_password": ".{1,256}",
+    "note": ""
+},
+"HotspotPackage": {
+    "name": "",
+    "charged_as": "",
+    "amount": "^([\\d]+[.]?[\\d]*)$",
+    "currency": "[A-Z]{3}",
+    "hours": "[\\d]+|^$",
+    "trial_duration_minutes": "[\\d]+|^$",
+    "trial_reset": "^([\\d]+[.]?[\\d]*)$|^$",
+    "limit_overwrite": "true|false",
+    "limit_up": "[\\d]+|^$",
+    "limit_down": "[\\d]+|^$",
+    "limit_quota": "[\\d]+|^$",
+    "index": "[\\d]+",
+    "custom_payment_fields_enabled": "true|false",
+    "payment_fields_address_enabled": "true|false",
+    "payment_fields_address_required": "true|false",
+    "payment_fields_city_enabled": "true|false",
+    "payment_fields_city_required": "true|false",
+    "payment_fields_country_enabled": "true|false",
+    "payment_fields_country_required": "true|false",
+    "payment_fields_email_enabled": "true|false",
+    "payment_fields_email_required": "true|false",
+    "payment_fields_first_name_enabled": "true|false",
+    "payment_fields_first_name_required": "true|false",
+    "payment_fields_last_name_enabled": "true|false",
+    "payment_fields_last_name_required": "true|false",
+    "payment_fields_state_enabled": "true|false",
+    "payment_fields_state_required": "true|false",
+    "payment_fields_zip_enabled": "true|false",
+    "payment_fields_zip_required": "true|false"
+},
+"Map": {
+    "name": "",
+    "mapTypeId": "satellite|roadmap|hybrid|terrain",
+    "tilt": "[\\d]+",
+    "type": "designerMap|imageMap|googleMap",
+    "upp": "^([\\d]+[.]?[\\d]*)$",
+    "unit": "m|f",
+    "lat": "^([-]?[\\d]+[.]?[\\d]*([eE][-+]?[\\d]+)?)$",
+    "lng": "^([-]?[\\d]+[.]?[\\d]*([eE][-+]?[\\d]+)?)$",
+    "selected": "true|false",
+    "zoom": "[\\d]+",
+    "offset_top": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "offset_left": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "opacity": "^(0(\\.[\\d]{1,2})?|1)$|^$"
+},
+"MediaFile": {
+    "name": ""
+},
+"NetworkConf": {
+    "name": ".{1,128}",
+    "enabled": "true|false",
+    "setting_preference": "auto|manual",
+    "ipv6_setting_preference": "auto|manual",
+    "purpose": "corporate|guest|remote-user-vpn|site-vpn|vlan-only|vpn-client|wan",
+    "vpn_type": "auto|ipsec-vpn|openvpn-client|openvpn-server|openvpn-vpn|pptp-client|l2tp-server|pptp-server|sdwan-hub-spoke-tunnel|sdwan-mesh-tunnel|uid-server|wireguard-server|wireguard-client",
+    "vlan_enabled": "false|true",
+    "vlan": "[2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|400[0-9]|401[0-8]|^$",
+    "gateway_type":"default|switch",
+    "gateway_device": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "priority": "[1-4]",
+    "igmp_proxy_upstream": "true|false",
+    "igmp_proxy_for": "all|some|none",
+    "igmp_proxy_downstream_networkconf_ids":  [""],
+    "igmp_snooping": "true|false",
+    "igmp_fastleave": "true|false",
+    "igmp_flood_unknown_multicast": "true|false",
+    "igmp_supression": "true|false",
+    "igmp_maxresponse": "[1-9]|1[0-9]|2[0-5]|^$",
+    "igmp_mcrtrexpiretime": "[0-9]|[1-9][0-9]{1,2}|[1-2][0-9]{3}|3[0-5][0-9]{2}|3600|^$",
+    "igmp_groupmembership": "[2-9]|[1-9][0-9]{1,2}|[1-2][0-9]{3}|3[0-5][0-9]{2}|3600|^$",
+    "igmp_querier_switches": [{
+        "switch_mac": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$",
+        "querier_address": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$"
+    }],
+    "interface_mtu_enabled": "false|true",
+    "interface_mtu": "^(6[89]|[7-9][0-9]|[1-9][0-9]{2,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|65500)$",
+    "ip_subnet": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$",
+    "ip_aliases" : ["^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([8-9]|[1-2][0-9]|3[0-2])$|^$"],
+    "ipv6_subnet": "",
+    "ipv6_aliases" : [""],
+    "ipv6_interface_type": "static|pd|single_network|none",
+    "ipv6_pd_interface": "wan[2-9]?",
+    "ipv6_pd_auto_prefixid_enabled": "true|false",
+    "ipv6_pd_prefixid": "^$|[a-fA-F0-9]{1,4}",
+    "ipv6_ra_enabled": "false|true",
+    "ipv6_ra_priority": "high|medium|low",
+    "ipv6_ra_valid_lifetime": "^([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-8][0-9]{4}|9[0-8][0-9]{3}|99[0-8][0-9]{2}|999[0-8][0-9]|9999[0-9]|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[0-8][0-9]{3}|999[0-8][0-9]{2}|9999[0-8][0-9]|99999[0-9]|[1-8][0-9]{6}|9[0-8][0-9]{5}|99[0-8][0-9]{4}|999[0-8][0-9]{3}|9999[0-8][0-9]{2}|99999[0-8][0-9]|999999[0-9]|[12][0-9]{7}|30[0-9]{6}|31[0-4][0-9]{5}|315[0-2][0-9]{4}|3153[0-5][0-9]{3}|31536000)$|^$",
+    "ipv6_ra_preferred_lifetime": "^([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-8][0-9]{4}|9[0-8][0-9]{3}|99[0-8][0-9]{2}|999[0-8][0-9]|9999[0-9]|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[0-8][0-9]{3}|999[0-8][0-9]{2}|9999[0-8][0-9]|99999[0-9]|[1-8][0-9]{6}|9[0-8][0-9]{5}|99[0-8][0-9]{4}|999[0-8][0-9]{3}|9999[0-8][0-9]{2}|99999[0-8][0-9]|999999[0-9]|[12][0-9]{7}|30[0-9]{6}|31[0-4][0-9]{5}|315[0-2][0-9]{4}|3153[0-5][0-9]{3}|31536000)$|^$",
+    "ipv6_pd_start": "",
+    "ipv6_pd_stop": "",
+    "ipv6_client_address_assignment": "slaac|dhcpv6",
+    "domain_name": "(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|^$|[a-zA-Z0-9-]{1,63}",
+    "dhcpd_enabled": "true|false",
+    "dhcpd_start": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_stop": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_gateway": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_gateway_enabled": "^true|false$",
+    "dhcpd_dns_enabled": "true|false",
+    "dhcpd_dns_1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_dns_2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_dns_3": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_dns_4": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_leasetime": "[\\d]+",
+    "dhcpd_wins_enabled": "true|false",
+    "dhcpd_wins_1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_wins_2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_ntp_enabled": "true|false",
+    "dhcpd_ntp_1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_ntp_2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_boot_enabled": "true|false",
+    "dhcpd_boot_server": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$|(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|[a-zA-Z0-9-]{1,63}|^$",
+    "dhcpd_boot_filename": ".{1,256}",
+    "dhcpd_unifi_controller": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_time_offset_enabled": "true|false",
+    "dhcpd_time_offset": "^0$|^-?([1-9]([0-9]{1,3})?|[1-7][0-9]{4}|[8][0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "dhcpd_wpad_url": "",
+    "dhcpd_tftp_server": "",
+    "dhcp_relay_enabled": "true|false",
+    "dhcp_relay_servers": ["^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$"],
+    "dhcpguard_enabled": "true|false",
+    "dhcpd_ip_1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_ip_2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_ip_3": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dhcpd_mac_1": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "dhcpd_mac_2": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "dhcpd_mac_3": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "dhcpd_conflict_checking": "true|false",
+    "dhcpdv6_enabled": "true|false",
+    "dhcpdv6_start": "",
+    "dhcpdv6_stop": "",
+    "dhcpdv6_leasetime": "[\\d]+",
+    "dhcpdv6_dns_auto": "true|false",
+    "dhcpdv6_dns_1": "",
+    "dhcpdv6_dns_2": "",
+    "dhcpdv6_dns_3": "",
+    "dhcpdv6_dns_4": "",
+    "dhcpdv6_allow_slaac": "true|false",
+    "is_nat": "true|false",
+    "nat_outbound_ip_addresses": [{
+        "wan_network_group": "WAN[2-9]?",
+        "mode": "all|ip_address|ip_address_pool",
+        "ip_address": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+        "ip_address_pool": [ "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" ]
+    }],
+    "networkgroup": "LAN[2-8]?",
+    "usergroup_id": "",
+    "dpi_enabled": "false|true",
+    "dpigroup_id": "[\\d\\w]+|^$",
+    "remote_site_id": "",
+    "remote_site_subnets": [ "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|30)$|^$" ],
+    "exposed_to_site_vpn": "false|true",
+    "require_mschapv2": "true|false",
+    "remote_vpn_subnets": [ "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$|^$" ],
+    "remote_vpn_dynamic_subnets_enabled": "true|false",
+    "ipsec_peer_ip": "",
+    "ipsec_local_ip": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "x_ipsec_pre_shared_key": "[^\\\"\\' ]+",
+    "ipsec_profile": "customized|azure_dynamic|azure_static",
+    "ipsec_encryption": "aes128|aes192|aes256|3des",
+    "ipsec_hash": "sha1|md5|sha256|sha384|sha512",
+    "ipsec_dh_group": "2|5|14|15|16|19|20|21|25|26",
+    "ipsec_ike_dh_group": "1|2|5|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32",
+    "ipsec_ike_encryption": "aes128|aes192|aes256|3des",
+    "ipsec_ike_hash": "sha1|md5|sha256|sha384|sha512",
+    "ipsec_ike_lifetime": "^(?:3[0-9]|[4-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "ipsec_esp_dh_group": "1|2|5|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32",
+    "ipsec_esp_encryption": "aes128|aes192|aes256|3des",
+    "ipsec_esp_hash": "sha1|md5|sha256|sha384|sha512",
+    "ipsec_esp_lifetime": "^(?:3[0-9]|[4-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9]{2}|86400)$",
+    "ipsec_key_exchange": "ikev1|ikev2",
+    "ipsec_pfs": "false|true",
+    "ipsec_dynamic_routing": "true|false",
+    "ipsec_local_identifier": "",
+    "ipsec_local_identifier_enabled": "false|true",
+    "ipsec_remote_identifier": "",
+    "ipsec_remote_identifier_enabled": "false|true",
+    "ipsec_separate_ikev2_networks": "true|false",
+    "ipsec_tunnel_ip_enabled": "true|false",
+    "ipsec_tunnel_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$",
+    "internet_access_enabled": "true|false",
+    "local_port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "lte_lan_enabled": "true|false",
+    "l2tp_allow_weak_ciphers": "true|false",
+    "l2tp_interface": "wan[2-9]?",
+    "l2tp_local_wan_ip": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "mdns_enabled": "true|false",
+    "firewall_zone_id": "",
+    "network_isolation_enabled": "true|false",
+    "openvpn_interface": "wan[2-9]?",
+    "openvpn_local_wan_ip": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "openvpn_mode": "site-to-site|client|server",
+    "openvpn_remote_host": "[^\\\"\\' ]+|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "openvpn_local_port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "openvpn_remote_port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "openvpn_local_address": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "openvpn_remote_address": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "openvpn_configuration": "",
+    "openvpn_configuration_filename": "",
+    "openvpn_username": "",
+    "openvpn_encryption_cipher": "AES_256_GCM|AES_256_CBC|BF_CBC",
+    "sdwan_remote_site_id": "",
+    "x_openvpn_password": "",
+    "x_openvpn_shared_secret_key": "[0-9A-Fa-f]{512}",
+    "x_auth_key": "",
+    "x_ca_crt": "",
+    "x_ca_key": "",
+    "x_server_crt": "",
+    "x_server_key": "",
+    "x_dh_key": "",
+    "x_shared_client_crt": "",
+    "x_shared_client_key": "",
+    "pptpc_server_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|(?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)|^[a-zA-Z0-9-]{1,63}$",
+    "pptpc_username": "[^\\\"\\' ]+",
+    "x_pptpc_password": "[^\\\"\\' ]+",
+    "pptpc_require_mppe": "true|false",
+    "pptpc_route_distance": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "vpn_client_pull_dns": "true|false",
+    "vpn_client_default_route": "true|false",
+    "vpn_protocol": "TCP|UDP",
+    "upnp_lan_enabled": "true|false",
+    "route_distance": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "radiusprofile_id": "",
+    "vrrp_ip_subnet_gw1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|30)$",
+    "vrrp_ip_subnet_gw2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|30)$",
+    "vrrp_vrid": "[1-9]|[1-9][0-9]",
+    "wan_type": "disabled|dhcp|static|pppoe|dslite|map-e,hubspoke|map-e,jpix|map-e,ntt|dslite-over-pppoe",
+    "wan_networkgroup": "WAN[2-9]?|WAN_LTE_FAILOVER",
+    "wan_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "wan_ip_aliases":  [ "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([8-9]|[1-2][0-9]|3[0-2])$|^$" ],
+    "wan_netmask": "^((128|192|224|240|248|252|254)\\.0\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0)|255\\.(0|128|192|224|240|248|252|254)))))$",
+    "wan_gateway": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "wan_username": "[^\"' ]+|^$",
+    "wan_pppoe_username_enabled": "true|false",
+    "wan_dhcp_options": [{
+        "optionNumber": "([1-9]|[1-8][0-9]|9[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-4])",
+        "value": ""
+    }],
+    "wan_dhcpv6_options": [{
+        "optionNumber": "(1|11|15|16|17)",
+        "value": ""
+    }],
+    "wan_dslite_remote_host": "",
+    "wan_dslite_remote_host_auto": "true|false",
+    "x_wan_password": "[^\"' ]+|^$",
+    "wan_pppoe_password_enabled": "true|false",
+    "report_wan_event": "true|false",
+    "wan_dns_preference": "auto|manual",
+    "wan_dns1": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "wan_dns2": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "wan_dns3": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "wan_dns4": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "wan_vlan_enabled": "false|true",
+    "wan_vlan": "[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-4]|^$",
+    "wan_egress_qos": "[1-7]|^$",
+    "wan_smartq_enabled": "false|true",
+    "wan_smartq_up_rate": "[0-9]{1,9}|1000000000",
+    "wan_smartq_down_rate": "[0-9]{1,9}|1000000000",
+    "wan_load_balance_type": "failover-only|weighted",
+    "wan_load_balance_weight": "^$|[1-9]|[1-9][0-9]",
+    "wan_failover_priority": "[1-9]",
+    "wan_type_v6": "disabled|slaac|dhcpv6|static",
+    "ipv6_wan_delegation_type": "pd|single_network|none",
+    "ipv6_single_network_interface": "",
+    "single_network_lan": "",
+    "wan_dhcpv6_pd_size": "^(4[89]|5[0-9]|6[0-4])$|^$",
+    "wan_dhcpv6_pd_size_auto": "true|false",
+    "wan_ipv6": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "wan_prefixlen": "^([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])$|^$",
+    "wan_gateway_v6": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "wan_provider_capabilities": {
+        "upload_kilobits_per_second": "^[1-9][0-9]*$",
+        "download_kilobits_per_second": "^[1-9][0-9]*$"
+    },
+    "ipsec_interface": "wan[2-9]?",
+    "auto_scale_enabled": "false|true",
+    "mac_override": "(^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)",
+    "mac_override_enabled": "false|true",
+    "uid_policy_enabled": "false|true",
+    "uid_policy_name": "",
+    "uid_public_gateway_port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "uid_vpn_type": "openvpn|wireguard",
+    "uid_workspace_url": "",
+    "uid_traffic_rules_enabled": "false|true",
+    "uid_traffic_rules_allowed_ips_and_hostnames": [""],
+    "uid_vpn_custom_routing": ["^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$"],
+    "uid_vpn_default_dns_suffix": "",
+    "uid_vpn_masquerade_enabled": "false|true",
+    "uid_vpn_sync_public_ip": "false|true",
+    "uid_vpn_max_connection_time_seconds": "^[1-9][0-9]*$",
+    "vpn_client_configuration_remote_ip_override": "",
+    "vpn_client_configuration_remote_ip_override_enabled": "true|false",
+    "x_wireguard_private_key": "",
+    "wireguard_client_mode": "file|manual",
+    "wireguard_client_configuration_file": "",
+    "wireguard_client_configuration_filename": "",
+    "wireguard_client_peer_ip": "",
+    "wireguard_client_peer_port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$",
+    "wireguard_client_peer_public_key": "",
+    "wireguard_client_preshared_key_enabled": "true|false",
+    "wireguard_client_preshared_key": "",
+    "wireguard_interface": "wan[2-9]?",
+    "wireguard_local_wan_ip": "^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "wireguard_public_key": "",
+    "wan_dhcp_cos": "[0-7]|^$",
+    "wan_dhcpv6_cos": "[0-7]|^$",
+    "wan_ipv6_dns_preference": "auto|manual",
+    "wan_ipv6_dns1": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "wan_ipv6_dns2": "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$",
+    "wan_sla": ""
+},
+"PortConf": {
+    "name": "",
+    "forward": "all|native|customize|disabled",
+    "fec_mode": "rs-fec|fc-fec|default|disabled",
+    "native_networkconf_id": "",
+    "tagged_vlan_mgmt": "auto|block_all|custom",
+    "excluded_networkconf_ids": [""],
+    "voice_networkconf_id": "",
+    "op_mode":"switch",
+    "autoneg":"true|false",
+    "speed":"10|100|1000|2500|5000|10000|20000|25000|40000|50000|100000",
+    "full_duplex":"true|false",
+    "poe_mode":"auto|off",
+    "isolation":"true|false",
+    "dot1x_ctrl":"auto|force_authorized|force_unauthorized|mac_based|multi_host",
+    "dot1x_idle_timeout":"[0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]",
+    "stormctrl_type": "level|rate",
+    "stormctrl_ucast_enabled": "true|false",
+    "stormctrl_ucast_level": "[0-9]|[1-9][0-9]|100",
+    "stormctrl_ucast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "stormctrl_mcast_enabled": "true|false",
+    "stormctrl_mcast_level": "[0-9]|[1-9][0-9]|100",
+    "stormctrl_mcast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "stormctrl_bcast_enabled": "true|false",
+    "stormctrl_bcast_level": "[0-9]|[1-9][0-9]|100",
+    "stormctrl_bcast_rate": "[0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000",
+    "priority_queue1_level": "[0-9]|[1-9][0-9]|100",
+    "priority_queue2_level": "[0-9]|[1-9][0-9]|100",
+    "priority_queue3_level": "[0-9]|[1-9][0-9]|100",
+    "priority_queue4_level": "[0-9]|[1-9][0-9]|100",
+    "lldpmed_enabled": "true|false",
+    "lldpmed_notify_enabled": "true|false",
+    "stp_port_mode": "true|false",
+    "egress_rate_limit_kbps_enabled": "true|false",
+    "egress_rate_limit_kbps": "6[4-9]|[7-9][0-9]|[1-9][0-9]{2,6}",
+    "port_security_enabled": "true|false",
+    "port_security_mac_address": ["^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"],
+    "port_keepalive_enabled": "true|false",
+    "setting_preference": "auto|manual",
+    "qos_profile": {
+        "qos_profile_mode": "custom|unifi_play|aes67_audio|crestron_audio_video|dante_audio|ndi_aes67_audio|ndi_dante_audio|qsys_audio_video|qsys_video_dante_audio|sdvoe_aes67_audio|sdvoe_dante_audio|shure_audio",
+        "qos_policies": [{
+            "qos_matching": {
+                "dscp_code": "[0-9]|[1-5][0-9]|6[0-3]",
+                "cos_code": "[0-7]",
+                "ip_precedence_code": "[0-7]",
+                "protocol": "([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|ah|ax.25|dccp|ddp|egp|eigrp|encap|esp|etherip|fc|ggp|gre|hip|hmp|icmp|idpr-cmtp|idrp|igmp|igp|ip|ipcomp|ipencap|ipip|ipv6|ipv6-frag|ipv6-icmp|ipv6-nonxt|ipv6-opts|ipv6-route|isis|iso-tp4|l2tp|manet|mobility-header|mpls-in-ip|ospf|pim|pup|rdp|rohc|rspf|rsvp|sctp|shim6|skip|st|tcp|udp|udplite|vmtp|vrrp|wesp|xns-idp|xtp",
+                "src_port": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-4]|65535",
+                "dst_port": "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-4]|65535"
+            },
+            "qos_marking": {
+                "queue": "[0-7]",
+                "dscp_code": "0|8|16|24|32|40|48|56|10|12|14|18|20|22|26|28|30|34|36|38|44|46",
+                "cos_code": "[0-7]",
+                "ip_precedence_code": "[0-7]"
+            }
+        }]
+    },
+    "multicast_router_networkconf_ids": [""]
+},
+"PortForward": {
+    "name": ".{1,128}",
+    "enabled": "true|false",
+    "src": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([0-9]|[1-2][0-9]|3[0-2])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([0-9]|[1-2][0-9]|3[0-2])$|^any$",
+    "src_firewall_group_id": "",
+    "src_limiting_enabled": "true|false",
+    "src_limiting_type": "ip|firewall_group",
+    "dst_port": "(([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]))+(,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])){0,14}",
+    "destination_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^any$",
+    "destination_ips": [
+        {
+            "interface": "wan[2-9]?",
+            "destination_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^any$"
+        }
+    ],
+    "fwd": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+    "fwd_port": "(([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]))+(,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])){0,14}",
+    "proto": "tcp_udp|tcp|udp",
+    "log": "true|false",
+    "pfwd_interface": "wan[2-9]?|both|all"
+},
+"RadiusProfile": {
+    "name": ".{1,128}",
+    "vlan_enabled": "false|true",
+    "vlan_wlan_mode": "disabled|optional|required",
+    "use_usg_auth_server": "false|true",
+    "auth_servers": [{
+        "ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+        "port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$",
+        "x_secret": ""
+    }],
+    "accounting_enabled": "false|true",
+    "use_usg_acct_server": "false|true",
+    "interim_update_enabled": "false|true",
+    "interim_update_interval": "^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$",
+    "acct_servers": [{
+        "ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+        "port": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$",
+        "x_secret": ""
+    }],
+    "tls_enabled": "false|true",
+    "x_ca_crts": [{
+        "filename": "",
+        "x_ca_crt": ""
+    }],
+    "x_client_crt": "",
+    "x_client_crt_filename": "",
+    "x_client_private_key": "",
+    "x_client_private_key_filename": "",
+    "x_client_private_key_password": ""
+},
+"Routing": {
+    "name": ".{1,128}",
+    "enabled": "true|false",
+    "type": "static-route",
+
+    "static-route_type": "nexthop-route|interface-route|blackhole",
+    "static-route_network": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([1-9]|[1-2][0-9]|3[0-2])$|^([a-fA-F0-9:]+\\/(([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])))$",
+    "static-route_nexthop": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^([a-fA-F0-9:]+)$|^$",
+    "static-route_interface": "WAN[1-9]?|[\\d\\w]+|^$",
+    "static-route_distance": "^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$",
+    "gateway_type": "default|switch",
+    "gateway_device": "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"
+},
+"ScheduleTask": {
+    "cron_expr": "",
+    "action": "upgrade",
+    "execute_only_once": "true|false",
+    "name": "",
+    "upgrade_targets": [{
+        "mac":"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"
+    }]
+},
+"Setting": {
+    "mgmt": {
+        "alert_enabled": "true|false",
+        "auto_upgrade": "true|false",
+        "auto_upgrade_hour": "[0-9]|1[0-9]|2[0-3]|^$",
+        "boot_sound": "true|false",
+        "debug_tools_enabled": "true|false",
+        "direct_connect_enabled": "true|false",
+        "led_enabled": "true|false",
+        "advanced_feature_enabled": "true|false",
+        "outdoor_mode_enabled": "true|false",
+        "unifi_idp_enabled": "true|false",
+        "wifiman_enabled": "true|false",
+        "x_mgmt_key": "[0-9a-f]{32}",
+        "x_ssh_keys": [""],
+        "x_ssh_username": "^[_A-Za-z0-9][-_.A-Za-z0-9]{0,29}$",
+        "x_ssh_password": ".{1,128}",
+        "x_ssh_md5passwd": "",
+        "x_ssh_sha512passwd": "",
+        "x_ssh_enabled": "true|false",
+        "x_ssh_bind_wildcard": "true|false",
+        "x_ssh_auth_password_enabled": "true|false"
+    },
+    "country": {
+        "code": "[\\d]{1,3}"
+    },
+    "locale": {
+        "timezone": ""
+    },
+    "snmp": {
+        "enabled": "true|false",
+        "enabledV3": "true|false",
+        "community": ".{1,256}",
+        "username": "[a-zA-Z0-9_-]{1,30}",
+        "x_password": "[^'\"]{8,32}"
+    },
+    "radio_ai": {
+        "auto_adjust_channels_to_country": "true|false",
+        "auto_channel_presets_type" : "maximum_speed|conservative|custom",
+        "enabled": "true|false",
+        "cron_expr": "",
+        "default": "true|false",
+        "radios": ["na|ng|6e"],
+        "radios_configuration": [{
+            "radio": "na|ng|6e",
+            "channel_width": "20|40|80|160|320",
+            "dfs": "true|false"
+        }],
+        "optimize": ["channel|power"],
+        "channels_ng": ["1|2|3|4|5|6|7|8|9|10|11|12|13|14"],
+        "channels_na": ["34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|169"],
+        "channels_6e": ["[1-9]|[1-2][0-9]|3[3-9]|[4-5][0-9]|6[0-1]|6[5-9]|[7-8][0-9]|9[0-3]|9[7-9]|1[0-1][0-9]|12[0-5]|129|1[3-4][0-9]|15[0-7]|16[1-9]|1[7-8][0-9]|19[3-9]|2[0-1][0-9]|22[0-1]|22[5-9]|233"],
+        "ht_modes_ng": ["^(20|40)$"],
+        "ht_modes_na": ["^(20|40|80|160)$"],
+        "exclude_devices": ["([0-9a-z]{2}:){5}[0-9a-z]{2}"],
+        "high_priority_devices": ["([0-9a-z]{2}:){5}[0-9a-z]{2}"],
+        "useXY": "true|false",
+        "setting_preference": "auto|manual",
+        "channels_blacklist": [{
+            "channel": "[1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-9]|2[0-1][0-9]|22[0-1]|22[5-9]|233",
+            "radio": "na|ng|6e",
+            "channel_width": "20|40|80|160|240|320"
+        }]
+    },
+    "network_optimization": {
+        "enabled": "true|false"
+    },
+    "rsyslogd": {
+        "enabled": "true|false",
+        "ip": "",
+        "port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]",
+        "debug": "false|true",
+        "this_controller": "false|true",
+        "this_controller_encrypted_only": "false|true",
+        "log_all_contents": "false|true",
+        "contents": ["device|client|firewall_default_policy|triggers|updates|admin_activity|critical|security_detections|vpn"],
+        "netconsole_enabled": "true|false",
+        "netconsole_host": "",
+        "netconsole_port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]"
+    },
+    "baresip": {
+        "enabled": "true|false",
+        "server": "",
+        "outbound_proxy": "",
+        "package_url": ""
+    },
+    "super_mgmt": {
+        "override_inform_host": "true|false",
+        "override_inform_host_location": "",
+        "auto_upgrade": "true|false",
+        "discoverable": "true|false",
+        "led_enabled": "true|false",
+        "live_chat": "disabled|super-only|everyone",
+        "live_updates": "disabled|live|auto",
+        "store_enabled": "disabled|super-only|everyone",
+        "x_ssh_username": "",
+        "x_ssh_password": "",
+        "autobackup_enabled": "true|false",
+        "autobackup_cron_expr": "",
+        "autobackup_days": "-?[\\d]+",
+        "autobackup_max_files": "[\\d]+",
+        "autobackup_timezone": "",
+        "autobackup_local_path": "",
+        "autobackup_post_actions": ["copy_local|copy_cloud"],
+        "backup_to_cloud_enabled": "true|false",
+        "google_maps_api_key": "",
+        "minimum_usable_hd_space": "[\\d]+",
+        "minimum_usable_sd_space": "[\\d]+",
+        "image_maps_use_google_engine": "true|false",
+        "data_retention_setting_preference": "auto|manual",
+        "data_retention_time_in_hours_for_5minutes_scale": "-?[\\d]+",
+        "data_retention_time_in_hours_for_hourly_scale": "-?[\\d]+",
+        "data_retention_time_in_hours_for_daily_scale": "-?[\\d]+",
+        "data_retention_time_in_hours_for_monthly_scale": "-?[\\d]+",
+        "data_retention_time_in_hours_for_others": "-?[\\d]+",
+        "time_series_per_client_stats_enabled": "true|false",
+        "contact_info_full_name": "",
+        "contact_info_company_name": "",
+        "contact_info_phone_number": "",
+        "contact_info_shipping_address_1": "",
+        "contact_info_shipping_address_2": "",
+        "contact_info_city": "",
+        "contact_info_state": "",
+        "contact_info_zip": "",
+        "contact_info_country": "",
+        "default_site_device_auth_password_alert": "false",
+        "enable_analytics" : "true|false",
+        "analytics_disapproved_for": "",
+        "multiple_sites_enabled": "true|false"
+    },
+    "super_identity": {
+        "name": "",
+        "hostname": ""
+    },
+    "super_mail": {
+        "provider": "smtp|cloud|disabled"
+    },
+    "super_smtp": {
+        "enabled": "true|false",
+        "host": "",
+        "port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]|^$",
+        "sender": "",
+        "use_ssl": "true|false",
+        "use_sender": "true|false",
+        "use_auth": "true|false",
+        "username": "",
+        "x_password": ""
+    },
+    "super_sdn": {
+        "enabled" : "true|false",
+        "migrated" : "true|false",
+        "ubic_uuid" : "",
+        "auth_token" : "",
+        "device_id": "",
+        "sso_login_enabled": ""
+    },
+    "super_cloudaccess": {
+        "enabled" : "true|false",
+        "x_certificate_arn" : "",
+        "x_certificate_pem" : "",
+        "device_id" : "",
+        "device_auth" : "",
+        "x_private_key" : "",
+        "ubic_uuid" : ""
+    },
+    "super_events": {
+        "_ignored": ""
+    },
+    "usw": {
+        "dhcp_snoop" : "true|false"
+    },
+    "guest_access": {
+        "portal_enabled": "true|false",
+        "auth": "none|hotspot|facebook_wifi|custom",
+        "auth_url": "",
+        "redirect_enabled": "true|false",
+        "redirect_url": "",
+        "redirect_https": "true|false",
+        "redirect_to_https": "true|false",
+        "portal_customized": "true|false",
+        "portal_use_hostname": "true|false",
+        "portal_hostname": "^[a-zA-Z0-9.-]+$|^$",
+        "expire": "[\\d]+|custom",
+        "expire_number": "^[1-9][0-9]{0,5}|1000000$",
+        "expire_unit": "1|60|1440",
+        "x_password": "",
+        "custom_ip": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+        "facebook_enabled": "true|false",
+        "facebook_app_id": "",
+        "x_facebook_app_secret": "",
+        "facebook_scope_email": "true|false",
+        "facebook_wifi_gw_id": "",
+        "facebook_wifi_gw_name": "",
+        "x_facebook_wifi_gw_secret": "",
+        "facebook_wifi_block_https": "true|false",
+        "google_enabled": "true|false",
+        "google_client_id": "",
+        "x_google_client_secret": "",
+        "google_domain": "",
+        "google_scope_email": "true|false",
+        "password_enabled": "true|false",
+        "voucher_enabled": "true|false",
+        "voucher_customized": "true|false",
+        "payment_enabled": "true|false",
+        "restricted_subnet_": "",
+        "allowed_subnet_": "",
+        "restricted_dns_enabled": "false|true",
+        "restricted_dns_servers": [ "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$" ],
+        "gateway": "paypal|stripe|authorize|quickpay|merchantwarrior|ippay",
+        "paypal_use_sandbox": "true|false",
+        "x_paypal_username": "",
+        "x_paypal_password": "",
+        "x_paypal_signature": "",
+        "x_stripe_api_key": "",
+        "x_quickpay_agreementid": "",
+        "x_quickpay_apikey": "",
+        "x_quickpay_merchantid": "",
+        "quickpay_testmode": "true|false",
+        "x_authorize_loginid": "",
+        "x_authorize_transactionkey": "",
+        "x_merchantwarrior_merchantuuid": "",
+        "x_merchantwarrior_apikey": "",
+        "x_merchantwarrior_apipassphrase": "",
+        "x_ippay_terminalid": "",
+        "merchantwarrior_use_sandbox": "false|true",
+        "authorize_use_sandbox": "true|false",
+        "ippay_use_sandbox": "true|false",
+        "template_engine": "jsp|angular",
+        "portal_customized_authentication_text": "",
+        "portal_customized_bg_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_bg_image_enabled": "true|false",
+        "portal_customized_bg_image_filename": "",
+        "portal_customized_bg_image_tile": "true|false",
+        "portal_customized_bg_type": "color|image|gallery",
+        "portal_customized_box_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_box_opacity": "^[1-9][0-9]?$|^100$|^$",
+        "portal_customized_box_radius": "[0-9]|[1-4][0-9]|50",
+        "portal_customized_button_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_button_text": "",
+        "portal_customized_button_text_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_link_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_logo_enabled": "true|false",
+        "portal_customized_logo_filename": "",
+        "portal_customized_logo_position": "left|center|right",
+        "portal_customized_logo_size": "6[4-9]|[7-9][0-9]|1[0-8][0-9]|19[0-2]",
+        "portal_customized_success_text": "",
+        "portal_customized_text_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_title": "",
+        "portal_customized_tos_enabled": "true|false",
+        "portal_customized_tos": "",
+        "portal_customized_unsplash_author_name": "",
+        "portal_customized_unsplash_author_username": "",
+        "portal_customized_welcome_text": "",
+        "portal_customized_welcome_text_enabled": "true|false",
+        "portal_customized_welcome_text_position": "under_logo|above_boxes",
+        "portal_customized_box_link_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_box_text_color": "^#[a-zA-Z0-9]{6}$|^#[a-zA-Z0-9]{3}$|^$",
+        "portal_customized_languages": [ "^[a-z]{2}([_-][a-zA-Z]{2,4})*$" ],
+        "radius_enabled": "true|false",
+        "radius_auth_type": "chap|mschapv2",
+        "radius_disconnect_enabled": "true|false",
+        "radius_disconnect_port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]",
+        "radiusprofile_id": "",
+        "wechat_enabled": "true|false",
+        "wechat_app_id": "",
+        "wechat_shop_id": "",
+        "x_wechat_app_secret": "",
+        "x_wechat_secret_key": "",
+        "ec_enabled": "true|false"
+    },
+    "connectivity": {
+        "enable_isolated_wlan": "true|false",
+        "enabled": "true|false",
+        "x_mesh_essid": "",
+        "x_mesh_psk": "",
+        "uplink_host": "",
+        "uplink_type": ""
+    },
+    "element_adopt": {
+        "enabled": "true|false",
+        "x_element_essid": "",
+        "x_element_psk": ""
+    },
+    "auto_speedtest": {
+        "enabled": "false|true",
+        "cron_expr": ""
+    },
+    "dpi": {
+        "enabled": "false|true",
+        "fingerprintingEnabled": "false|true"
+    },
+    "porta": {
+        "ugw3_wan2_enabled": "false|true"
+    },
+    "broadcast": {
+        "sound_before_enabled": "true|false",
+        "sound_before_type": "sample|media",
+        "sound_before_resource": "",
+        "sound_after_enabled": "true|false",
+        "sound_after_type": "sample|media",
+        "sound_after_resource": ""
+    },
+    "radius": {
+        "enabled": "true|false",
+        "auth_port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]",
+        "acct_port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]",
+        "configure_whole_network": "true|false",
+        "tunneled_reply": "true|false",
+        "interim_update_interval": "^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$",
+        "accounting_enabled": "true|false",
+        "x_secret": "^[^\\\\\"' ]{1,48}$"
+    },
+    "usg": {
+        "dhcp_relay_hop_count": "([1-9]|[1-8][0-9]|9[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^$",
+        "dhcp_relay_max_size": "(6[4-9]|[7-9][0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|1[0-3][0-9]{2}|1400)|^$",
+        "dhcp_relay_port": "[1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]|^$",
+        "dhcp_relay_agents_packets": "append|discard|forward|replace|^$",
+        "upnp_enabled": "true|false",
+        "upnp_wan_interface":"WAN[2-9]?",
+        "upnp_nat_pmp_enabled": "true|false",
+        "upnp_secure_mode": "true|false",
+        "ftp_module": "true|false",
+        "gre_module": "true|false",
+        "h323_module": "true|false",
+        "pptp_module": "true|false",
+        "sip_module": "true|false",
+        "tftp_module": "true|false",
+        "timeout_setting_preference": "auto|manual",
+        "icmp_timeout": "",
+        "other_timeout": "",
+        "tcp_close_timeout": "",
+        "tcp_close_wait_timeout": "",
+        "tcp_established_timeout": "",
+        "tcp_fin_wait_timeout": "",
+        "tcp_last_ack_timeout": "",
+        "tcp_syn_recv_timeout": "",
+        "tcp_syn_sent_timeout": "",
+        "tcp_time_wait_timeout": "",
+        "udp_other_timeout": "",
+        "udp_stream_timeout": "",
+        "broadcast_ping": "true|false",
+        "receive_redirects": "true|false",
+        "send_redirects": "true|false",
+        "syn_cookies": "true|false",
+        "offload_accounting": "true|false",
+        "offload_l2_blocking": "true|false",
+        "offload_sch": "true|false",
+        "echo_server": "[^\\\"\\' ]{1,255}",
+        "dns_verification" : {
+            "setting_preference" : "auto|manual",
+            "primary_dns_server": "",
+            "secondary_dns_server": "",
+            "domain" : ""
+        },
+        "lldp_enable_all": "true|false",
+        "mss_clamp_mss": "[1-9][0-9]{2,3}",
+        "mss_clamp": "auto|custom|disabled",
+        "dhcpd_use_dnsmasq": "true|false",
+        "dhcpd_hostfile_update": "true|false",
+        "geo_ip_filtering_enabled": "true|false",
+        "geo_ip_filtering_block": "block|allow",
+        "geo_ip_filtering_countries": "^([A-Z]{2})?(,[A-Z]{2}){0,149}$",
+        "geo_ip_filtering_traffic_direction": "^(both|ingress|egress)$",
+        "arp_cache_timeout": "normal|min-dhcp-lease|custom",
+        "arp_cache_base_reachable": "^$|^[1-9]{1}[0-9]{0,4}$",
+        "dnsmasq_all_servers": "true|false",
+        "unbind_wan_monitors": "true|false"
+    },
+    "ntp": {
+        "setting_preference": "auto|manual",
+        "ntp_server_1": "",
+        "ntp_server_2": "",
+        "ntp_server_3": "",
+        "ntp_server_4": ""
+    },
+    "ips": {
+        "advanced_filtering_preference": "|manual|disabled",
+        "enabled_categories": ["emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm|exploit-kit|adware-pup|botcc-portgrouped|phishing|threatview-cs-c2|3coresec|chat|coinminer|current-events|drop|hunting|icmp-info|inappropriate|info|ja3|policy|scada|dark-web-blocker-list|malicious-hosts"],
+        "ips_mode": "ids|ips|ipsInline|disabled",
+        "enabled_networks": [""],
+        "restrict_torrents": "true|false",
+        "suppression": {
+            "alerts": [{
+                "category": "",
+                "gid": "[\\d]+",
+                "id": "[\\d]+",
+                "signature": "",
+                "tracking": [{
+                    "direction": "both|src|dest",
+                    "mode": "ip|subnet|network",
+                    "value": ""
+                }],
+                "type": "all|track"
+            }],
+            "whitelist": [{
+                "direction": "both|src|dest",
+                "mode": "ip|subnet|network",
+                "value": ""
+            }]
+        },
+        "honeypot_enabled": "true|false",
+        "honeypot": [{
+            "network_id": "",
+            "ip_address": "",
+            "version": "v4|v6"
+        }],
+        "memory_optimized": "true|false",
+        "content_filtering_blocking_page_enabled": "true|false"
+    },
+    "teleport": {
+        "enabled": "true|false",
+        "subnet_cidr": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\/([8-9]|[1-2][0-9]|3[0-2])$|^$"
+    },
+    "super_fwupdate": {
+        "controller_channel": "internal|alpha|beta|release-candidate|release",
+        "firmware_channel": "internal|alpha|beta|release-candidate|release",
+        "sso_enabled": "true|false"
+    },
+    "lcm": {
+        "enabled": "true|false",
+        "sync": "true|false",
+        "touch_event": "true|false",
+        "brightness": "[1-9]|[1-9][0-9]|100",
+        "idle_timeout": "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600"
+    },
+    "global_ap": {
+        "ap_exclusions": ["^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"],
+        "ng_channel_size": "20|40",
+        "ng_tx_power": "[0-9]|[1-4][0-9]",
+        "ng_tx_power_mode": "auto|medium|high|low|custom",
+        "na_channel_size": "20|40|80|160",
+        "na_tx_power": "[0-9]|[1-4][0-9]",
+        "na_tx_power_mode": "auto|medium|high|low|custom",
+        "6e_channel_size": "20|40|80|160",
+        "6e_tx_power": "[0-9]|[1-4][0-9]",
+        "6e_tx_power_mode": "auto|medium|high|low|custom"
+    },
+    "global_switch": {
+        "dhcp_snoop": "true|false",
+        "dot1x_fallback_networkconf_id": "[\\d\\w]+|",
+        "dot1x_portctrl_enabled": "true|false",
+        "flowctrl_enabled": "true|false",
+        "jumboframe_enabled": "true|false",
+        "radiusprofile_id": "",
+        "stp_version": "stp|rstp|disabled",
+        "switch_exclusions": ["^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"],
+        "acl_device_isolation": [""],
+        "acl_l3_isolation": [{
+            "source_network": "",
+            "destination_networks": [""]
+        }],
+        "forward_unknown_mcast_router_ports": "true|false",
+        "flood_known_protocols": "true|false"
+    },
+    "magic_site_to_site_vpn": {
+        "enabled": "true|false"
+    },
+    "doh": {
+        "state": "off|auto|manual|custom",
+        "server_names": [""],
+        "custom_servers" : [{
+            "server_name" : "",
+            "sdns_stamp" : "",
+            "enabled" : "true|false"
+        }]
+    },
+    "ether_lighting": {
+        "speed_overrides": [{
+            "key": "FE|GbE|2.5GbE|5GbE|10GbE|25GbE|40GbE|100GbE",
+            "raw_color_hex": "[0-9A-Fa-f]{6}"
+        }],
+        "network_overrides": [{
+            "key": "",
+            "raw_color_hex": "[0-9A-Fa-f]{6}"
+        }]
+    },
+    "evaluation_score": {
+        "dismissed_ids": [
+            "^[a-zA-Z]{2}[0-9]{2,3}$|^$"
+        ]
+    },
+    "ssl_inspection": {
+        "state": "off|simple|advanced"
+    },
+    "dashboard": {
+        "layout_preference": "auto|manual",
+        "widgets": [{
+            "enabled": "true|false",
+            "name":"critical_traffic_prioritization|cybersecure|traffic_identification|wifi_technology|wifi_channels|wifi_client_experience|wifi_tx_retries|most_active_apps_aps_clients|most_active_apps_clients|most_active_aps_clients|most_active_apps_aps|most_active_apps|v2_most_active_aps|v2_most_active_clients|wifi_connectivity|ap_radio_density|wifi_channel_preset_configuration|most_common_client_fingerprints|wan_activity"
+        }]
+    },
+    "global_nat": {
+        "mode": "auto|custom|off",
+        "excluded_network_ids": [""]
+    },
+    "netflow": {
+        "enabled": "true|false",
+        "network_ids": [""],
+        "server": ".{0,252}[^\\.]$",
+        "port": "102[4-9]|10[3-9][0-9]|1[1-9][0-9]{2}|[2-9][0-9]{3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]",
+        "version": "5|9|10",
+        "auto_engine_id_enabled": "true|false",
+        "engine_id": "^$|[1-9][0-9]*",
+        "export_frequency": "[\\d]+",
+        "refresh_rate": "[\\d]+",
+        "sampling_mode": "off|hash|random|deterministic",
+        "sampling_rate": "[2-9]|[1-9][0-9]{1,3}|1[0-5][0-9]{3}|16[0-2][0-9]{2}|163[0-7][0-9]|1638[0-3]|^$"
+    },
+    "mdns": {
+        "mode" : "all|auto|custom",
+        "predefined_services": [
+            {
+                "code": "amazon_devices|android_tv_remote|apple_airDrop|apple_airPlay|apple_file_sharing|apple_iChat|apple_iTunes|aqara|bose|dns_service_discovery|ftp_servers|google_chromecast|homeKit|matter_network|philips_hue|printers|roku|scanners|sonos|spotify_connect|ssh_servers|time_capsule|web_servers|windows_file_sharing_samba"
+            }
+        ],
+        "custom_services": [
+            {
+                "name": "",
+                "address": "^_[a-zA-Z0-9._-]+\\._(tcp|udp)(\\.local)?$"
+            }
+        ]
+    },
+    "traffic_flow": {
+        "enabled_allowed_traffic": "true|false",
+        "gateway_dns_enabled": "true|false",
+        "unifi_device_management_enabled": "true|false",
+        "unifi_services_enabled": "true|false"
+    },
+    "roaming_assistant": {
+        "enabled": "true|false",
+        "rssi": "^-([6-7][0-9]|80)$"
+    }
+},
+"SpatialRecord": {
+    "name": ".{1,128}",
+    "devices": [{
+        "mac": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+        "position": {
+            "x": "(^([-]?[\\d]+)$)|(^([-]?[\\d]+[.]?[\\d]+)$)",
+            "y": "(^([-]?[\\d]+)$)|(^([-]?[\\d]+[.]?[\\d]+)$)",
+            "z": "(^([-]?[\\d]+)$)|(^([-]?[\\d]+[.]?[\\d]+)$)"
+        }
+    }]
+},
+"Tag": {
+    "name": "",
+    "member_table": [""]
+},
+"User": {
+    "mac": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+    "name": "",
+    "note": "",
+    "blocked": "",
+    "hostname": "",
+    "last_seen": "",
+    "usergroup_id": "",
+    "use_fixedip": "false|true",
+    "network_id": "",
+    "fixed_ip": "",
+    "fixed_ap_enabled": "false|true",
+    "fixed_ap_mac": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+    "local_dns_record_enabled": "false|true",
+    "local_dns_record": "",
+    "virtual_network_override_id": "",
+    "virtual_network_override_enabled": "false|true",
+    "network_members_group_ids": [""]
+},
+"UserGroup": {
+    "name": ".{1,128}",
+    "qos_rate_max_up": "-1|[2-9]|[1-9][0-9]{1,4}|100000",
+    "qos_rate_max_down": "-1|[2-9]|[1-9][0-9]{1,4}|100000"
+},
+"VirtualDevice": {
+    "type": "uap|usg|usw",
+    "map_id": "",
+    "x": "",
+    "y": "",
+    "heightInMeters": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "locked": "true|false"
+},
+"Wall": {
+    "map_id": "",
+    "a": ["^([-]?[\\d]+[.]?[\\d]*)$"],
+    "b": ["^([-]?[\\d]+[.]?[\\d]*)$"],
+    "id": "",
+    "heightInMeters": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "thicknessInMeters": "^([-]?[\\d]+[.]?[\\d]*)$",
+    "type": ""
+},
+"WlanConf": {
+    "name": ".{1,32}",
+    "name_combine_enabled": "true|false",
+    "name_combine_suffix": ".{0,8}",
+    "enabled": "true|false",
+    "setting_preference": "auto|manual",
+    "enhanced_iot": "true|false",
+    "iapp_enabled": "true|false",
+    "x_iapp_key": "[0-9A-Fa-f]{32}",
+    "security": "open|wpapsk|wep|wpaeap|osen",
+    "x_passphrase": "[\\x20-\\x7E]{8,255}|[0-9a-fA-F]{64}",
+    "x_wep": "",
+    "wep_idx": "[1-4]",
+    "radiusprofile_id": "",
+    "hide_ssid": "false|true",
+    "priority": "medium|high|low",
+    "vlan_enabled": "false|true",
+    "vlan": "[2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$",
+    "is_guest": "false|true",
+    "usergroup_id": "",
+    "networkconf_id": "",
+    "roam_cluster_id": "[0-9]|[1-2][0-9]|[3][0-1]|^$",
+    "wpa_mode": "auto|wpa1|wpa2",
+    "wpa_enc": "auto|ccmp|gcmp|ccmp-256|gcmp-256",
+    "p2p" : "true|false",
+    "p2p_cross_connect": "true|false",
+    "proxy_arp" : "true|false",
+    "l2_isolation" : "true|false",
+    "tdls_prohibit": "true|false",
+    "bss_transition": "true|false",
+    "auth_cache": "true|false",
+    "group_rekey": "^(0|[6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$",
+    "uapsd_enabled": "false|true",
+    "dpi_enabled": "false|true",
+    "dpigroup_id": "[\\d\\w]+|^$",
+    "schedule_enabled": "false|true",
+    "schedule_reversed": "false|true",
+    "schedule": [
+        "(sun|mon|tue|wed|thu|fri|sat)(\\-(sun|mon|tue|wed|thu|fri|sat))?\\|([0-2][0-9][0-5][0-9])\\-([0-2][0-9][0-5][0-9])"
+    ],
+    "schedule_with_duration": [
+        {
+            "start_days_of_week": [
+                "^(sun|mon|tue|wed|thu|fri|sat)$"
+            ],
+            "start_hour": "^(1?[0-9])|(2[0-3])$",
+            "start_minute": "^[0-5]?[0-9]$",
+            "duration_minutes": "^[1-9][0-9]*$",
+            "name": ".*"
+        }
+    ],
+    "optimize_iot_wifi_connectivity": "true|false",
+    "dtim_mode": "default|custom",
+    "dtim_ng": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dtim_na": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "dtim_6e": "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$",
+    "minrate_setting_preference": "auto|manual",
+    "minrate_ng_enabled": "true|false",
+    "minrate_ng_data_rate_kbps": "^[0-9]*$",
+    "minrate_ng_advertising_rates": "true|false",
+    "minrate_na_enabled": "true|false",
+    "minrate_na_data_rate_kbps": "^[0-9]*$",
+    "minrate_na_advertising_rates": "true|false",
+    "mac_filter_enabled": "true|false",
+    "mac_filter_policy": "allow|deny",
+    "mac_filter_list": ["^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"],
+    "bc_filter_enabled": "true|false",
+    "bc_filter_list": ["^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"],
+    "hotspot2conf_enabled": "true|false",
+    "hotspot2": {
+        "venue_name": [
+            {
+                "language": "[a-z]{0,3}",
+                "name": "",
+                "url": ""
+            }
+        ],
+        "venue_group": "0|1|2|3|4|5|6|7|8|9|10|11",
+        "venue_type": "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15",
+        "network_type": "0|1|2|3|4|5|14|15",
+        "ipaddr_type_avail_v4": "0|1|2|3|4|5|6|7",
+        "ipaddr_type_avail_v6": "0|1|2",
+        "nai_realm_list": [
+            {
+                "name": ".{1,128}",
+                "status": "true|false",
+                "encoding": "0|1",
+                "eap_method": "13|21|18|23|50",
+                "auth_ids": ["0|1|2|3|4|5"],
+                "auth_vals": ["0|1|2|3|4|5|6|7|8|9|10"]
+            }
+        ],
+        "domain_name_list": [".{1,128}"],
+        "roaming_consortium_list": [
+            {
+                "name": ".{1,128}",
+                "oid": ".{1,128}"
+            }
+        ],
+        "cellular_network_list": [
+            {
+                "name": ".{1,128}",
+                "country_code": "[1-9]{1}[0-9]{0,3}",
+                "mcc": "[0-9]{3}",
+                "mnc": "[0-9]{2,3}"
+            }
+        ],
+        "friendly_name" : [
+            {
+                "language": "[a-z]{3}",
+                "text": ".{1,128}"
+            }
+        ],
+        "metrics_status" : "true|false",
+        "metrics_info_link_status" : "up|down|test",
+        "metrics_info_symmetric" : "true|false",
+        "metrics_info_at_capacity" : "true|false",
+        "metrics_downlink_speed_set": "true|false",
+        "metrics_downlink_speed": "[0-9]{1,10}",
+        "metrics_uplink_speed_set": "true|false",
+        "metrics_uplink_speed": "[0-9]{1,10}",
+        "metrics_downlink_load_set": "true|false",
+        "metrics_downlink_load": "[0-9]{1,3}",
+        "metrics_uplink_load_set": "true|false",
+        "metrics_uplink_load": "[0-9]{1,3}",
+        "metrics_measurement_set": "true|false",
+        "metrics_measurement": "[0-9]{1,5}",
+        "capab" : [
+            {
+                "protocol" : "icmp|tcp_udp|tcp|udp|esp",
+                "port": "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])|$",
+                "status" : "closed|open|unknown"
+            }
+        ]
+    },
+    "fast_roaming_enabled": "true|false",
+    "wpa3_fast_roaming": "true|false",
+    "rrm_enabled":"true|false",
+    "radius_das_enabled": "true|false",
+    "radius_mac_auth_enabled": "true|false",
+    "radius_macacl_format": "none_lower|hyphen_lower|colon_lower|none_upper|hyphen_upper|colon_upper",
+    "radius_macacl_empty_password": "true|false",
+    "mcastenhance_enabled": "true|false",
+    "mlo_enabled": "true|false",
+    "no2ghz_oui": "true|false",
+    "pmf_mode": "disabled|optional|required",
+    "pmf_cipher": "auto|aes-128-cmac|bip-gmac-256",
+    "wpa3_transition": "true|false",
+    "wpa3_support": "true|false",
+    "wpa3_enhanced_192": "true|false",
+    "sae_psk":  [
+      {
+          "psk": "[\\x20-\\x7E]{8,255}",
+          "mac": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$",
+          "vlan": "[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$",
+          "id": ".{0,128}"
+      }
+    ],
+    "sae_psk_vlan_required": "false|true",
+    "sae_anti_clogging": "^[0-9]{0,5}$",
+    "sae_sync": "^[0-9]{0,5}$",
+    "sae_groups": ["[0-9]{0,5}$"],
+    "log_level": "",
+    "element_adopt": "true|false",
+    "country_beacon": "true|false",
+    "b_supported": "true|false",
+    "wlan_band": "2g|5g|both",
+    "wlan_bands": ["2g|5g|6g"],
+    "ap_group_mode": "all|groups|devices",
+    "ap_group_ids": [""],
+    "uid_workspace_url": "",
+    "wpa_psk_radius": "disabled|optional|required",
+    "private_preshared_keys_enabled": "true|false",
+    "private_preshared_keys": [
+      {
+          "networkconf_id": "",
+          "password": "[\\x20-\\x7E]{8,255}"
+      }
+    ],
+    "nas_identifier_type": "ap_name|ap_mac|bssid|site_name|custom",
+    "nas_identifier": ".{0,48}",
+    "mdns_proxy_mode": "off|auto|custom",
+    "mdns_proxy_custom": [
+        {
+            "networkconf_ids": [""],
+            "ap_scope_mode": "all|specific|group",
+            "ap_macs": ["^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"],
+            "ap_group_ids": [""],
+            "isolation_enabled": "true|false",
+            "services_mode": "all|specific|none",
+            "predefined_services": [
+                {
+                    "code": "amazon_devices|android_tv_remote|apple_airDrop|apple_airPlay|apple_file_sharing|apple_iChat|apple_iTunes|aqara|bose|dns_service_discovery|ftp_servers|google_chromecast|homeKit|matter_network|philips_hue|printers|roku|scanners|sonos|spotify_connect|ssh_servers|time_capsule|web_servers|windows_file_sharing_samba"
+                }
+            ],
+            "custom_services": [
+                {
+                    "name": "",
+                    "address": "^_[a-zA-Z0-9._-]+\\._(tcp|udp)(\\.local)?$"
+                }
+            ]
+        }
+    ]
+},
+"WlanGroup": {
+    "name":".{1,128}"
+}}
