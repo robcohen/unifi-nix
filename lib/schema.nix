@@ -4,9 +4,22 @@
 
 let
   # Helper to get enum values with fallback
+  # Handles both old format (list) and new format ({ values, collections })
   getEnum =
     enums: key: fallback:
-    if enums ? ${key} && enums.${key} != [ ] then lib.unique (enums.${key} ++ fallback) else fallback;
+    let
+      raw = enums.${key} or null;
+      values =
+        if raw == null then
+          [ ]
+        else if builtins.isList raw then
+          raw
+        else if builtins.isAttrs raw && raw ? values then
+          raw.values
+        else
+          [ ];
+    in
+    if values != [ ] then lib.unique (values ++ fallback) else fallback;
 
   # Load schema from a directory containing enums.json
   loadSchema =

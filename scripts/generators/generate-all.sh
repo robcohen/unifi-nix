@@ -10,8 +10,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SCHEMA_DIR="${1:?Usage: $0 <schema-version-dir> [output-dir]}"
 OUTPUT_DIR="${2:-$SCHEMA_DIR/generated}"
 
-# Verify input files exist
-for file in integration.json mongodb-examples.json mongodb-fields.json; do
+# Verify required files/directories exist
+if [[ ! -d "$SCHEMA_DIR/jar-fields" ]]; then
+  echo "Error: Required directory not found: $SCHEMA_DIR/jar-fields" >&2
+  exit 1
+fi
+
+for file in mongodb-examples.json mongodb-fields.json; do
   if [[ ! -f "$SCHEMA_DIR/$file" ]]; then
     echo "Error: Required file not found: $SCHEMA_DIR/$file" >&2
     exit 1
@@ -26,26 +31,18 @@ echo "Input: $SCHEMA_DIR" >&2
 echo "Output: $OUTPUT_DIR" >&2
 echo "" >&2
 
-# 1. Extract enums
-echo "[1/4] Extracting enums from OpenAPI..." >&2
-"$SCRIPT_DIR/extract-enums.sh" \
-  "$SCHEMA_DIR/integration.json" \
-  "$OUTPUT_DIR/enums.json"
+# 1. Extract enums and validation from JAR field definitions
+echo "[1/3] Extracting enums and validation from JAR..." >&2
+"$SCRIPT_DIR/extract-from-jar.sh" "$SCHEMA_DIR" "$OUTPUT_DIR"
 
 # 2. Extract defaults
-echo "[2/4] Extracting defaults from examples..." >&2
+echo "[2/3] Extracting defaults from examples..." >&2
 "$SCRIPT_DIR/extract-defaults.sh" \
   "$SCHEMA_DIR/mongodb-examples.json" \
   "$OUTPUT_DIR/defaults.json"
 
-# 3. Extract validation rules
-echo "[3/4] Extracting validation rules..." >&2
-"$SCRIPT_DIR/extract-validation.sh" \
-  "$SCHEMA_DIR/integration.json" \
-  "$OUTPUT_DIR/validation.json"
-
-# 4. Generate JSON Schema
-echo "[4/4] Generating JSON Schema..." >&2
+# 3. Generate JSON Schema
+echo "[3/3] Generating JSON Schema..." >&2
 "$SCRIPT_DIR/generate-json-schema.sh" \
   "$SCHEMA_DIR/mongodb-fields.json" \
   "$SCHEMA_DIR/mongodb-examples.json" \

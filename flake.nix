@@ -318,14 +318,13 @@
                 # Run all generators
                 mkdir -p generated
 
-                if [ -f "$SCHEMA_VERSION_DIR/integration.json" ]; then
-                  echo "Extracting enums..."
-                  bash ${generatorsDir}/extract-enums.sh "$SCHEMA_VERSION_DIR/integration.json" generated/enums.json
-
-                  echo "Extracting validation rules..."
-                  bash ${generatorsDir}/extract-validation.sh "$SCHEMA_VERSION_DIR/integration.json" generated/validation.json
+                if [ -d "$SCHEMA_VERSION_DIR/jar-fields" ]; then
+                  echo "Extracting enums and validation from JAR field definitions..."
+                  bash ${generatorsDir}/extract-from-jar.sh "$SCHEMA_VERSION_DIR" generated
                 else
-                  echo "Warning: integration.json not found, skipping enum/validation extraction"
+                  echo "Warning: jar-fields not found, skipping enum/validation extraction"
+                  echo "{}" > generated/enums.json
+                  echo "{}" > generated/validation.json
                 fi
 
                 if [ -f "$SCHEMA_VERSION_DIR/mongodb-examples.json" ]; then

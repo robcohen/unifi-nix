@@ -40,7 +40,7 @@ echo "  Found $(ls "$FIELDS_DIR/"*.json 2>/dev/null | wc -l) field definition fi
     printf '"%s": %s' "$name" "$(cat "$f")"
   done
   echo "}"
-} > "$OUTPUT_DIR/fields-combined.json"
+} >"$OUTPUT_DIR/fields-combined.json"
 
 # Validate it's proper JSON
 if ! jq -e . "$OUTPUT_DIR/fields-combined.json" >/dev/null 2>&1; then
@@ -80,7 +80,7 @@ group_by(.field) | map({
     collections: (map(.collection) | unique | sort)
   }
 }) | from_entries
-' "$OUTPUT_DIR/fields-combined.json" > "$OUTPUT_DIR/enums.json"
+' "$OUTPUT_DIR/fields-combined.json" >"$OUTPUT_DIR/enums.json"
 
 echo "  Generated enums.json with $(jq 'keys | length' "$OUTPUT_DIR/enums.json") enum types" >&2
 
@@ -109,7 +109,7 @@ group_by(.field) | map({
     collections: (map(.collection) | unique | sort)
   }
 }) | from_entries
-' "$OUTPUT_DIR/fields-combined.json" > "$OUTPUT_DIR/validation.json"
+' "$OUTPUT_DIR/fields-combined.json" >"$OUTPUT_DIR/validation.json"
 
 echo "  Generated validation.json with $(jq 'keys | length' "$OUTPUT_DIR/validation.json") patterns" >&2
 
