@@ -13,6 +13,8 @@ on:
         description: "Specific version to extract (leave empty for latest)"
         required: false
         default: ""
+permissions:
+  contents: write
 env:
   MONGO_USER: unifi
   MONGO_PASS: unifi
