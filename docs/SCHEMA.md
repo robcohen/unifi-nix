@@ -14,12 +14,20 @@ The schema system works at three levels:
 
 ```
 schemas/
-  └── 10.0.162/          # Version-specific schema
-      ├── integration.json   # OpenAPI schema (from device)
-      ├── enums.json         # Extracted enum values
+  └── 10.0.162/              # Version-specific schema
+      ├── jar-fields/        # Field definitions from core.jar
+      │   ├── NetworkConf.json
+      │   ├── WlanConf.json
+      │   ├── FirewallRule.json
+      │   └── ... (34 files)
+      ├── generated/
+      │   ├── enums.json         # 282 enum types extracted from JAR
+      │   ├── validation.json    # 226 validation patterns
+      │   ├── defaults.json      # Default values from MongoDB
+      │   └── json-schema/       # IDE-compatible JSON schemas
       ├── mongodb-fields.json    # MongoDB collection fields
       ├── mongodb-examples.json  # Example documents
-      └── reference-ids.json     # IDs for default groups/sites
+      └── version                # Schema version file
 
 lib/
   └── schema.nix         # Nix schema loader
@@ -29,23 +37,25 @@ lib/
 
 ### Schema Extraction
 
-When you first deploy to a device, `extract-device-schema.sh` automatically:
+Schemas are automatically extracted via GitHub Actions when new UniFi versions are released:
 
-1. Connects to the UDM via SSH
-1. Queries MongoDB for collection field names and example documents
-1. Extracts enum values from existing data (zones, network purposes, etc.)
-1. Downloads the OpenAPI schema from the device
-1. Caches everything in `~/.cache/unifi-nix/devices/<host>/`
-1. Copies enums to the versioned `schemas/<version>/` directory
+1. **GitHub Actions workflow** runs weekly (or on-demand)
+2. Starts UniFi Network Application in Docker
+3. Extracts field definitions from `core.jar` (api/fields/*.json)
+4. Queries MongoDB for collection fields and example documents
+5. Generates enums, validation patterns, and JSON schemas
+6. Commits updated schemas to the repository
 
-### Version Detection
+The JAR field definitions are the authoritative source - they contain all 282 enum types and 226 validation patterns directly from UniFi's internal schema.
 
-The deploy script:
+### Manual Extraction
 
-1. Gets the device version from `/usr/lib/unifi/webapps/ROOT/api-docs/integration.json`
-1. Looks for a matching `schemas/<version>/` directory
-1. If not found, creates a minimal schema with extracted enums
-1. Updates the versioned schema if device enums are newer
+For local development or testing with specific devices:
+
+```bash
+# Run the schema update workflow locally
+nix run .#generate-schema
+```
 
 ### Nix-time Validation
 
@@ -136,35 +146,32 @@ nix run .#schema-diff -- 10.0.159 10.0.162
 
 Your device is running a version that hasn't been extracted yet:
 
-1. Run `./scripts/extract-device-schema.sh <host>` to cache device schema
-1. The deploy script will auto-create `schemas/<version>/enums.json`
+1. Trigger the `Update UniFi Schemas` workflow manually
+2. Or wait for the weekly automatic update
+3. The workflow will extract and commit schemas for the new version
 
 ### "Invalid enum value"
 
 The value isn't in the schema. Either:
 
-1. Re-extract schema: `./scripts/extract-device-schema.sh <host>`
-1. The value may be from a newer/older version - check the device version
+1. The enum may have been added in a newer UniFi version
+2. Check `schemas/<version>/generated/enums.json` for available values
+3. Update to a newer schema version if available
 
 ### Tests fail with "empty enum list"
 
 The schema loader couldn't find valid enums. Ensure:
 
-1. `schemas/<version>/enums.json` exists and has content
-1. The enum field names match what's in `lib/schema.nix`
+1. `schemas/<version>/generated/enums.json` exists and has content
+2. The `jar-fields/` directory contains the field definition files
+3. Run `nix run .#generate-schema` to regenerate
 
 ## CI Integration
 
-For CI pipelines, you can:
+Schemas are automatically maintained via GitHub Actions:
 
-1. Commit extracted schemas to the repo
-1. Use `SKIP_SCHEMA_CACHE=true` to skip device extraction
-1. Use `SKIP_SCHEMA_VALIDATION=true` to deploy without OpenAPI validation
+- **Weekly schedule**: Checks for new UniFi versions every Sunday
+- **Manual trigger**: Run `Update UniFi Schemas` workflow with `force=true`
+- **Auto-commit**: New schemas are automatically committed to the repo
 
-The recommended approach is to extract schemas from a test device and commit them:
-
-```bash
-./scripts/extract-device-schema.sh test-udm.local
-git add schemas/
-git commit -m "chore: update device schema"
-```
+All schema files are version-controlled, so your CI just uses what's in the repo.

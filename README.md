@@ -227,7 +227,7 @@ networks = {
 
 ## Schema Validation
 
-unifi-nix automatically validates your configuration against UniFi's OpenAPI schema:
+unifi-nix automatically validates your configuration against UniFi's internal schema:
 
 - **Required fields** - Ensures all mandatory fields are present
 - **Type validation** - Verifies correct types (booleans, integers, strings)
@@ -261,7 +261,7 @@ nix run .#deploy -- config.json 192.168.1.1
 ## How It Works
 
 1. **Nix evaluation** - Config is evaluated and converted to MongoDB format
-1. **Schema validation** - Configuration is validated against OpenAPI schema
+1. **Schema validation** - Configuration is validated against device schema
 1. **SSH connection** - Connects to UDM as root via SSH
 1. **MongoDB queries** - Reads current state from `ace` database (port 27117)
 1. **Diff calculation** - Compares current vs desired state
