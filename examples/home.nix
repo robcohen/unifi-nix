@@ -94,29 +94,38 @@
     };
 
     # ==========================================================================
-    # Firewall Rules
+    # Firewall Policies (zone-based, UniFi 10.x+)
     # ==========================================================================
-    firewall.rules = {
+    # Note: For simple isolation, just use 'isolate = true' on the network.
+    # Use firewall.policies for more granular control (specific ports, protocols, etc.)
+    firewall.policies = {
       # Block IoT from accessing main network
-      block-iot-to-lan = {
-        from = "IoT";
-        to = "Default";
-        action = "drop";
-        description = "Isolate IoT devices";
-        index = 2001;
+      block-iot-to-default = {
+        name = "Block IoT to Default";
+        action = "block";
+        sourceZone = "internal";
+        sourceType = "network";
+        sourceNetworks = [ "IoT" ];
+        destinationZone = "internal";
+        destinationType = "network";
+        destinationNetworks = [ "Default" ];
+        description = "Isolate IoT devices from main network";
+        index = 10001;
       };
 
-      # Block guests from all private networks
-      block-guest-to-private = {
-        from = "Guest";
-        to = [
-          "Default"
-          "IoT"
-        ];
-        action = "drop";
-        description = "Isolate guest network";
-        index = 2000;
-      };
+      # Allow IoT to reach specific IPs (e.g., Home Assistant)
+      # allow-iot-to-homeassistant = {
+      #   name = "Allow IoT to Home Assistant";
+      #   action = "allow";
+      #   sourceZone = "internal";
+      #   sourceType = "network";
+      #   sourceNetworks = [ "IoT" ];
+      #   destinationZone = "internal";
+      #   destinationType = "ip";
+      #   destinationIPs = [ "192.168.1.50" ];
+      #   description = "Allow IoT devices to reach Home Assistant";
+      #   index = 10000;  # Lower index = higher priority
+      # };
     };
   };
 }

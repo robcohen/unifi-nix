@@ -28,8 +28,10 @@ JSON.stringify({
   networks: db.networkconf.find({}).toArray(),
   wifi: db.wlanconf.find({}).toArray(),
   firewallRules: db.traffic_rule.find({}).toArray(),
+  firewallPolicies: db.firewall_policy.find({}).toArray(),
+  firewallZones: db.firewall_zone.find({}).toArray(),
   portForwards: db.portforward.find({}).toArray(),
-  dhcpReservations: db.dhcp_option.find({}).toArray()
+  dhcpReservations: db.dhcpd_static.find({}).toArray()
 })
 "')
 
@@ -170,58 +172,189 @@ done
 echo "    };"
 echo ""
 
-# Firewall Rules
-echo "    # Firewall Rules"
-echo "    firewall.rules = {"
+# Check if zone-based firewall is enabled
+ZONE_COUNT=$(echo "$CONFIG" | jq '.firewallZones | length')
+POLICY_COUNT=$(echo "$CONFIG" | jq '.firewallPolicies | length')
 
-echo "$CONFIG" | jq -r '.firewallRules[] | @base64' | while read -r rule_b64; do
-  rule=$(echo "$rule_b64" | base64 -d)
+if [[ $ZONE_COUNT -gt 0 ]]; then
+  # Zone-based firewall (UniFi 10.x+)
+  echo "    # Zone-Based Firewall Policies"
+  echo "    firewall.policies = {"
 
-  desc=$(echo "$rule" | jq -r '.description // empty')
-  enabled=$(echo "$rule" | jq -r '.enabled // true')
-  action=$(echo "$rule" | jq -r '.action // "drop"')
-  protocol=$(echo "$rule" | jq -r '.ip_protocol // "all"')
-  dst_port=$(echo "$rule" | jq -r '.dst_port // empty')
-  index=$(echo "$rule" | jq -r '.index // 2000')
+  echo "$CONFIG" | jq -r '.firewallPolicies[] | @base64' | while read -r policy_b64; do
+    policy=$(echo "$policy_b64" | base64 -d)
 
-  [[ -z $desc ]] && continue
+    name=$(echo "$policy" | jq -r '.name // empty')
+    desc=$(echo "$policy" | jq -r '.description // ""')
+    enabled=$(echo "$policy" | jq -r '.enabled // true')
+    action=$(echo "$policy" | jq -r '.action // "BLOCK"' | tr '[:upper:]' '[:lower:]')
+    protocol=$(echo "$policy" | jq -r '.protocol // "all"')
+    ip_version=$(echo "$policy" | jq -r '.ip_version // "BOTH"' | tr '[:upper:]' '[:lower:]')
+    index=$(echo "$policy" | jq -r '.index // 10000')
+    logging=$(echo "$policy" | jq -r '.logging // false')
+    connection_state=$(echo "$policy" | jq -r '.connection_state_type // "ALL"')
 
-  # Generate key from description
-  key=$(echo "$desc" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/-*$//' | cut -c1-40)
+    # Source info
+    src_zone=$(echo "$policy" | jq -r '.source._zone_key // "internal"')
+    src_target=$(echo "$policy" | jq -r '.source.matching_target // "ANY"' | tr '[:upper:]' '[:lower:]')
+    src_networks=$(echo "$policy" | jq -r '.source._network_names // [] | .[]' 2>/dev/null || true)
+    src_ips=$(echo "$policy" | jq -r '.source._ips // [] | .[]' 2>/dev/null || true)
 
-  echo "      \"$key\" = {"
-  echo "        description = \"$desc\";"
-  echo "        action = \"$action\";"
-  echo '        from = "any";  # TODO: resolve from rule'
-  echo '        to = "any";    # TODO: resolve from rule'
-  [[ $enabled == "false" ]] && echo "        enable = false;"
-  [[ $protocol != "all" ]] && echo "        protocol = \"$protocol\";"
-  [[ -n $dst_port ]] && echo "        ports = [ $dst_port ];"
-  [[ $index != "2000" ]] && echo "        index = $index;"
-  echo "      };"
-  echo ""
-done
+    # Destination info
+    dst_zone=$(echo "$policy" | jq -r '.destination._zone_key // "internal"')
+    dst_target=$(echo "$policy" | jq -r '.destination.matching_target // "ANY"' | tr '[:upper:]' '[:lower:]')
+    dst_networks=$(echo "$policy" | jq -r '.destination._network_names // [] | .[]' 2>/dev/null || true)
+    dst_ips=$(echo "$policy" | jq -r '.destination._ips // [] | .[]' 2>/dev/null || true)
+    dst_port=$(echo "$policy" | jq -r 'if .destination.ports and (.destination.ports | length) > 0 then .destination.ports[0] else empty end' 2>/dev/null || true)
 
-echo "    };"
+    [[ -z $name ]] && continue
+
+    # Generate key from name
+    key=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/-*$//' | cut -c1-40)
+
+    echo "      \"$key\" = {"
+    echo "        name = \"$name\";"
+    [[ -n $desc ]] && echo "        description = \"$desc\";"
+    echo "        action = \"$action\";"
+    echo "        sourceZone = \"$src_zone\";"
+    echo "        destinationZone = \"$dst_zone\";"
+
+    # Source type and networks/IPs
+    if [[ $src_target == "network" ]] && [[ -n $src_networks ]]; then
+      echo '        sourceType = "network";'
+      networks_nix=$(echo "$src_networks" | xargs -I{} echo -n '"{}" ' | sed 's/ $//')
+      echo "        sourceNetworks = [ $networks_nix ];"
+    elif [[ $src_target == "ip" ]] && [[ -n $src_ips ]]; then
+      echo '        sourceType = "ip";'
+      ips_nix=$(echo "$src_ips" | xargs -I{} echo -n '"{}" ' | sed 's/ $//')
+      echo "        sourceIPs = [ $ips_nix ];"
+    fi
+
+    # Destination type and networks/IPs
+    if [[ $dst_target == "network" ]] && [[ -n $dst_networks ]]; then
+      echo '        destinationType = "network";'
+      networks_nix=$(echo "$dst_networks" | xargs -I{} echo -n '"{}" ' | sed 's/ $//')
+      echo "        destinationNetworks = [ $networks_nix ];"
+    elif [[ $dst_target == "ip" ]] && [[ -n $dst_ips ]]; then
+      echo '        destinationType = "ip";'
+      ips_nix=$(echo "$dst_ips" | xargs -I{} echo -n '"{}" ' | sed 's/ $//')
+      echo "        destinationIPs = [ $ips_nix ];"
+    fi
+
+    [[ -n $dst_port ]] && echo "        destinationPort = $dst_port;"
+    [[ $protocol != "all" ]] && echo "        protocol = \"$protocol\";"
+    [[ $ip_version != "both" ]] && echo "        ipVersion = \"$ip_version\";"
+    [[ $connection_state != "ALL" ]] && echo "        connectionState = \"$connection_state\";"
+    [[ $enabled == "false" ]] && echo "        enable = false;"
+    [[ $logging == "true" ]] && echo "        logging = true;"
+    [[ $index != "10000" ]] && echo "        index = $index;"
+
+    echo "      };"
+    echo ""
+  done
+
+  echo "    };"
+else
+  # Legacy traffic rules (deprecated)
+  RULE_COUNT=$(echo "$CONFIG" | jq '.firewallRules | length')
+  if [[ $RULE_COUNT -gt 0 ]]; then
+    echo "    # Legacy Firewall Rules (DEPRECATED - upgrade to zone-based firewall)"
+    echo "    # firewall.rules = {"
+    echo "$CONFIG" | jq -r '.firewallRules[] | "    #   \(.description // "unnamed"): \(.action // "drop")"'
+    echo "    # };"
+    echo ""
+    echo "    # NOTE: Zone-based firewall is not enabled on this device."
+    echo "    # Enable it in UniFi Settings > Firewall & Security > Upgrade to Zone-Based Firewall"
+    echo "    # Then re-run this import to get proper firewall.policies configuration."
+  fi
+fi
 
 # Port Forwards
 port_forward_count=$(echo "$CONFIG" | jq '.portForwards | length')
 if [[ $port_forward_count -gt 0 ]]; then
   echo ""
-  echo "    # Port Forwards (not yet supported - showing for reference)"
-  echo "    # portForwards = {"
-  echo "$CONFIG" | jq -r '.portForwards[] | "    #   \(.name // .dst_port): \(.src // "any"):\(.dst_port) -> \(.fwd):\(.fwd_port)"'
-  echo "    # };"
+  echo "    # Port Forwards"
+  echo "    portForwards = {"
+
+  echo "$CONFIG" | jq -r '.portForwards[] | @base64' | while read -r pf_b64; do
+    pf=$(echo "$pf_b64" | base64 -d)
+
+    name=$(echo "$pf" | jq -r '.name // empty')
+    enabled=$(echo "$pf" | jq -r '.enabled // true')
+    proto=$(echo "$pf" | jq -r '.proto // "tcp_udp"')
+    src_port=$(echo "$pf" | jq -r '.dst_port // empty')
+    dst_ip=$(echo "$pf" | jq -r '.fwd // empty')
+    dst_port=$(echo "$pf" | jq -r '.fwd_port // empty')
+    src_ip=$(echo "$pf" | jq -r '.src // empty')
+    log=$(echo "$pf" | jq -r '.log // false')
+
+    [[ -z $dst_ip ]] && continue
+    [[ -z $src_port ]] && continue
+
+    # Generate key from name or port
+    if [[ -n $name ]]; then
+      key=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/-*$//' | cut -c1-40)
+    else
+      key="port-$src_port"
+    fi
+
+    echo "      \"$key\" = {"
+    [[ -n $name ]] && echo "        name = \"$name\";"
+    echo "        srcPort = $src_port;"
+    echo "        dstIP = \"$dst_ip\";"
+    [[ -n $dst_port ]] && [[ $dst_port != "$src_port" ]] && echo "        dstPort = $dst_port;"
+    [[ $proto != "tcp_udp" ]] && echo "        protocol = \"$proto\";"
+    [[ -n $src_ip ]] && [[ $src_ip != "any" ]] && echo "        srcIP = \"$src_ip\";"
+    [[ $enabled == "false" ]] && echo "        enable = false;"
+    [[ $log == "true" ]] && echo "        log = true;"
+    echo "      };"
+    echo ""
+  done
+
+  echo "    };"
 fi
 
 # DHCP Reservations
 dhcp_count=$(echo "$CONFIG" | jq '.dhcpReservations | length')
 if [[ $dhcp_count -gt 0 ]]; then
   echo ""
-  echo "    # DHCP Reservations (not yet supported - showing for reference)"
-  echo "    # dhcpReservations = {"
-  echo "$CONFIG" | jq -r '.dhcpReservations[] | "    #   \(.mac): \(.ip)"'
-  echo "    # };"
+  echo "    # DHCP Reservations"
+  echo "    dhcpReservations = {"
+
+  echo "$CONFIG" | jq -r '.dhcpReservations[] | @base64' | while read -r dhcp_b64; do
+    dhcp=$(echo "$dhcp_b64" | base64 -d)
+
+    mac=$(echo "$dhcp" | jq -r '.mac // empty')
+    ip=$(echo "$dhcp" | jq -r '.ip // empty')
+    hostname=$(echo "$dhcp" | jq -r '.name // empty')
+    network_id=$(echo "$dhcp" | jq -r '.network_id // empty')
+
+    [[ -z $mac ]] && continue
+    [[ -z $ip ]] && continue
+
+    # Resolve network name
+    network_name=""
+    if [[ -n $network_id ]]; then
+      network_name=$(echo "$NETWORK_MAP" | jq -r ".[\"$network_id\"] // empty")
+    fi
+
+    # Generate key from hostname or MAC
+    if [[ -n $hostname ]]; then
+      key=$(echo "$hostname" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/-*$//' | cut -c1-40)
+    else
+      key=$(echo "$mac" | tr ':' '-' | tr '[:upper:]' '[:lower:]')
+    fi
+
+    echo "      \"$key\" = {"
+    echo "        mac = \"$mac\";"
+    echo "        ip = \"$ip\";"
+    [[ -n $hostname ]] && echo "        name = \"$hostname\";"
+    [[ -n $network_name ]] && echo "        network = \"$network_name\";"
+    echo "      };"
+    echo ""
+  done
+
+  echo "    };"
 fi
 
 cat <<'FOOTER'

@@ -90,7 +90,8 @@ var configCollections = [
   \"wlanconf\", \"networkconf\", \"firewallrule\", \"firewallgroup\",
   \"portforward\", \"routing\", \"dhcpd_static\", \"dhcp_option\",
   \"wlangroup\", \"apgroup\", \"usergroup\", \"radiusprofile\",
-  \"hotspotconf\", \"portconf\", \"setting\", \"traffic_rule\", \"device\"
+  \"hotspotconf\", \"portconf\", \"setting\", \"traffic_rule\", \"device\",
+  \"firewall_policy\", \"firewall_zone\"
 ];
 var result = {};
 configCollections.forEach(function(collName) {
@@ -102,8 +103,79 @@ var vlanNet = db.networkconf.findOne({vlan_enabled: true});
 if (vlanNet) result[\"networkconf_vlan\"] = vlanNet;
 var defaultLan = db.networkconf.findOne({attr_hidden_id: \"LAN\"});
 if (defaultLan) result[\"networkconf_lan\"] = defaultLan;
+// Get all firewall zones to extract valid zone_keys
+var allZones = db.firewall_zone.find({}, {zone_key: 1, name: 1}).toArray();
+if (allZones.length > 0) result[\"firewall_zones_all\"] = allZones;
+// Get multiple firewall policies to capture all enum variations
+var allPolicies = db.firewall_policy.find({}).limit(5).toArray();
+if (allPolicies.length > 0) result[\"firewall_policies_sample\"] = allPolicies;
 print(JSON.stringify(result, null, 2));
 "' >"$DEVICE_CACHE_DIR/mongodb-examples.json"
+
+# Extract enum values from existing documents
+echo "  Extracting enum values..."
+ssh "$SSH_USER@$HOST" 'mongo --port 27117 --quiet ace --eval "
+var enums = {
+  // From firewall_zone
+  zone_keys: db.firewall_zone.distinct(\"zone_key\"),
+
+  // From firewall_policy (user-created)
+  policy_actions: db.firewall_policy.distinct(\"action\"),
+  policy_protocols: db.firewall_policy.distinct(\"protocol\"),
+  policy_ip_versions: db.firewall_policy.distinct(\"ip_version\"),
+  policy_connection_state_types: db.firewall_policy.distinct(\"connection_state_type\"),
+  policy_connection_states: db.firewall_policy.distinct(\"connection_states\"),
+  policy_src_matching_targets: db.firewall_policy.distinct(\"source.matching_target\"),
+  policy_dst_matching_targets: db.firewall_policy.distinct(\"destination.matching_target\"),
+  policy_port_matching_types: db.firewall_policy.distinct(\"source.port_matching_type\"),
+
+  // From traffic_rule (for reference)
+  traffic_rule_actions: db.traffic_rule.distinct(\"action\"),
+
+  // From networkconf
+  network_purposes: db.networkconf.distinct(\"purpose\"),
+  network_groups: db.networkconf.distinct(\"networkgroup\"),
+
+  // From wlanconf
+  wifi_security: db.wlanconf.distinct(\"security\"),
+  wifi_wpa_modes: db.wlanconf.distinct(\"wpa_mode\"),
+  wifi_bands: db.wlanconf.distinct(\"wlan_band\"),
+  wifi_pmf_modes: db.wlanconf.distinct(\"pmf_mode\"),
+  wifi_mac_filter_policies: db.wlanconf.distinct(\"mac_filter_policy\"),
+
+  // From portforward
+  portfwd_protocols: db.portforward.distinct(\"proto\"),
+  portfwd_types: db.portforward.distinct(\"pfwd_interface\"),
+
+  // From routing
+  routing_types: db.routing.distinct(\"type\"),
+  routing_interfaces: db.routing.distinct(\"interface\"),
+
+  // From dhcpd_static (DHCP reservations)
+  dhcp_network_ids: db.dhcpd_static.distinct(\"network_id\"),
+
+  // From firewallgroup
+  firewall_group_types: db.firewallgroup.distinct(\"group_type\"),
+
+  // From dpigroup
+  dpi_categories: db.dpigroup.distinct(\"dpiapp_ids\"),
+
+  // From radiusprofile
+  radius_auth_types: db.radiusprofile.distinct(\"auth_type\"),
+
+  // From setting (for VPN, etc.)
+  setting_keys: db.setting.distinct(\"key\"),
+
+  // From traffic_rule (QoS)
+  traffic_rule_matching_targets: db.traffic_rule.distinct(\"matching_target\"),
+  traffic_rule_target_devices: db.traffic_rule.distinct(\"target_devices\"),
+
+  // From portconf (switch ports)
+  port_profile_types: db.portconf.distinct(\"forward\")
+};
+
+print(JSON.stringify(enums, null, 2));
+"' >"$DEVICE_CACHE_DIR/enums.json"
 
 # Extract reference IDs
 echo "  Extracting reference IDs..."

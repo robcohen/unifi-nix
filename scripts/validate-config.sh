@@ -13,6 +13,7 @@ DEVICE_DIR="${3:?Missing device-schema-dir}"
 OPENAPI_SCHEMA="$OPENAPI_DIR/integration.json"
 MONGODB_FIELDS="$DEVICE_DIR/mongodb-fields.json"
 MONGODB_EXAMPLES="$DEVICE_DIR/mongodb-examples.json"
+MONGODB_ENUMS="$DEVICE_DIR/enums.json"
 REFERENCE_IDS="$DEVICE_DIR/reference-ids.json"
 
 ERRORS=()
@@ -37,6 +38,21 @@ done
 CONFIG=$(cat "$CONFIG_JSON")
 
 echo "Validating configuration..."
+
+# =============================================================================
+# Load enum values from device schema
+# =============================================================================
+if [[ -f $MONGODB_ENUMS ]]; then
+  echo "  Loading enums from device schema..."
+  VALID_NETWORK_PURPOSES=$(jq -r '.network_purposes // [] | join(" ")' "$MONGODB_ENUMS")
+  VALID_WIFI_SECURITY=$(jq -r '.wifi_security // [] | join(" ")' "$MONGODB_ENUMS")
+  VALID_WIFI_WPA_MODES=$(jq -r '.wifi_wpa_modes // [] | join(" ")' "$MONGODB_ENUMS")
+fi
+
+# Defaults if not loaded from schema
+VALID_NETWORK_PURPOSES="${VALID_NETWORK_PURPOSES:-corporate guest wan vlan-only remote-user-vpn site-vpn}"
+VALID_WIFI_SECURITY="${VALID_WIFI_SECURITY:-open wpapsk wpaeap wep}"
+VALID_WIFI_WPA_MODES="${VALID_WIFI_WPA_MODES:-wpa1 wpa2 wpa3 auto}"
 
 # =============================================================================
 # Validate Networks
@@ -95,13 +111,12 @@ for net_name in $(echo "$CONFIG" | jq -r '.networks // {} | keys[]'); do
     fi
   fi
 
-  # Validate purpose enum
+  # Validate purpose enum (from schema)
   purpose=$(echo "$net" | jq -r '.purpose // empty')
   if [[ -n $purpose ]] && [[ $purpose != "null" ]]; then
-    case "$purpose" in
-    corporate | guest | wan | vlan-only | remote-user-vpn | site-vpn) ;;
-    *) error "Network '$net_name': invalid purpose '$purpose'" ;;
-    esac
+    if ! echo "$VALID_NETWORK_PURPOSES" | grep -qw "$purpose"; then
+      error "Network '$net_name': invalid purpose '$purpose' (valid: $VALID_NETWORK_PURPOSES)"
+    fi
   fi
 done
 
@@ -160,22 +175,20 @@ for wifi_name in $(echo "$CONFIG" | jq -r '.wifi // {} | keys[]'); do
     esac
   done
 
-  # Validate security type
+  # Validate security type (from schema)
   security=$(echo "$wifi" | jq -r '.security // empty')
   if [[ -n $security ]] && [[ $security != "null" ]]; then
-    case "$security" in
-    open | wpapsk | wpaeap | wep) ;;
-    *) error "WiFi '$wifi_name': invalid security type '$security'" ;;
-    esac
+    if ! echo "$VALID_WIFI_SECURITY" | grep -qw "$security"; then
+      error "WiFi '$wifi_name': invalid security type '$security' (valid: $VALID_WIFI_SECURITY)"
+    fi
   fi
 
-  # Validate wpa_mode
+  # Validate wpa_mode (from schema)
   wpa_mode=$(echo "$wifi" | jq -r '.wpa_mode // empty')
   if [[ -n $wpa_mode ]] && [[ $wpa_mode != "null" ]]; then
-    case "$wpa_mode" in
-    wpa1 | wpa2 | wpa3 | auto) ;;
-    *) error "WiFi '$wifi_name': invalid wpa_mode '$wpa_mode'" ;;
-    esac
+    if ! echo "$VALID_WIFI_WPA_MODES" | grep -qw "$wpa_mode"; then
+      error "WiFi '$wifi_name': invalid wpa_mode '$wpa_mode' (valid: $VALID_WIFI_WPA_MODES)"
+    fi
   fi
 
   # Validate field names
@@ -188,29 +201,212 @@ for wifi_name in $(echo "$CONFIG" | jq -r '.wifi // {} | keys[]'); do
 done
 
 # =============================================================================
-# Validate Firewall Rules
+# Validate Firewall Rules - DEPRECATED
 # =============================================================================
 echo "  Checking firewall rules..."
 
-for rule_name in $(echo "$CONFIG" | jq -r '.firewallRules // {} | keys[]'); do
-  rule=$(echo "$CONFIG" | jq -c ".firewallRules[\"$rule_name\"]")
+# firewall.rules is deprecated - it wrote to traffic_rule collection which is
+# for Traffic Management (bandwidth limits, app filtering), NOT firewall blocking.
+# The schema shows traffic_rule.action = "ALLOW" only, not accept/drop/reject.
+#
+# For proper implementation, use:
+# - network_isolation_enabled on networks (isolate = true in config)
+# - zone-based firewall (firewall_zone + firewall_policy collections)
+#
+# The firewall.rules option wrote to traffic_rule collection, but that collection
+# is for Traffic Management rules (QoS/rate limiting), not firewall rules.
+# Use firewall.policies instead (zone-based firewall, UniFi 10.x+).
 
-  # Check action is valid
-  action=$(echo "$rule" | jq -r '.action // empty')
-  if [[ -n $action ]] && [[ $action != "null" ]]; then
-    case "$action" in
-    accept | drop | reject) ;;
-    *) error "Firewall rule '$rule_name': invalid action '$action'" ;;
-    esac
+rule_count=$(echo "$CONFIG" | jq '.firewallRules // {} | length')
+if [[ $rule_count -gt 0 ]]; then
+  error "firewall.rules is deprecated and broken - use firewall.policies instead (zone-based firewall)"
+fi
+
+# =============================================================================
+# Validate Firewall Policies (zone-based, UniFi 10.x+)
+# =============================================================================
+echo "  Checking firewall policies..."
+
+# Default known values (fallback if schema not available)
+DEFAULT_ZONES="internal external gateway vpn hotspot dmz"
+DEFAULT_ACTIONS="ALLOW BLOCK REJECT"
+DEFAULT_PROTOCOLS="all tcp_udp tcp udp icmp icmpv6"
+DEFAULT_IP_VERSIONS="BOTH IPV4 IPV6"
+DEFAULT_MATCHING_TARGETS="ANY NETWORK IP MAC DEVICE APP DOMAIN REGION"
+
+# Read valid values from device schema
+if [[ -f $MONGODB_ENUMS ]]; then
+  echo "    Reading enum values from device schema..."
+
+  # Zone keys from device
+  SCHEMA_ZONES=$(jq -r '.zone_keys // [] | join(" ")' "$MONGODB_ENUMS")
+  VALID_ZONES="${SCHEMA_ZONES:-$DEFAULT_ZONES}"
+
+  # Merge schema values with defaults (schema values take precedence for validation)
+  SCHEMA_ACTIONS=$(jq -r '.policy_actions // [] | join(" ")' "$MONGODB_ENUMS")
+  SCHEMA_PROTOCOLS=$(jq -r '.policy_protocols // [] | join(" ")' "$MONGODB_ENUMS")
+  SCHEMA_IP_VERSIONS=$(jq -r '.policy_ip_versions // [] | join(" ")' "$MONGODB_ENUMS")
+  SCHEMA_MATCHING_TARGETS=$(jq -r '([.policy_src_matching_targets // [], .policy_dst_matching_targets // []] | flatten | unique | join(" "))' "$MONGODB_ENUMS")
+
+  # Use defaults but warn if schema has values we don't recognize
+  VALID_ACTIONS="$DEFAULT_ACTIONS"
+  VALID_PROTOCOLS="$DEFAULT_PROTOCOLS"
+  VALID_IP_VERSIONS="$DEFAULT_IP_VERSIONS"
+  VALID_MATCHING_TARGETS="$DEFAULT_MATCHING_TARGETS"
+
+  # Check if schema has any values not in our defaults
+  for action in $SCHEMA_ACTIONS; do
+    if ! echo "$DEFAULT_ACTIONS" | grep -qw "$action"; then
+      warn "Device schema has unknown action '$action' - adding to valid list"
+      VALID_ACTIONS="$VALID_ACTIONS $action"
+    fi
+  done
+  for proto in $SCHEMA_PROTOCOLS; do
+    if ! echo "$DEFAULT_PROTOCOLS" | grep -qw "$proto"; then
+      warn "Device schema has unknown protocol '$proto' - adding to valid list"
+      VALID_PROTOCOLS="$VALID_PROTOCOLS $proto"
+    fi
+  done
+  for ipv in $SCHEMA_IP_VERSIONS; do
+    if ! echo "$DEFAULT_IP_VERSIONS" | grep -qw "$ipv"; then
+      warn "Device schema has unknown ip_version '$ipv' - adding to valid list"
+      VALID_IP_VERSIONS="$VALID_IP_VERSIONS $ipv"
+    fi
+  done
+  for target in $SCHEMA_MATCHING_TARGETS; do
+    if ! echo "$DEFAULT_MATCHING_TARGETS" | grep -qw "$target"; then
+      warn "Device schema has unknown matching_target '$target' - adding to valid list"
+      VALID_MATCHING_TARGETS="$VALID_MATCHING_TARGETS $target"
+    fi
+  done
+
+  # Get valid field names for firewall_policy
+  VALID_POLICY_FIELDS=$(jq -r '.firewall_policy // [] | .[]' "$MONGODB_FIELDS" 2>/dev/null || echo "")
+
+  echo "    Zones from device: $VALID_ZONES"
+elif [[ -f $MONGODB_EXAMPLES ]]; then
+  # Fallback to examples file
+  VALID_ZONES=$(jq -r '.firewall_zones_all // [] | .[].zone_key // empty' "$MONGODB_EXAMPLES" | tr '\n' ' ')
+  VALID_ZONES="${VALID_ZONES:-$DEFAULT_ZONES}"
+  VALID_ACTIONS="$DEFAULT_ACTIONS"
+  VALID_PROTOCOLS="$DEFAULT_PROTOCOLS"
+  VALID_IP_VERSIONS="$DEFAULT_IP_VERSIONS"
+  VALID_MATCHING_TARGETS="$DEFAULT_MATCHING_TARGETS"
+  VALID_POLICY_FIELDS=$(jq -r '.firewall_policy // [] | .[]' "$MONGODB_FIELDS" 2>/dev/null || echo "")
+
+  echo "    Zones from examples: $VALID_ZONES"
+else
+  warn "No device schema found - using default validation values"
+  VALID_ZONES="$DEFAULT_ZONES"
+  VALID_ACTIONS="$DEFAULT_ACTIONS"
+  VALID_PROTOCOLS="$DEFAULT_PROTOCOLS"
+  VALID_IP_VERSIONS="$DEFAULT_IP_VERSIONS"
+  VALID_MATCHING_TARGETS="$DEFAULT_MATCHING_TARGETS"
+  VALID_POLICY_FIELDS=""
+
+  echo "    Using defaults (no schema)"
+fi
+
+for policy_name in $(echo "$CONFIG" | jq -r '.firewallPolicies // {} | keys[]'); do
+  policy=$(echo "$CONFIG" | jq -c ".firewallPolicies[\"$policy_name\"]")
+
+  # Check required fields
+  name=$(echo "$policy" | jq -r '.name // empty')
+  if [[ -z $name ]] || [[ $name == "null" ]]; then
+    error "Firewall policy '$policy_name': missing required field 'name'"
   fi
 
-  # Check protocol is valid
-  protocol=$(echo "$rule" | jq -r '.protocol // empty')
-  if [[ -n $protocol ]] && [[ $protocol != "null" ]]; then
-    case "$protocol" in
-    all | tcp | udp | tcp_udp | icmp | gre | esp | ah | sctp) ;;
-    *) error "Firewall rule '$rule_name': invalid protocol '$protocol'" ;;
-    esac
+  # Validate action
+  action=$(echo "$policy" | jq -r '.action // empty')
+  if [[ -n $action ]] && [[ $action != "null" ]]; then
+    if ! echo "$VALID_ACTIONS" | grep -qw "$action"; then
+      error "Firewall policy '$policy_name': invalid action '$action' (must be ALLOW, BLOCK, or REJECT)"
+    fi
+  fi
+
+  # Validate source zone
+  src_zone=$(echo "$policy" | jq -r '.source._zone_key // empty')
+  if [[ -n $src_zone ]] && [[ $src_zone != "null" ]]; then
+    if ! echo "$VALID_ZONES" | grep -qw "$src_zone"; then
+      error "Firewall policy '$policy_name': invalid source zone '$src_zone'"
+    fi
+  fi
+
+  # Validate destination zone
+  dst_zone=$(echo "$policy" | jq -r '.destination._zone_key // empty')
+  if [[ -n $dst_zone ]] && [[ $dst_zone != "null" ]]; then
+    if ! echo "$VALID_ZONES" | grep -qw "$dst_zone"; then
+      error "Firewall policy '$policy_name': invalid destination zone '$dst_zone'"
+    fi
+  fi
+
+  # Validate source matching_target
+  src_target=$(echo "$policy" | jq -r '.source.matching_target // empty')
+  if [[ -n $src_target ]] && [[ $src_target != "null" ]]; then
+    if ! echo "$VALID_MATCHING_TARGETS" | grep -qw "$src_target"; then
+      error "Firewall policy '$policy_name': invalid source matching_target '$src_target'"
+    fi
+  fi
+
+  # Validate destination matching_target
+  dst_target=$(echo "$policy" | jq -r '.destination.matching_target // empty')
+  if [[ -n $dst_target ]] && [[ $dst_target != "null" ]]; then
+    if ! echo "$VALID_MATCHING_TARGETS" | grep -qw "$dst_target"; then
+      error "Firewall policy '$policy_name': invalid destination matching_target '$dst_target'"
+    fi
+  fi
+
+  # Validate protocol
+  proto=$(echo "$policy" | jq -r '.protocol // empty')
+  if [[ -n $proto ]] && [[ $proto != "null" ]]; then
+    if ! echo "$VALID_PROTOCOLS" | grep -qw "$proto"; then
+      # Check if it's a numeric protocol (0-255)
+      if ! [[ $proto =~ ^[0-9]+$ ]] || [[ $proto -lt 0 ]] || [[ $proto -gt 255 ]]; then
+        error "Firewall policy '$policy_name': invalid protocol '$proto'"
+      fi
+    fi
+  fi
+
+  # Validate ip_version
+  ip_ver=$(echo "$policy" | jq -r '.ip_version // empty')
+  if [[ -n $ip_ver ]] && [[ $ip_ver != "null" ]]; then
+    if ! echo "$VALID_IP_VERSIONS" | grep -qw "$ip_ver"; then
+      error "Firewall policy '$policy_name': invalid ip_version '$ip_ver'"
+    fi
+  fi
+
+  # Validate index range (user policies should be 0-29999)
+  idx=$(echo "$policy" | jq -r '.index // empty')
+  if [[ -n $idx ]] && [[ $idx != "null" ]]; then
+    if [[ $idx -ge 30000 ]]; then
+      warn "Firewall policy '$policy_name': index $idx >= 30000 may conflict with system rules"
+    fi
+  fi
+
+  # Check network references exist
+  for net_ref in $(echo "$policy" | jq -r '.source._network_names // [] | .[]'); do
+    if ! echo "$CONFIG" | jq -e ".networks[\"$net_ref\"]" &>/dev/null; then
+      error "Firewall policy '$policy_name': source references non-existent network '$net_ref'"
+    fi
+  done
+
+  for net_ref in $(echo "$policy" | jq -r '.destination._network_names // [] | .[]'); do
+    if ! echo "$CONFIG" | jq -e ".networks[\"$net_ref\"]" &>/dev/null; then
+      error "Firewall policy '$policy_name': destination references non-existent network '$net_ref'"
+    fi
+  done
+
+  # Validate field names against schema (if available)
+  if [[ -n $VALID_POLICY_FIELDS ]]; then
+    for field in $(echo "$policy" | jq -r 'keys[]'); do
+      [[ $field == "_"* ]] && continue     # Skip internal fields
+      [[ $field == "source" ]] && continue # Nested objects handled separately
+      [[ $field == "destination" ]] && continue
+      [[ $field == "schedule" ]] && continue
+      if ! echo "$VALID_POLICY_FIELDS" | grep -qxF "$field"; then
+        warn "Firewall policy '$policy_name': unknown field '$field' (not in device schema)"
+      fi
+    done
   fi
 done
 

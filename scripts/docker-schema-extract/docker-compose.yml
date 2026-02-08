@@ -1,0 +1,52 @@
+version: "3.8"
+# Docker Compose for extracting UniFi MongoDB schema
+# Usage: ./extract-from-docker.sh [version]
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: unifi-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=unifi
+      - MONGO_INITDB_ROOT_PASSWORD=unifi
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  unifi:
+    image: lscr.io/linuxserver/unifi-network-application:${UNIFI_VERSION:-latest}
+    container_name: unifi-app
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - MONGO_USER=unifi
+      - MONGO_PASS=unifi
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DBNAME=unifi
+      - MONGO_AUTHSOURCE=admin
+      # Skip wizard for faster startup (we just need schema)
+      - MEM_LIMIT=512
+    volumes:
+      - unifi_data:/config
+    ports:
+      - "8443:8443" # Web UI
+      - "8080:8080" # Device inform
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fkL", "https://localhost:8443"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+volumes:
+  mongodb_data:
+  unifi_data:

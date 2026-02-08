@@ -4,379 +4,404 @@
 # shellcheck disable=SC2154  # $oid is a MongoDB field name, not a shell variable
 set -euo pipefail
 
+# =============================================================================
+# Configuration
+# =============================================================================
+
 CONFIG_JSON="${1:-}"
 HOST="${2:-}"
-DRY_RUN="${DRY_RUN:-false}"
-SSH_USER="${SSH_USER:-root}"
-ALLOW_DELETES="${ALLOW_DELETES:-false}"
-SKIP_SCHEMA_CACHE="${SKIP_SCHEMA_CACHE:-false}"
+export HOST
+
+export DRY_RUN="${DRY_RUN:-false}"
+export SSH_USER="${SSH_USER:-root}"
+export ALLOW_DELETES="${ALLOW_DELETES:-false}"
+export SKIP_SCHEMA_CACHE="${SKIP_SCHEMA_CACHE:-false}"
+export AUTO_CONFIRM="${AUTO_CONFIRM:-false}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BACKUP_DIR="${UNIFI_BACKUP_DIR:-$HOME/.local/share/unifi-nix/backups}"
 
-if [[ -z $CONFIG_JSON ]] || [[ -z $HOST ]]; then
-  echo "Usage: unifi-deploy <config.json> <host>"
-  echo ""
-  echo "Arguments:"
-  echo "  config.json  Path to generated config JSON (from unifi-eval)"
-  echo "  host         UDM IP address or hostname"
-  echo ""
-  echo "Environment:"
-  echo "  DRY_RUN=true                  Show commands without executing"
-  echo "  SSH_USER=root                 SSH username (default: root)"
-  echo "  ALLOW_DELETES=true            Delete resources not in config"
-  echo "  UNIFI_SECRETS_DIR=path        Directory containing secret files"
-  echo "  SKIP_SCHEMA_CACHE=true        Skip device schema caching"
-  echo "  SKIP_SCHEMA_VALIDATION=true   Deploy even if OpenAPI schema missing"
-  echo ""
-  echo "Example:"
-  echo "  unifi-eval ./sites/mysite.nix > config.json"
-  echo "  unifi-deploy config.json 192.168.1.1"
-  exit 1
-fi
+# =============================================================================
+# Source Libraries
+# =============================================================================
 
-if [[ ! -f $CONFIG_JSON ]]; then
-  echo "Error: Config file not found: $CONFIG_JSON"
-  exit 1
-fi
+# shellcheck source=lib/deploy/utils.sh
+source "$SCRIPT_DIR/lib/deploy/utils.sh"
+# shellcheck source=lib/deploy/schema.sh
+source "$SCRIPT_DIR/lib/deploy/schema.sh"
+# shellcheck source=lib/deploy/backup.sh
+source "$SCRIPT_DIR/lib/deploy/backup.sh"
+# shellcheck source=lib/deploy/resources.sh
+source "$SCRIPT_DIR/lib/deploy/resources.sh"
+# shellcheck source=lib/deploy/cleanup.sh
+source "$SCRIPT_DIR/lib/deploy/cleanup.sh"
 
-echo "=== UniFi Declarative Deploy ==="
-echo "Host: $HOST"
-[[ $DRY_RUN == "true" ]] && echo "Mode: DRY RUN"
-echo ""
+# =============================================================================
+# Usage
+# =============================================================================
 
-# Extract and cache device schemas on first run
-if [[ $SKIP_SCHEMA_CACHE != "true" ]] && [[ -x "$SCRIPT_DIR/extract-device-schema.sh" ]]; then
-  DEVICE_SCHEMA_DIR=$("$SCRIPT_DIR/extract-device-schema.sh" "$HOST" "$SSH_USER" 2>/dev/null | tail -1) || true
-  if [[ -n $DEVICE_SCHEMA_DIR ]] && [[ -d $DEVICE_SCHEMA_DIR ]]; then
-    echo "Device schemas: $DEVICE_SCHEMA_DIR"
-    export UNIFI_DEVICE_SCHEMA_DIR="$DEVICE_SCHEMA_DIR"
+show_usage() {
+  cat <<EOF
+Usage: unifi-deploy <config.json> <host>
 
-    # Check if OpenAPI schema exists for this version
-    DEVICE_VERSION=$(cat "$DEVICE_SCHEMA_DIR/version" 2>/dev/null || echo "unknown")
-    OPENAPI_SCHEMA_DIR="$SCRIPT_DIR/../schemas/$DEVICE_VERSION"
+Arguments:
+  config.json  Path to generated config JSON (from unifi-eval)
+  host         UDM IP address or hostname
 
-    if [[ ! -f "$OPENAPI_SCHEMA_DIR/integration.json" ]]; then
-      echo ""
-      echo "ERROR: OpenAPI schema not found for version $DEVICE_VERSION"
-      echo ""
-      echo "Your device is running a version that isn't in the schema repository yet."
-      echo "This can happen if:"
-      echo "  1. Your device was recently upgraded"
-      echo "  2. The CI pipeline hasn't extracted the new schema yet"
-      echo ""
-      echo "Options:"
-      echo "  1. Wait for CI to extract the schema (runs every 6 hours)"
-      echo "  2. Extract manually: ./scripts/extract-schema.sh $HOST"
-      echo "  3. Skip validation: SKIP_SCHEMA_VALIDATION=true ./scripts/deploy.sh ..."
-      echo ""
+Environment:
+  DRY_RUN=true                  Show commands without executing
+  SSH_USER=root                 SSH username (default: root)
+  ALLOW_DELETES=true            Delete resources not in config
+  UNIFI_SECRETS_DIR=path        Directory containing secret files
+  SKIP_SCHEMA_CACHE=true        Skip device schema caching
+  SKIP_SCHEMA_VALIDATION=true   Deploy even if OpenAPI schema missing
+  ALLOW_UNSAFE_CREATE=true      Create resources without schema defaults (dangerous!)
+  SKIP_BACKUP=true              Skip automatic backup before deploy
+  AUTO_CONFIRM=true             Skip confirmation prompt (for CI/automation)
+  UNIFI_BACKUP_DIR=path         Custom backup directory
 
-      if [[ ${SKIP_SCHEMA_VALIDATION:-false} != "true" ]]; then
-        exit 1
-      else
-        echo "WARNING: Proceeding without OpenAPI validation (SKIP_SCHEMA_VALIDATION=true)"
-      fi
-    else
-      echo "OpenAPI schema: $OPENAPI_SCHEMA_DIR"
-      export UNIFI_OPENAPI_SCHEMA_DIR="$OPENAPI_SCHEMA_DIR"
-    fi
+Example:
+  unifi-eval ./sites/mysite.nix > config.json
+  unifi-deploy config.json 192.168.1.1
+EOF
+}
+
+# =============================================================================
+# Pre-flight Checks
+# =============================================================================
+
+# Verify zone-based firewall is enabled if policies are defined
+check_zone_firewall() {
+  local desired="$1"
+
+  local policy_count
+  policy_count=$(echo "$desired" | jq '.firewallPolicies | length')
+
+  if [[ $policy_count -eq 0 ]]; then
+    return 0
   fi
-  echo ""
-fi
 
-# Validate configuration before deploying
-if [[ -n ${UNIFI_OPENAPI_SCHEMA_DIR:-} ]] && [[ -n ${UNIFI_DEVICE_SCHEMA_DIR:-} ]]; then
-  if [[ -x "$SCRIPT_DIR/validate-config.sh" ]]; then
-    echo "=== Validating Configuration ==="
-    if ! "$SCRIPT_DIR/validate-config.sh" "$CONFIG_JSON" "$UNIFI_OPENAPI_SCHEMA_DIR" "$UNIFI_DEVICE_SCHEMA_DIR"; then
-      echo ""
-      echo "Configuration validation failed. Fix the errors above before deploying."
-      echo ""
-      echo "To skip validation (not recommended):"
-      echo "  SKIP_SCHEMA_VALIDATION=true ./scripts/deploy.sh ..."
-      exit 1
-    fi
+  echo ""
+  echo "=== Pre-flight Check: Zone-Based Firewall ==="
+  echo "  Config contains $policy_count firewall policy(ies)"
+  echo "  Checking if zone-based firewall is enabled on UDM..."
+
+  local zone_count
+  zone_count=$(fetch_mongo 'db.firewall_zone.count()' || echo "0")
+
+  if [[ $zone_count -eq 0 ]]; then
     echo ""
+    echo "ERROR: Zone-based firewall is NOT enabled on the UDM!"
+    echo ""
+    echo "Your configuration defines firewall policies, but the UDM is still using"
+    echo "the legacy firewall system. Deploying would fail or cause undefined behavior."
+    echo ""
+    echo "To enable zone-based firewall:"
+    echo "  1. Open UniFi Network UI: https://$HOST"
+    echo "  2. Go to: Settings > Firewall & Security"
+    echo "  3. Click 'Upgrade to Zone-Based Firewall'"
+    echo "  4. Re-run this deploy command"
+    echo ""
+    echo "Note: This is a one-way upgrade. After enabling, you cannot revert to"
+    echo "the legacy firewall system."
+    echo ""
+    return 1
   fi
-elif [[ ${SKIP_SCHEMA_VALIDATION:-false} != "true" ]]; then
-  echo "WARNING: Skipping validation (schemas not available)"
-  echo ""
-fi
 
-DESIRED=$(cat "$CONFIG_JSON")
+  echo "  Zone-based firewall is enabled ($zone_count zones found)"
+  return 0
+}
 
-run_mongo() {
-  local cmd="$1"
+# =============================================================================
+# Site Info Fetching
+# =============================================================================
+
+fetch_site_info() {
+  echo "Fetching site info..."
+
+  local site_info
+  site_info=$(fetch_mongo 'JSON.stringify(db.site.findOne({name: "default"}))')
+  SITE_ID=$(echo "$site_info" | jq -r '._id."$oid"')
+  export SITE_ID
+  echo "Site ID: $SITE_ID"
+
+  # Get default usergroup_id for WiFi networks
+  USERGROUP_ID=$(fetch_mongo "var g = db.usergroup.findOne({site_id: \"$SITE_ID\"}); print(g ? g._id.str : \"\")")
+  export USERGROUP_ID
+  echo "UserGroup ID: ${USERGROUP_ID:-none}"
+
+  # Build network name -> id mapping
+  echo "Building network mappings..."
+  NETWORK_MAP=$(fetch_mongo 'JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
+    m[n.name] = n._id.str || n._id.toString();
+    return m;
+  }, {}))')
+  export NETWORK_MAP
+}
+
+# Refresh network mapping (after creating networks)
+refresh_network_map() {
   if [[ $DRY_RUN == "true" ]]; then
-    echo "[DRY RUN] mongo: ${cmd:0:80}..."
+    return 0
+  fi
+
+  NETWORK_MAP=$(fetch_mongo 'JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
+    m[n.name] = n._id.str || n._id.toString();
+    return m;
+  }, {}))')
+  export NETWORK_MAP
+}
+
+# =============================================================================
+# VPN Deployment (special handling)
+# =============================================================================
+
+deploy_vpn() {
+  local desired="$1"
+  local site_id="$2"
+
+  echo ""
+  echo "=== Applying VPN Configuration ==="
+
+  # WireGuard Server
+  local wg_enabled
+  wg_enabled=$(echo "$desired" | jq -r '.vpn.wireguard.server.wg_enabled // false')
+
+  if [[ $wg_enabled == "true" ]]; then
+    echo "Configuring WireGuard server..."
+    local wg_config
+    wg_config=$(echo "$desired" | jq -c ".vpn.wireguard.server + {site_id: \"$site_id\"} | del(.key)")
+
+    local existing_wg
+    existing_wg=$(fetch_mongo 'JSON.stringify(db.setting.findOne({key: "wireguard_server"}, {_id: 1}))' || echo "null")
+
+    if [[ $existing_wg == "null" ]] || [[ -z $existing_wg ]]; then
+      echo "  Creating WireGuard server setting"
+      run_mongo "db.setting.insertOne({key: \"wireguard_server\", $wg_config})"
+    else
+      local existing_id
+      existing_id=$(echo "$existing_wg" | jq -r '._id."$oid"')
+      echo "  Updating WireGuard server (id: ${existing_id:0:8}...)"
+      run_mongo "db.setting.updateOne({key: \"wireguard_server\"}, {\$set: $wg_config})"
+    fi
+
+    # WireGuard Peers
+    local peer_count
+    peer_count=$(echo "$desired" | jq '.vpn.wireguard.peers | length')
+    if [[ $peer_count -gt 0 ]]; then
+      echo "  Configuring $peer_count WireGuard peer(s)..."
+      for peer in $(echo "$desired" | jq -r '.vpn.wireguard.peers | keys[]'); do
+        local peer_config peer_name
+        peer_config=$(echo "$desired" | jq -c ".vpn.wireguard.peers[\"$peer\"]")
+        peer_name=$(echo "$peer_config" | jq -r '.name')
+        echo "    Processing peer: $peer_name"
+      done
+    fi
   else
-    ssh -o ConnectTimeout=10 "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '$cmd'"
+    echo "  WireGuard server not enabled"
+  fi
+
+  # Site-to-Site VPN
+  local s2s_count
+  s2s_count=$(echo "$desired" | jq '.vpn.siteToSite | length')
+
+  if [[ $s2s_count -gt 0 ]]; then
+    echo "Configuring $s2s_count site-to-site VPN tunnel(s)..."
+    for tunnel in $(echo "$desired" | jq -r '.vpn.siteToSite | keys[]'); do
+      local tunnel_config tunnel_name tunnel_type
+      tunnel_config=$(echo "$desired" | jq -c ".vpn.siteToSite[\"$tunnel\"]")
+      tunnel_name=$(echo "$tunnel_config" | jq -r '.name')
+      tunnel_type=$(echo "$tunnel_config" | jq -r '.vpn_type')
+      echo "  Processing: $tunnel_name ($tunnel_type)"
+
+      # Resolve PSK secret if needed
+      local psk_json
+      psk_json=$(echo "$tunnel_config" | jq -c '.x_psk // null')
+      if [[ $psk_json != "null" ]]; then
+        local psk
+        psk=$(resolve_json_secret "$psk_json" "VPN PSK") || {
+          echo "    Skipping tunnel due to secret resolution failure"
+          continue
+        }
+        tunnel_config=$(echo "$tunnel_config" | jq -c --arg psk "$psk" '.x_psk = $psk')
+      fi
+
+      echo "    Note: Site-to-site VPN requires manual configuration in UniFi UI"
+      echo "    Config prepared: $tunnel_name -> $(echo "$tunnel_config" | jq -r '.remote_host')"
+    done
+  else
+    echo "  No site-to-site VPN tunnels defined"
   fi
 }
 
-# Get site_id
-echo "Fetching site info..."
-SITE_INFO=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval 'JSON.stringify(db.site.findOne())'")
-SITE_ID=$(echo "$SITE_INFO" | jq -r '._id."$oid"')
-echo "Site ID: $SITE_ID"
+# =============================================================================
+# DPI Groups Deployment (special handling)
+# =============================================================================
 
-# Build network name -> id mapping
-echo "Building network mappings..."
-NETWORK_MAP=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
-  JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
-    m[n.name] = n._id.str || n._id.toString();
-    return m;
-  }, {}))
-"')
+deploy_dpi_groups() {
+  local desired="$1"
+  local site_id="$2"
 
-echo ""
-echo "=== Applying Networks ==="
+  echo ""
+  echo "=== Applying DPI Groups ==="
 
-for net in $(echo "$DESIRED" | jq -r '.networks | keys[]'); do
-  echo "Processing: $net"
-  desired_net=$(echo "$DESIRED" | jq -c ".networks[\"$net\"]")
-  existing_id=$(echo "$NETWORK_MAP" | jq -r ".[\"$net\"] // empty")
+  local count
+  count=$(echo "$desired" | jq '.dpiGroups | length')
 
-  if [[ -z $existing_id ]]; then
-    echo "  Creating new network"
-    insert_doc=$(echo "$desired_net" | jq -c ". + {site_id: \"$SITE_ID\"}")
-    run_mongo "db.networkconf.insertOne($insert_doc)"
-  else
-    echo "  Updating (id: ${existing_id:0:8}...)"
-    update_doc=$(echo "$desired_net" | jq -c 'del(.name)')
-    run_mongo "db.networkconf.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $update_doc})"
-  fi
-done
-
-# Refresh network map
-if [[ $DRY_RUN != "true" ]]; then
-  NETWORK_MAP=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
-    JSON.stringify(db.networkconf.find({}, {name: 1}).toArray().reduce(function(m, n) {
-      m[n.name] = n._id.str || n._id.toString();
-      return m;
-    }, {}))
-  "')
-fi
-
-echo ""
-echo "=== Applying WiFi ==="
-
-for wifi in $(echo "$DESIRED" | jq -r '.wifi | keys[]'); do
-  desired_wifi=$(echo "$DESIRED" | jq -c ".wifi[\"$wifi\"]")
-  ssid=$(echo "$desired_wifi" | jq -r '.name')
-  echo "Processing: $ssid"
-
-  # Resolve network reference
-  net_name=$(echo "$desired_wifi" | jq -r '._network_name')
-  net_id=$(echo "$NETWORK_MAP" | jq -r ".[\"$net_name\"] // empty")
-
-  if [[ -z $net_id ]]; then
-    echo "  WARNING: Network '$net_name' not found, skipping"
-    continue
+  if [[ $count -eq 0 ]]; then
+    echo "  (none defined)"
+    return 0
   fi
 
-  # Resolve passphrase
-  passphrase=$(echo "$desired_wifi" | jq -r '.x_passphrase')
-  if echo "$desired_wifi" | jq -e '.x_passphrase._secret' >/dev/null 2>&1; then
-    secret_path=$(echo "$desired_wifi" | jq -r '.x_passphrase._secret')
-    echo "  Resolving secret: $secret_path"
+  # Build category->app_ids mapping
+  echo "Building DPI category mappings..."
+  local dpi_category_map
+  dpi_category_map=$(fetch_mongo 'var apps = db.dpiapp.find({}, {_id: 1, cat: 1}).toArray();
+    var catMap = {};
+    apps.forEach(function(a) {
+      var cat = a.cat || "Unknown";
+      if (!catMap[cat]) catMap[cat] = [];
+      catMap[cat].push(a._id.str || a._id.toString());
+    });
+    print(JSON.stringify(catMap));' || echo "{}")
 
-    if [[ -n ${UNIFI_SECRETS_DIR:-} ]] && [[ -f "${UNIFI_SECRETS_DIR}/${secret_path}" ]]; then
-      passphrase=$(cat "${UNIFI_SECRETS_DIR}/${secret_path}")
-    else
-      # Try environment variable
-      env_var=$(echo "$secret_path" | tr '/' '_' | tr '[:lower:]' '[:upper:]')
-      passphrase="${!env_var:-}"
-    fi
-
-    if [[ -z $passphrase ]] || [[ $passphrase == "null" ]]; then
-      echo "  ERROR: Could not resolve secret '$secret_path'"
-      exit 1
-    fi
-  fi
-
-  wifi_doc=$(echo "$desired_wifi" | jq -c "
-    del(._network_name) |
-    .networkconf_id = \"$net_id\" |
-    .x_passphrase = \"$passphrase\" |
-    .site_id = \"$SITE_ID\"
-  ")
-
-  existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
-    JSON.stringify(db.wlanconf.findOne({name: \"$ssid\"}, {_id: 1}))
-  '" 2>/dev/null || echo "null")
-
-  if [[ $existing == "null" ]] || [[ -z $existing ]]; then
-    echo "  Creating new WiFi"
-    run_mongo "db.wlanconf.insertOne($wifi_doc)"
-  else
-    existing_id=$(echo "$existing" | jq -r '._id."$oid"')
-    echo "  Updating (id: ${existing_id:0:8}...)"
-    update_doc=$(echo "$wifi_doc" | jq -c 'del(.name, .site_id)')
-    run_mongo "db.wlanconf.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $update_doc})"
-  fi
-done
-
-echo ""
-echo "=== Applying Firewall Rules ==="
-
-rule_count=$(echo "$DESIRED" | jq '.firewallRules | length')
-if [[ $rule_count -gt 0 ]]; then
-  for rule in $(echo "$DESIRED" | jq -r '.firewallRules | keys[]'); do
-    desired_rule=$(echo "$DESIRED" | jq -c ".firewallRules[\"$rule\"]")
-    desc=$(echo "$desired_rule" | jq -r '.description')
-    echo "Processing: $desc"
-
-    rule_doc=$(echo "$desired_rule" | jq -c "
-      del(._source_networks, ._dest_networks) |
-      .site_id = \"$SITE_ID\"
-    ")
-
-    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
-      JSON.stringify(db.traffic_rule.findOne({description: \"$desc\"}, {_id: 1}))
-    '" 2>/dev/null || echo "null")
-
-    if [[ $existing == "null" ]] || [[ -z $existing ]]; then
-      echo "  Creating new rule"
-      run_mongo "db.traffic_rule.insertOne($rule_doc)"
-    else
-      existing_id=$(echo "$existing" | jq -r '._id."$oid"')
-      echo "  Updating"
-      run_mongo "db.traffic_rule.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $rule_doc})"
-    fi
-  done
-else
-  echo "  (none defined)"
-fi
-
-echo ""
-echo "=== Applying Port Forwards ==="
-
-pf_count=$(echo "$DESIRED" | jq '.portForwards | length')
-if [[ $pf_count -gt 0 ]]; then
-  for pf in $(echo "$DESIRED" | jq -r '.portForwards | keys[]'); do
-    desired_pf=$(echo "$DESIRED" | jq -c ".portForwards[\"$pf\"]")
-    name=$(echo "$desired_pf" | jq -r '.name')
+  for dpi in $(echo "$desired" | jq -r '.dpiGroups | keys[]'); do
+    local desired_dpi name
+    desired_dpi=$(echo "$desired" | jq -c ".dpiGroups[\"$dpi\"]")
+    name=$(echo "$desired_dpi" | jq -r '.name')
     echo "Processing: $name"
 
-    pf_doc=$(echo "$desired_pf" | jq -c ". + {site_id: \"$SITE_ID\"}")
+    # Get directly specified app IDs
+    local app_ids
+    app_ids=$(echo "$desired_dpi" | jq -c '.dpiapp_ids // []')
 
-    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
-      JSON.stringify(db.portforward.findOne({name: \"$name\"}, {_id: 1}))
-    '" 2>/dev/null || echo "null")
-
-    if [[ $existing == "null" ]] || [[ -z $existing ]]; then
-      echo "  Creating new port forward"
-      run_mongo "db.portforward.insertOne($pf_doc)"
-    else
-      existing_id=$(echo "$existing" | jq -r '._id."$oid"')
-      echo "  Updating (id: ${existing_id:0:8}...)"
-      update_doc=$(echo "$pf_doc" | jq -c 'del(.name, .site_id)')
-      run_mongo "db.portforward.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $update_doc})"
-    fi
-  done
-else
-  echo "  (none defined)"
-fi
-
-echo ""
-echo "=== Applying DHCP Reservations ==="
-
-dhcp_count=$(echo "$DESIRED" | jq '.dhcpReservations | length')
-if [[ $dhcp_count -gt 0 ]]; then
-  for res in $(echo "$DESIRED" | jq -r '.dhcpReservations | keys[]'); do
-    desired_res=$(echo "$DESIRED" | jq -c ".dhcpReservations[\"$res\"]")
-    mac=$(echo "$desired_res" | jq -r '.mac')
-    name=$(echo "$desired_res" | jq -r '.name')
-    echo "Processing: $name ($mac)"
-
-    # Resolve network reference
-    net_name=$(echo "$desired_res" | jq -r '._network_name')
-    net_id=$(echo "$NETWORK_MAP" | jq -r ".[\"$net_name\"] // empty")
-
-    if [[ -z $net_id ]]; then
-      echo "  WARNING: Network '$net_name' not found, skipping"
-      continue
+    # Resolve categories to app IDs
+    local categories
+    categories=$(echo "$desired_dpi" | jq -r '._categories // [] | .[]')
+    if [[ -n $categories ]]; then
+      for cat in $categories; do
+        local cat_app_ids
+        cat_app_ids=$(echo "$dpi_category_map" | jq -c ".\"$cat\" // []")
+        if [[ $cat_app_ids != "[]" ]]; then
+          app_ids=$(echo "[$app_ids, $cat_app_ids]" | jq -c 'flatten | unique')
+          echo "  Category '$cat': $(echo "$cat_app_ids" | jq 'length') apps"
+        else
+          echo "  WARNING: Category '$cat' not found or empty"
+        fi
+      done
     fi
 
-    res_doc=$(echo "$desired_res" | jq -c "
-      del(._network_name) |
-      .network_id = \"$net_id\" |
-      .site_id = \"$SITE_ID\"
+    local dpi_doc
+    dpi_doc=$(echo "$desired_dpi" | jq -c "
+      del(._categories) |
+      .dpiapp_ids = $app_ids |
+      .site_id = \"$site_id\"
     ")
 
-    existing=$(ssh "$SSH_USER@$HOST" "mongo --quiet --port 27117 ace --eval '
-      JSON.stringify(db.dhcp_option.findOne({mac: \"$mac\"}, {_id: 1}))
-    '" 2>/dev/null || echo "null")
+    local existing
+    existing=$(fetch_mongo "JSON.stringify(db.dpigroup.findOne({name: \"$name\"}, {_id: 1}))" || echo "null")
 
     if [[ $existing == "null" ]] || [[ -z $existing ]]; then
-      echo "  Creating new reservation"
-      run_mongo "db.dhcp_option.insertOne($res_doc)"
+      echo "  Creating new DPI group"
+      run_mongo "db.dpigroup.insertOne($dpi_doc)"
     else
+      local existing_id
       existing_id=$(echo "$existing" | jq -r '._id."$oid"')
-      echo "  Updating"
-      run_mongo "db.dhcp_option.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $res_doc})"
+      echo "  Updating (id: ${existing_id:0:8}...)"
+      local update_doc
+      update_doc=$(echo "$dpi_doc" | jq -c 'del(.name, .site_id)')
+      run_mongo "db.dpigroup.updateOne({_id: ObjectId(\"$existing_id\")}, {\$set: $update_doc})"
     fi
   done
-else
-  echo "  (none defined)"
-fi
+}
 
-# Handle deletions if enabled
-if [[ $ALLOW_DELETES == "true" ]]; then
+# =============================================================================
+# Main
+# =============================================================================
+
+main() {
+  # Validate arguments
+  if [[ -z $CONFIG_JSON ]] || [[ -z $HOST ]]; then
+    show_usage
+    exit 1
+  fi
+
+  if [[ ! -f $CONFIG_JSON ]]; then
+    echo "Error: Config file not found: $CONFIG_JSON"
+    exit 1
+  fi
+
+  echo "=== UniFi Declarative Deploy ==="
+  echo "Host: $HOST"
+  [[ $DRY_RUN == "true" ]] && echo "Mode: DRY RUN"
   echo ""
-  echo "=== Cleaning Up Orphaned Resources ==="
 
-  # Get desired resource names
-  desired_networks=$(echo "$DESIRED" | jq -r '.networks | keys[]')
-  desired_ssids=$(echo "$DESIRED" | jq -r '.wifi[].name')
-  desired_rules=$(echo "$DESIRED" | jq -r '.firewallRules[].description')
+  # Setup schemas and load defaults
+  setup_device_schemas "$HOST" "$SSH_USER" "$SCRIPT_DIR" || exit 1
+  load_schema_defaults
 
-  # Delete orphaned networks (except Default which is system-managed)
-  echo "Checking networks..."
-  current_networks=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
-    JSON.stringify(db.networkconf.find({}, {name: 1}).toArray())
-  "')
+  # Validate configuration
+  validate_configuration "$CONFIG_JSON" "$SCRIPT_DIR" || exit 1
 
-  for net in $(echo "$current_networks" | jq -r '.[].name'); do
-    [[ $net == "Default" ]] && continue
-    if ! echo "$desired_networks" | grep -qxF "$net"; then
-      net_id=$(echo "$current_networks" | jq -r ".[] | select(.name == \"$net\") | ._id[\"\\$oid\"] // ._id.str")
-      echo "  Deleting network: $net"
-      run_mongo "db.networkconf.deleteOne({_id: ObjectId(\"$net_id\")})"
-    fi
-  done
+  # Load desired config
+  local desired
+  desired=$(cat "$CONFIG_JSON")
 
-  # Delete orphaned WiFi networks
-  echo "Checking WiFi..."
-  current_wifi=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
-    JSON.stringify(db.wlanconf.find({}, {name: 1}).toArray())
-  "')
+  # Create backup
+  create_pre_deploy_backup "$HOST" "$SSH_USER" "$BACKUP_DIR" "${DEVICE_VERSION:-unknown}"
 
-  for ssid in $(echo "$current_wifi" | jq -r '.[].name'); do
-    if ! echo "$desired_ssids" | grep -qxF "$ssid"; then
-      wifi_id=$(echo "$current_wifi" | jq -r ".[] | select(.name == \"$ssid\") | ._id[\"\\$oid\"] // ._id.str")
-      echo "  Deleting WiFi: $ssid"
-      run_mongo "db.wlanconf.deleteOne({_id: ObjectId(\"$wifi_id\")})"
-    fi
-  done
+  # Confirm deployment
+  confirm_deployment "$desired" || exit 0
 
-  # Delete orphaned firewall rules
-  echo "Checking firewall rules..."
-  current_rules=$(ssh "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
-    JSON.stringify(db.traffic_rule.find({}, {description: 1}).toArray())
-  "')
+  # Fetch site info and mappings
+  fetch_site_info
 
-  for desc in $(echo "$current_rules" | jq -r '.[].description // empty'); do
-    [[ -z $desc ]] && continue
-    if ! echo "$desired_rules" | grep -qxF "$desc"; then
-      rule_id=$(echo "$current_rules" | jq -r ".[] | select(.description == \"$desc\") | ._id[\"\\$oid\"] // ._id.str")
-      echo "  Deleting rule: $desc"
-      run_mongo "db.traffic_rule.deleteOne({_id: ObjectId(\"$rule_id\")})"
-    fi
-  done
-fi
+  # Pre-flight: check zone-based firewall
+  check_zone_firewall "$desired" || exit 1
 
-echo ""
-echo "=== Complete ==="
-echo "Changes applied. They should take effect within 30 seconds."
-echo "If not, SSH to UDM and run: unifi-os restart"
+  # Deploy resources in order
+  deploy_networks "$desired" "$SITE_ID" || exit 1
+  refresh_network_map
+
+  deploy_wifi "$desired" "$SITE_ID" "$USERGROUP_ID" || exit 1
+
+  echo ""
+  echo "=== Firewall Rules (Legacy) ==="
+  echo "  (skipped - use firewall.policies instead)"
+
+  deploy_firewall_policies "$desired" "$SITE_ID" || exit 1
+
+  deploy_simple_resource "firewallGroups" "firewallgroup" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "apGroups" "apgroup" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "userGroups" "usergroup" "name" "$desired" "$SITE_ID"
+
+  deploy_traffic_rules "$desired" "$SITE_ID" || exit 1
+  deploy_radius_profiles "$desired" "$SITE_ID" || exit 1
+  deploy_port_profiles "$desired" "$SITE_ID" || exit 1
+  deploy_vpn "$desired" "$SITE_ID"
+  deploy_dpi_groups "$desired" "$SITE_ID"
+  deploy_port_forwards "$desired" "$SITE_ID" || exit 1
+  deploy_dhcp_reservations "$desired" "$SITE_ID" || exit 1
+
+  # Schema-generated collections
+  deploy_simple_resource "scheduledTasks" "scheduletask" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "wlanGroups" "wlangroup" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "alertSettings" "alert_setting" "key" "$desired" "$SITE_ID"
+  deploy_simple_resource "firewallZones" "firewall_zone" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "dohServers" "doh_servers" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "sslInspectionProfiles" "ssl_inspection_profile" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "dashboards" "dashboard" "name" "$desired" "$SITE_ID"
+  deploy_simple_resource "diagnosticsConfig" "diagnostics_config" "key" "$desired" "$SITE_ID"
+
+  deploy_global_settings "$desired" "$SITE_ID"
+
+  # Cleanup orphaned resources
+  cleanup_orphaned_resources "$desired"
+
+  echo ""
+  echo "=== Complete ==="
+  echo "Changes applied. They should take effect within 30 seconds."
+  echo "If not, SSH to UDM and run: unifi-os restart"
+}
+
+main "$@"

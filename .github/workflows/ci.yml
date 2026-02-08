@@ -6,94 +6,54 @@ on:
     branches: [main]
 jobs:
   check:
-    name: Nix Flake Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v27
         with:
-          nix_path: nixpkgs=channel:nixos-unstable
+          nix_path: nixpkgs=channel:nixos-24.11
           extra_nix_config: |
             experimental-features = nix-command flakes
-            accept-flake-config = true
       - uses: cachix/cachix-action@v15
         with:
-          name: nix-community
+          name: unifi-nix
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+        continue-on-error: true
       - name: Check flake
-        run: nix flake check --print-build-logs
-  format:
-    name: Formatting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      - name: Check Nix formatting
+        run: nix flake check --no-build
+      - name: Build checks
+        run: nix build .#checks.x86_64-linux.formatting .#checks.x86_64-linux.statix .#checks.x86_64-linux.deadnix
+      - name: Run all tests
         run: |
-          nix develop .#ci --command treefmt --fail-on-change
-  lint:
-    name: Linting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      - name: Run statix
-        run: nix develop .#ci --command statix check .
-      - name: Run deadnix
-        run: nix develop .#ci --command deadnix --fail .
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      - name: Run tests
-        run: nix flake check --print-build-logs
-  build:
-    name: Build (${{ matrix.system }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - system: x86_64-linux
-            os: ubuntu-latest
-          - system: x86_64-darwin
-            os: macos-latest
-          - system: aarch64-darwin
-            os: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
+          nix build .#checks.x86_64-linux.example-eval
+          nix build .#checks.x86_64-linux.module-structure
+          nix build .#checks.x86_64-linux.schema-loading
+          nix build .#checks.x86_64-linux.schema-validation
+          nix build .#checks.x86_64-linux.full-config-eval
+          nix build .#checks.x86_64-linux.to-mongo-conversion
+          nix build .#checks.x86_64-linux.schema-generated-collections
       - name: Build packages
         run: |
-          nix build .#packages.${{ matrix.system }}.default --print-build-logs
-          nix build .#packages.${{ matrix.system }}.deploy --print-build-logs
-          nix build .#packages.${{ matrix.system }}.diff --print-build-logs
-          nix build .#packages.${{ matrix.system }}.eval --print-build-logs
-  eval-example:
-    name: Evaluate Example Config
+          nix build .#deploy
+          nix build .#diff
+          nix build .#eval
+          nix build .#validate
+          nix build .#restore
+          nix build .#drift-detect
+          nix build .#multi-site
+          nix build .#schema-diff
+          nix build .#generate-module
+          nix build .#generate-schema
+          nix build .#extract-schema
+          nix build .#unifi
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
         with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      - name: Evaluate example configuration
-        run: |
-          # Build the example-eval check from the flake
-          nix build .#checks.x86_64-linux.example-eval --print-build-logs
-          echo "Example configuration evaluated successfully"
+          scandir: "./scripts"
+          severity: warning
+          # Note: Some warnings are acceptable (SC1091 for sourced files, SC2029 for SSH)
+          # Run locally with: nix-shell -p shellcheck --run "shellcheck scripts/*.sh"

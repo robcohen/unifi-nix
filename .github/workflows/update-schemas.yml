@@ -1,17 +1,27 @@
 name: Update UniFi Schemas
 on:
   schedule:
-    # Run every 6 hours
-    - cron: "0 */6 * * *"
+    # Run weekly on Sunday at midnight
+    - cron: "0 0 * * 0"
   workflow_dispatch:
     inputs:
       force:
         description: "Force extraction even if version exists"
         required: false
         default: "false"
+      version:
+        description: "Specific version to extract (leave empty for latest)"
+        required: false
+        default: ""
+env:
+  MONGO_USER: unifi
+  MONGO_PASS: unifi
 jobs:
-  check-and-extract:
+  extract-schemas:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+      needs_update: ${{ steps.check-version.outputs.needs_extraction }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,17 +31,22 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y jq curl
-      - name: Check for new UniFi Network Application version
+      - name: Check for new UniFi version
         id: check-version
         run: |
-          # Get latest version from Docker Hub
-          LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/linuxserver/unifi-network-application/tags?page_size=100" | \
-            jq -r '.results[].name' | \
-            grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | \
-            sort -V | \
-            tail -1)
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            LATEST_TAG="${{ github.event.inputs.version }}"
+            echo "Using specified version: $LATEST_TAG"
+          else
+            # Get latest version from Docker Hub
+            LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/linuxserver/unifi-network-application/tags?page_size=100" | \
+              jq -r '.results[].name' | \
+              grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | \
+              sort -V | \
+              tail -1)
+            echo "Latest Docker tag: $LATEST_TAG"
+          fi
 
-          echo "Latest Docker tag: $LATEST_TAG"
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
 
           # Check if we already have this version
@@ -42,17 +57,50 @@ jobs:
             echo "New version detected or force extraction requested"
             echo "needs_extraction=true" >> $GITHUB_OUTPUT
           fi
-      - name: Start MongoDB container
+      - name: Create Docker network
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: docker network create unifi-extract
+      - name: Start MongoDB
         if: steps.check-version.outputs.needs_extraction == 'true'
         run: |
-          docker network create unifi-extract
           docker run -d --name mongo \
             --network unifi-extract \
-            -e MONGO_INITDB_DATABASE=unifi \
+            -e MONGO_INITDB_ROOT_USERNAME=$MONGO_USER \
+            -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS \
+            -p 27017:27017 \
             mongo:7.0
 
-          echo "Waiting for MongoDB to start..."
-          sleep 10
+          echo "Waiting for MongoDB..."
+          for i in {1..30}; do
+            if docker exec mongo mongosh --eval "db.adminCommand('ping')" &>/dev/null; then
+              echo "MongoDB is ready"
+              break
+            fi
+            sleep 2
+          done
+      - name: Initialize MongoDB for UniFi
+        if: steps.check-version.outputs.needs_extraction == 'true'
+        run: |
+          docker exec mongo mongosh -u $MONGO_USER -p $MONGO_PASS --authenticationDatabase admin --eval '
+            db = db.getSiblingDB("unifi");
+            db.createUser({
+              user: "unifi",
+              pwd: "unifi",
+              roles: [
+                { role: "dbOwner", db: "unifi" },
+                { role: "readWrite", db: "unifi" }
+              ]
+            });
+            db = db.getSiblingDB("unifi_stat");
+            db.createUser({
+              user: "unifi",
+              pwd: "unifi",
+              roles: [
+                { role: "dbOwner", db: "unifi_stat" },
+                { role: "readWrite", db: "unifi_stat" }
+              ]
+            });
+          '
       - name: Start UniFi Network Application
         if: steps.check-version.outputs.needs_extraction == 'true'
         run: |
@@ -62,20 +110,27 @@ jobs:
             --network unifi-extract \
             -e PUID=1000 \
             -e PGID=1000 \
+            -e TZ=UTC \
+            -e MONGO_USER=unifi \
+            -e MONGO_PASS=unifi \
             -e MONGO_HOST=mongo \
             -e MONGO_PORT=27017 \
             -e MONGO_DBNAME=unifi \
+            -e MONGO_AUTHSOURCE=admin \
+            -e MEM_LIMIT=512 \
             -p 8443:8443 \
-            "linuxserver/unifi-network-application:${VERSION}"
+            -p 8080:8080 \
+            "lscr.io/linuxserver/unifi-network-application:${VERSION}"
 
-          echo "Waiting for UniFi Network Application to initialize..."
-          echo "This may take 2-3 minutes..."
+          echo "Waiting for UniFi to initialize (this may take 3-5 minutes)..."
 
-          MAX_WAIT=180
+          MAX_WAIT=300
           WAITED=0
           while [[ $WAITED -lt $MAX_WAIT ]]; do
-            if curl -sk "https://localhost:8443/api-docs/integration.json" 2>/dev/null | jq -e '.info.version' &>/dev/null; then
-              echo "Application is ready!"
+            # Check if site collection exists (indicates initialization complete)
+            if docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+              --quiet --eval "db.site.countDocuments()" 2>/dev/null | grep -q "^[0-9]"; then
+              echo "UniFi initialized!"
               break
             fi
             sleep 10
@@ -84,86 +139,230 @@ jobs:
           done
 
           if [[ $WAITED -ge $MAX_WAIT ]]; then
-            echo "ERROR: Timeout waiting for UniFi Network Application"
+            echo "ERROR: Timeout waiting for UniFi initialization"
             docker logs unifi | tail -100
             exit 1
           fi
-      - name: Extract OpenAPI schema
+
+          # Additional wait for API to be ready
+          sleep 30
+      - name: Extract schemas
         if: steps.check-version.outputs.needs_extraction == 'true'
+        id: extract
         run: |
-          # Fetch the OpenAPI spec
-          curl -sk "https://localhost:8443/api-docs/integration.json" > /tmp/integration.json
+          # Detect version from MongoDB
+          DETECTED_VERSION=$(docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval "db.version_history.find().sort({_id:-1}).limit(1).toArray()[0]?.version || 'unknown'" 2>/dev/null | tr -d '"' || echo "unknown")
 
-          # Get version from spec
-          SPEC_VERSION=$(jq -r '.info.version' /tmp/integration.json)
-          echo "Extracted version: $SPEC_VERSION"
+          if [[ $DETECTED_VERSION == "unknown" ]]; then
+            DETECTED_VERSION="${{ steps.check-version.outputs.latest_tag }}"
+          fi
+          echo "Detected version: $DETECTED_VERSION"
+          echo "version=$DETECTED_VERSION" >> $GITHUB_OUTPUT
 
-          # Create schema directory
-          SCHEMA_DIR="schemas/$SPEC_VERSION"
+          SCHEMA_DIR="schemas/$DETECTED_VERSION"
           mkdir -p "$SCHEMA_DIR"
 
-          # Save the spec
-          cp /tmp/integration.json "$SCHEMA_DIR/integration.json"
+          # 1. Extract OpenAPI spec
+          echo "Extracting OpenAPI spec..."
+          if curl -sk "https://localhost:8443/api-docs/integration.json" -o "$SCHEMA_DIR/integration.json" 2>/dev/null; then
+            echo "  Saved: integration.json"
+          else
+            echo "  Warning: Could not fetch integration.json"
+          fi
 
-          # Extract metadata
-          jq '{
-            version: .info.version,
-            title: .info.title,
-            description: .info.description,
-            paths: (.paths | keys | length),
-            schemas: (.components.schemas | keys | length),
-            source: "github-actions",
-            extractedAt: now | strftime("%Y-%m-%dT%H:%M:%SZ")
-          }' /tmp/integration.json > "$SCHEMA_DIR/metadata.json"
+          # 2. Extract MongoDB collections list
+          echo "Extracting collection list..."
+          docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval "JSON.stringify(db.getCollectionNames())" > "$SCHEMA_DIR/collections.json"
 
-          # Extract schema names
-          jq '.components.schemas | keys' /tmp/integration.json > "$SCHEMA_DIR/schema-names.json"
-
-          # Extract API paths
-          jq '.paths | keys' /tmp/integration.json > "$SCHEMA_DIR/api-paths.json"
-
-          # Extract required fields
-          jq '
-          .components.schemas | to_entries | map(
-            select(.value.required != null) |
-            {
-              name: .key,
-              required: .value.required,
-              properties: (.value.properties | keys)
+          # 3. Extract field schemas
+          echo "Extracting field schemas..."
+          docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval '
+          var collections = db.getCollectionNames();
+          var schemas = {};
+          collections.forEach(function(coll) {
+            if (coll.startsWith("system.")) return;
+            var fields = [];
+            var sample = db[coll].findOne();
+            if (sample) {
+              Object.keys(sample).forEach(function(key) {
+                fields.push(key);
+              });
             }
-          )' /tmp/integration.json > "$SCHEMA_DIR/required-fields.json"
+            if (fields.length > 0) {
+              schemas[coll] = fields;
+            }
+          });
+          JSON.stringify(schemas, null, 2);
+          ' > "$SCHEMA_DIR/mongodb-fields.json"
+
+          # 4. Extract example documents
+          echo "Extracting example documents..."
+          docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval '
+          var keyCollections = [
+            "networkconf", "wlanconf", "portforward", "firewall_policy", "firewall_zone",
+            "firewallgroup", "traffic_rule", "radiusprofile", "portconf", "apgroup",
+            "usergroup", "dpigroup", "scheduletask", "wlangroup", "dhcp_option",
+            "setting", "site", "device"
+          ];
+          var examples = {};
+          keyCollections.forEach(function(coll) {
+            var doc = db[coll].findOne();
+            if (doc) {
+              delete doc.x_passphrase;
+              delete doc.x_password;
+              delete doc.x_psk;
+              delete doc.x_secret;
+              examples[coll] = doc;
+            }
+          });
+          JSON.stringify(examples, null, 2);
+          ' > "$SCHEMA_DIR/mongodb-examples.json"
+
+          # 5. Extract enums from MongoDB data
+          echo "Extracting enums from data..."
+          docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval '
+          var enums = {
+            zone_keys: db.firewall_zone.distinct("zone_key").filter(x => x),
+            network_purposes: db.networkconf.distinct("purpose").filter(x => x),
+            network_groups: db.networkconf.distinct("networkgroup").filter(x => x),
+            wifi_security: db.wlanconf.distinct("security").filter(x => x),
+            wifi_wpa_modes: db.wlanconf.distinct("wpa_mode").filter(x => x),
+            wifi_pmf_modes: db.wlanconf.distinct("pmf_mode").filter(x => x),
+            policy_actions: db.firewall_policy.distinct("action").filter(x => x),
+            setting_keys: db.setting.distinct("key").filter(x => x)
+          };
+          JSON.stringify(enums, null, 2);
+          ' > "$SCHEMA_DIR/enums.json"
+
+          # 6. Extract collection stats
+          echo "Extracting statistics..."
+          docker exec mongo mongosh -u unifi -p unifi --authenticationDatabase admin unifi \
+            --quiet --eval '
+          var stats = db.getCollectionNames()
+            .filter(c => !c.startsWith("system."))
+            .map(c => ({ name: c, count: db[c].countDocuments() }))
+            .filter(s => s.count > 0)
+            .sort((a,b) => b.count - a.count);
+          JSON.stringify(stats, null, 2);
+          ' > "$SCHEMA_DIR/mongodb-stats.json"
+
+          # 7. Save version
+          echo "$DETECTED_VERSION" > "$SCHEMA_DIR/version"
 
           echo "schema_dir=$SCHEMA_DIR" >> $GITHUB_OUTPUT
-          echo "spec_version=$SPEC_VERSION" >> $GITHUB_OUTPUT
-        id: extract
+          echo "Schema extraction complete!"
+          ls -la "$SCHEMA_DIR"
       - name: Cleanup containers
         if: always() && steps.check-version.outputs.needs_extraction == 'true'
         run: |
           docker rm -f unifi mongo || true
           docker network rm unifi-extract || true
-      - name: Commit and push changes
+      - name: Upload schema artifacts
         if: steps.check-version.outputs.needs_extraction == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: schemas-${{ steps.extract.outputs.version }}
+          path: schemas/${{ steps.extract.outputs.version }}
+  generate-from-schemas:
+    needs: extract-schemas
+    if: needs.extract-schemas.outputs.needs_update == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download schema artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: schemas-${{ needs.extract-schemas.outputs.version }}
+          path: schemas/${{ needs.extract-schemas.outputs.version }}
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.11
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Run generators
+        run: |
+          VERSION="${{ needs.extract-schemas.outputs.version }}"
+          SCHEMA_DIR="schemas/$VERSION"
+
+          echo "Running generators for version $VERSION..."
+
+          # Build and run generate-schema
+          nix build .#generate-schema
+
+          # The generators are built into the package, copy generated output
+          GEN_OUT=$(nix build .#generate-schema --print-out-paths)
+          if [[ -d "$GEN_OUT/share/unifi-nix/generated" ]]; then
+            mkdir -p "$SCHEMA_DIR/generated"
+            cp -r "$GEN_OUT/share/unifi-nix/generated/"* "$SCHEMA_DIR/generated/"
+            echo "Generated files:"
+            ls -la "$SCHEMA_DIR/generated/"
+          fi
+      - name: Run flake check
+        run: |
+          echo "Running flake checks..."
+          nix flake check --no-build
+      - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          SPEC_VERSION="${{ steps.extract.outputs.spec_version }}"
+          VERSION="${{ needs.extract-schemas.outputs.version }}"
 
           git add schemas/
-          git diff --staged --quiet || git commit -m "chore: add schema for UniFi Network Application $SPEC_VERSION
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update schemas for UniFi $VERSION
 
-          Automatically extracted from Docker image.
+          Automatically extracted and generated:
+          - OpenAPI integration spec
+          - MongoDB collection schemas
+          - Field definitions and examples
+          - Generated enums, defaults, validation rules
+          - JSON schemas for all collections
 
           🤖 Generated by GitHub Actions"
 
-          git push
+            git push
+          fi
       - name: Create summary
-        if: steps.check-version.outputs.needs_extraction == 'true'
         run: |
-          SPEC_VERSION="${{ steps.extract.outputs.spec_version }}"
-          echo "## Schema Extraction Complete" >> $GITHUB_STEP_SUMMARY
+          VERSION="${{ needs.extract-schemas.outputs.version }}"
+          SCHEMA_DIR="schemas/$VERSION"
+
+          echo "## Schema Update Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Version:** $SPEC_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** $VERSION" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Files created:**" >> $GITHUB_STEP_SUMMARY
-          ls -la "schemas/$SPEC_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "### Extracted Files" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls -la "$SCHEMA_DIR" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ -d "$SCHEMA_DIR/generated" ]]; then
+            echo "### Generated Files" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            ls -la "$SCHEMA_DIR/generated" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            if [[ -f "$SCHEMA_DIR/generated/enums.json" ]]; then
+              ENUM_COUNT=$(jq 'keys | length' "$SCHEMA_DIR/generated/enums.json")
+              echo "**Enums extracted:** $ENUM_COUNT types" >> $GITHUB_STEP_SUMMARY
+            fi
+
+            if [[ -d "$SCHEMA_DIR/generated/json-schema" ]]; then
+              SCHEMA_COUNT=$(ls "$SCHEMA_DIR/generated/json-schema"/*.schema.json 2>/dev/null | wc -l)
+              echo "**JSON schemas generated:** $SCHEMA_COUNT" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi

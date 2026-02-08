@@ -4,6 +4,10 @@
 let
   inherit (lib) mapAttrs;
 
+  # Schema-based conversion generator for new collections
+  # Usage: fromSchema.convertCollection "collection_name" config.myCollection
+  fromSchema = import ./from-schema.nix { inherit lib; };
+
   # Parse subnet string "192.168.10.1/24" into components
   parseSubnet =
     subnet:
@@ -55,7 +59,7 @@ let
           "";
       dhcpd_leasetime = cfg.dhcp.leasetime;
 
-      # DNS settings
+      # DNS settings (UniFi supports up to 4 DNS servers)
       dhcpd_dns_enabled = cfg.dhcp.dns != [ ];
       dhcpd_dns_1 = if builtins.length cfg.dhcp.dns >= 1 then builtins.elemAt cfg.dhcp.dns 0 else "";
       dhcpd_dns_2 = if builtins.length cfg.dhcp.dns >= 2 then builtins.elemAt cfg.dhcp.dns 1 else "";
@@ -145,27 +149,229 @@ let
     setting_preference = "manual";
   };
 
-  # Convert a firewall rule to MongoDB traffic_rule document
-  firewallRuleToMongo = name: cfg: {
-    description = if cfg.description != "" then cfg.description else name;
+  # Map action names to MongoDB values (lowercase -> uppercase)
+  actionMap = {
+    allow = "ALLOW";
+    block = "BLOCK";
+    reject = "REJECT";
+  };
+
+  # Map IP version to MongoDB values
+  ipVersionMap = {
+    both = "BOTH";
+    ipv4 = "IPV4";
+    ipv6 = "IPV6";
+  };
+
+  # Map connection state to MongoDB values
+  connectionStateMap = {
+    all = "ALL";
+    return = "RETURN_TRAFFIC";
+  };
+
+  # Convert a firewall group to MongoDB firewallgroup document
+  firewallGroupToMongo = _name: cfg: {
+    inherit (cfg) name;
+    group_type = cfg.type;
+    group_members = cfg.members;
+    site_id = "_SITE_ID_"; # Resolved at deploy time
+  };
+
+  # Convert an AP group to MongoDB apgroup document
+  apGroupToMongo = _name: cfg: {
+    inherit (cfg) name;
+    device_macs = cfg.devices;
+    attr_hidden_id = "";
+    attr_no_delete = false;
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a user group to MongoDB usergroup document
+  userGroupToMongo = _name: cfg: {
+    inherit (cfg) name;
+    qos_rate_max_down = if cfg.downloadLimit != null then cfg.downloadLimit else -1;
+    qos_rate_max_up = if cfg.uploadLimit != null then cfg.uploadLimit else -1;
+    attr_hidden_id = "";
+    attr_no_delete = false;
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a traffic rule to MongoDB traffic_rule document
+  trafficRuleToMongo = _name: cfg: {
+    inherit (cfg) name description;
     enabled = cfg.enable;
     inherit (cfg) action;
-
-    # Source/destination - will be resolved to zone IDs at deploy time
-    _source_networks = if builtins.isList cfg.from then cfg.from else [ cfg.from ];
-    _dest_networks = if builtins.isList cfg.to then cfg.to else [ cfg.to ];
-
-    matching_target = "INTERNET_AND_LAN";
+    matching_target = cfg.matchingTarget;
+    _network_name = cfg.networkId;
     target_devices = [ ];
 
-    # Protocol and ports
-    ip_protocol = cfg.protocol;
-    dst_port = if cfg.ports != null then builtins.concatStringsSep "," (map toString cfg.ports) else "";
+    # Bandwidth limits (for QOS_RATE_LIMIT action)
+    bandwidth_limit = {
+      enabled = cfg.action == "QOS_RATE_LIMIT";
+      download_limit_kbps =
+        if cfg.bandwidthLimit.download != null then cfg.bandwidthLimit.download else 0;
+      upload_limit_kbps = if cfg.bandwidthLimit.upload != null then cfg.bandwidthLimit.upload else 0;
+    };
 
-    # Rule ordering
+    # Schedule
+    schedule = {
+      inherit (cfg.schedule) mode;
+    };
+
+    inherit (cfg) index;
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a RADIUS profile to MongoDB radiusprofile document
+  radiusProfileToMongo = _name: cfg: {
+    inherit (cfg) name;
+    use_usg_auth_server = false;
+
+    # Auth servers
+    auth_servers = map (s: {
+      inherit (s) ip port;
+      x_secret = s.secret;
+    }) cfg.authServers;
+
+    # Accounting servers
+    acct_servers = map (s: {
+      inherit (s) ip port;
+      x_secret = s.secret;
+    }) cfg.acctServers;
+
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a DPI group to MongoDB dpigroup document
+  dpiGroupToMongo = _name: cfg: {
+    inherit (cfg) name;
+
+    # App IDs (directly specified or resolved from categories at deploy time)
+    dpiapp_ids = cfg.appIds;
+
+    # Categories to resolve at deploy time
+    _categories = cfg.categories;
+
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert WireGuard server config to MongoDB setting document
+  wireguardServerToMongo = cfg: {
+    key = "wireguard_server";
+    wg_enabled = cfg.enable;
+    wg_port = cfg.port;
+    wg_cidr = cfg.network;
+    wg_dns = cfg.dns;
+    wg_allowed_networks = cfg.allowedNetworks;
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert WireGuard peer to MongoDB format
+  wireguardPeerToMongo = _name: cfg: {
+    inherit (cfg) name;
+    public_key = cfg.publicKey;
+    preshared_key = cfg.presharedKey;
+    allowed_ips = cfg.allowedIPs;
+  };
+
+  # Convert site-to-site VPN to MongoDB setting document
+  siteToSiteVpnToMongo = _name: cfg: {
+    inherit (cfg) name;
+    enabled = cfg.enable;
+    vpn_type = cfg.type;
+    remote_host = cfg.remoteHost;
+    remote_networks = cfg.remoteNetworks;
+    local_networks = cfg.localNetworks;
+    x_psk = cfg.presharedKey;
+
+    # IPsec specific settings
+    ike_version = cfg.ipsec.ikeVersion;
+    inherit (cfg.ipsec) encryption hash;
+    dh_group = cfg.ipsec.dhGroup;
+
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a port profile to MongoDB portconf document
+  portProfileToMongo = _name: cfg: {
+    inherit (cfg) name forward;
+
+    # Native VLAN reference (resolved at deploy time)
+    _native_network_name = cfg.nativeNetwork;
+
+    # Tagged VLANs (resolved at deploy time)
+    _tagged_network_names = cfg.taggedNetworks;
+
+    # PoE settings
+    poe_mode = cfg.poeMode;
+
+    # Speed/duplex
+    inherit (cfg) speed;
+    full_duplex = true;
+
+    # Storm control
+    stormctrl_enabled = cfg.stormControl.enable;
+    stormctrl_rate = cfg.stormControl.rate;
+
+    # Port isolation
+    port_security_enabled = cfg.isolation;
+
+    site_id = "_SITE_ID_";
+  };
+
+  # Convert a firewall policy to MongoDB firewall_policy document (UniFi 10.x+)
+  firewallPolicyToMongo = name: cfg: {
+    inherit (cfg) name description;
+    enabled = cfg.enable;
+    action = actionMap.${cfg.action};
     inherit (cfg) index;
 
-    setting_preference = "manual";
+    # Source configuration
+    source = {
+      # Zone key for runtime lookup (zone names match MongoDB values directly)
+      _zone_key = cfg.sourceZone;
+      matching_target = lib.toUpper cfg.sourceType;
+      _network_names = cfg.sourceNetworks;
+      _ips = cfg.sourceIPs;
+      port_matching_type = if cfg.sourcePort != null then "SPECIFIC" else "ANY";
+      ports = if cfg.sourcePort != null then [ (toString cfg.sourcePort) ] else [ ];
+      match_opposite_networks = false;
+      match_opposite_ports = false;
+      match_mac = false;
+    };
+
+    # Destination configuration
+    destination = {
+      _zone_key = cfg.destinationZone;
+      matching_target = lib.toUpper cfg.destinationType;
+      _network_names = cfg.destinationNetworks;
+      _ips = cfg.destinationIPs;
+      port_matching_type = if cfg.destinationPort != null then "SPECIFIC" else "ANY";
+      ports = if cfg.destinationPort != null then [ (toString cfg.destinationPort) ] else [ ];
+      match_opposite_networks = false;
+      match_opposite_ports = false;
+    };
+
+    # Protocol and IP version
+    inherit (cfg) protocol;
+    ip_version = ipVersionMap.${cfg.ipVersion};
+
+    # Connection state
+    connection_state_type = connectionStateMap.${cfg.connectionState};
+    connection_states = [ ];
+
+    # Other options
+    match_ip_sec = false;
+    inherit (cfg) logging;
+    create_allow_respond = false;
+    match_opposite_protocol = false;
+    icmp_typename = "ANY";
+    icmp_v6_typename = "ANY";
+
+    # Schedule (always on for now)
+    schedule = {
+      mode = "ALWAYS";
+    };
   };
 
   # Validation checks - throw on errors
@@ -180,8 +386,8 @@ let
         (lib.optional (v.invalidWifiRefs != [ ])
           "WiFi networks reference undefined networks: ${toString v.invalidWifiRefs}. Valid: ${toString v.networkNames}"
         )
-        (lib.optional (v.invalidFirewallRefs != [ ])
-          "Firewall rules reference undefined networks: ${toString (lib.unique v.invalidFirewallRefs)}. Valid: ${toString v.networkNames} (or 'any')"
+        (lib.optional (v.invalidPolicyNetRefs != [ ])
+          "Firewall policies reference undefined networks: ${toString (lib.unique v.invalidPolicyNetRefs)}. Valid: ${toString v.networkNames}"
         )
         (lib.optional (v.overlappingSubnets != [ ])
           "Overlapping subnets: ${
@@ -205,14 +411,55 @@ assert validate config;
   # Convert all WiFi configs
   wifi = mapAttrs (name: cfg: wifiToMongo name cfg config.networks) config.wifi;
 
-  # Convert all firewall rules
-  firewallRules = mapAttrs firewallRuleToMongo config.firewall.rules;
+  # Convert all firewall policies (zone-based, UniFi 10.x+)
+  firewallPolicies = mapAttrs firewallPolicyToMongo config.firewall.policies;
+
+  # Convert all firewall groups
+  firewallGroups = mapAttrs firewallGroupToMongo config.firewall.groups;
 
   # Convert all port forwards
   portForwards = mapAttrs portForwardToMongo config.portForwards;
 
   # Convert all DHCP reservations
   dhcpReservations = mapAttrs dhcpReservationToMongo config.dhcpReservations;
+
+  # Convert all AP groups
+  apGroups = mapAttrs apGroupToMongo config.apGroups;
+
+  # Convert all user groups
+  userGroups = mapAttrs userGroupToMongo config.userGroups;
+
+  # Convert all traffic rules
+  trafficRules = mapAttrs trafficRuleToMongo config.trafficRules;
+
+  # Convert all RADIUS profiles
+  radiusProfiles = mapAttrs radiusProfileToMongo config.radiusProfiles;
+
+  # Convert all port profiles
+  portProfiles = mapAttrs portProfileToMongo config.portProfiles;
+
+  # Convert all DPI groups
+  dpiGroups = mapAttrs dpiGroupToMongo config.dpiGroups;
+
+  # Convert VPN configuration
+  vpn = {
+    wireguard = {
+      server = wireguardServerToMongo config.vpn.wireguard.server;
+      peers = mapAttrs wireguardPeerToMongo config.vpn.wireguard.peers;
+    };
+    siteToSite = mapAttrs siteToSiteVpnToMongo config.vpn.siteToSite;
+  };
+
+  # Schema-generated conversions (auto-generated from MongoDB schema)
+  scheduledTasks = fromSchema.convertCollection "scheduletask" config.scheduledTasks;
+  wlanGroups = fromSchema.convertCollection "wlangroup" config.wlanGroups;
+  globalSettings = fromSchema.convertCollection "setting" config.globalSettings;
+  alertSettings = fromSchema.convertCollection "alert_setting" config.alertSettings;
+  firewallZones = fromSchema.convertCollection "firewall_zone" config.firewallZones;
+  dohServers = fromSchema.convertCollection "doh_servers" config.dohServers;
+  sslInspectionProfiles = fromSchema.convertCollection "ssl_inspection_profile" config.sslInspectionProfiles;
+  dashboards = fromSchema.convertCollection "dashboard" config.dashboards;
+  diagnosticsConfig = fromSchema.convertCollection "diagnostics_config" config.diagnosticsConfig;
 
   # Metadata
   _meta = {

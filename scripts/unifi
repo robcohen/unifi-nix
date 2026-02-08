@@ -1,0 +1,401 @@
+#!/usr/bin/env bash
+# unifi - Unified CLI for unifi-nix
+# Declarative UniFi network configuration management
+set -euo pipefail
+
+VERSION="1.0.0"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Source common library
+# shellcheck source=lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+
+# =============================================================================
+# Help and Usage
+# =============================================================================
+
+show_version() {
+  echo "unifi-nix $VERSION"
+}
+
+show_help() {
+  cat <<EOF
+${COLOR_BOLD}unifi-nix${COLOR_RESET} - Declarative UniFi network configuration
+
+${COLOR_BOLD}USAGE:${COLOR_RESET}
+    unifi <command> [options] [arguments]
+
+${COLOR_BOLD}COMMANDS:${COLOR_RESET}
+    ${COLOR_CYAN}Configuration:${COLOR_RESET}
+      eval <config.nix>              Evaluate config and output JSON
+      validate <config.nix>          Validate configuration without deploying
+      diff <config.nix> <host>       Show differences between config and device
+      deploy <config.nix> <host>     Deploy configuration to device
+      plan <config.nix> <host>       Show full plan including deletions
+
+    ${COLOR_CYAN}Migration & Backup:${COLOR_RESET}
+      import <host> [output.nix]     Import existing config from device
+      restore <backup.json> <host>   Restore from backup file
+      backup <host> [output.json]    Create backup of current config
+
+    ${COLOR_CYAN}Monitoring:${COLOR_RESET}
+      drift <config.json> <host>     Detect configuration drift
+      status [--json] <host>         Show device status and info
+
+    ${COLOR_CYAN}Schema:${COLOR_RESET}
+      extract-schema <host> <dir>    Extract MongoDB schema from device
+      schema-diff <dir1> <dir2>      Compare two schema versions
+
+    ${COLOR_CYAN}Multi-site:${COLOR_RESET}
+      multi-site <config-dir>        Deploy to multiple sites
+
+    ${COLOR_CYAN}Utilities:${COLOR_RESET}
+      preflight <host>               Run pre-flight connectivity checks
+      generate-module <schema-dir>   Generate Nix module from schema
+      setup                          Interactive setup wizard
+      export-schema [output.json]    Export JSON schema for IDE support
+      help                           Show this help message
+      version                        Show version information
+
+${COLOR_BOLD}EXAMPLES:${COLOR_RESET}
+    # Validate and deploy configuration
+    unifi validate sites/home.nix
+    unifi diff sites/home.nix 192.168.1.1
+    unifi deploy sites/home.nix 192.168.1.1
+
+    # Import existing configuration
+    unifi import 192.168.1.1 sites/home.nix
+
+    # Check for drift
+    unifi eval sites/home.nix > /tmp/config.json
+    unifi drift /tmp/config.json 192.168.1.1
+
+    # Backup and restore
+    unifi backup 192.168.1.1 backups/home-backup.json
+    unifi restore backups/home-backup.json 192.168.1.1
+
+${COLOR_BOLD}ENVIRONMENT:${COLOR_RESET}
+    SSH_USER              SSH username (default: root)
+    SSH_TIMEOUT           SSH connection timeout in seconds (default: 10)
+    UNIFI_SECRETS_DIR     Directory containing secret files
+    UNIFI_KNOWN_HOSTS     Path to known_hosts file for SSH key pinning
+    UNIFI_MONGO_PORT      MongoDB port (default: 27117)
+    DRY_RUN               Set to 'true' to preview without changes
+    ALLOW_DELETES         Set to 'true' to allow resource deletion
+
+${COLOR_BOLD}DOCUMENTATION:${COLOR_RESET}
+    README:          https://github.com/yourusername/unifi-nix
+    Troubleshooting: See docs/troubleshooting.md
+    Schema:          See docs/SCHEMA.md
+
+EOF
+}
+
+# =============================================================================
+# Command Dispatch
+# =============================================================================
+
+cmd_eval() {
+  exec "$SCRIPT_DIR/eval.sh" "$@"
+}
+
+cmd_validate() {
+  exec "$SCRIPT_DIR/validate-config.sh" "$@"
+}
+
+cmd_diff() {
+  exec "$SCRIPT_DIR/diff.sh" "$@"
+}
+
+cmd_deploy() {
+  exec "$SCRIPT_DIR/deploy.sh" "$@"
+}
+
+cmd_plan() {
+  exec "$SCRIPT_DIR/plan.sh" "$@"
+}
+
+cmd_import() {
+  exec "$SCRIPT_DIR/import.sh" "$@"
+}
+
+cmd_restore() {
+  exec "$SCRIPT_DIR/restore.sh" "$@"
+}
+
+cmd_backup() {
+  local host="${1:-}"
+  local output="${2:-}"
+  local encrypt="${UNIFI_BACKUP_ENCRYPT:-false}"
+  local gpg_recipient="${UNIFI_BACKUP_GPG_RECIPIENT:-}"
+
+  if [[ -z $host ]]; then
+    echo "Usage: unifi backup <host> [output.json]"
+    echo ""
+    echo "Options via environment variables:"
+    echo "  UNIFI_BACKUP_ENCRYPT=true       Enable GPG encryption"
+    echo "  UNIFI_BACKUP_GPG_RECIPIENT=ID   GPG recipient key ID"
+    echo ""
+    exit 1
+  fi
+
+  if [[ -z $output ]]; then
+    ensure_dir "$UNIFI_BACKUP_DIR"
+    output="$UNIFI_BACKUP_DIR/$(backup_filename "$host")"
+  fi
+
+  log_step "Creating backup from $host..."
+
+  # Fetch all collections
+  local backup_data
+  backup_data=$(run_mongo "$host" "JSON.stringify({
+    _backup_meta: {
+      timestamp: new Date().toISOString(),
+      host: '$host',
+      version: db.version_history.findOne({}, {version: 1, sort: {_id: -1}})?.version || 'unknown',
+      encrypted: $([[ $encrypt == "true" ]] && echo "true" || echo "false")
+    },
+    networkconf: db.networkconf.find().toArray(),
+    wlanconf: db.wlanconf.find().toArray(),
+    firewall_policy: db.firewall_policy.find().toArray(),
+    firewallgroup: db.firewallgroup.find().toArray(),
+    portforward: db.portforward.find().toArray(),
+    dhcp_option: db.dhcp_option.find().toArray(),
+    apgroup: db.apgroup.find().toArray(),
+    usergroup: db.usergroup.find().toArray(),
+    traffic_rule: db.traffic_rule.find().toArray(),
+    radiusprofile: db.radiusprofile.find().toArray(),
+    portconf: db.portconf.find().toArray(),
+    dpigroup: db.dpigroup.find().toArray(),
+    scheduletask: db.scheduletask.find().toArray(),
+    wlangroup: db.wlangroup.find().toArray(),
+    setting: db.setting.find().toArray()
+  })")
+
+  # Save backup (optionally encrypted)
+  if [[ $encrypt == "true" ]]; then
+    if ! command -v gpg &>/dev/null; then
+      log_error "GPG not found. Install gnupg to use encryption."
+      exit 1
+    fi
+
+    local encrypted_output="${output%.json}.gpg"
+    if [[ -n $gpg_recipient ]]; then
+      echo "$backup_data" | jq '.' | gpg --encrypt --recipient "$gpg_recipient" --output "$encrypted_output"
+    else
+      echo "$backup_data" | jq '.' | gpg --symmetric --output "$encrypted_output"
+      log_info "Encrypted with symmetric key (you'll be prompted for passphrase on restore)"
+    fi
+    log_success "Encrypted backup saved to: $encrypted_output"
+  else
+    echo "$backup_data" | jq '.' > "$output"
+    log_success "Backup saved to: $output"
+  fi
+}
+
+cmd_drift() {
+  exec "$SCRIPT_DIR/drift-detect.sh" "$@"
+}
+
+cmd_status() {
+  local host=""
+  local user="${SSH_USER:-root}"
+  local json_output=false
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --json|-j)
+        json_output=true
+        shift
+        ;;
+      *)
+        host="$1"
+        shift
+        ;;
+    esac
+  done
+
+  if [[ -z $host ]]; then
+    log_error "Usage: unifi status [--json] <host>"
+    exit 1
+  fi
+
+  if [[ $json_output == false ]]; then
+    log_step "Fetching status from $host..."
+  fi
+
+  # Get comprehensive device info
+  local info
+  info=$(run_mongo "$host" "JSON.stringify({
+    site: db.site.findOne({name: 'default'}),
+    version: db.version_history.findOne({}, {sort: {_id: -1}})?.version || 'unknown',
+    networks: db.networkconf.count(),
+    wifi: db.wlanconf.count(),
+    policies: db.firewall_policy.count(),
+    portForwards: db.portforward.count(),
+    dhcpReservations: db.dhcp_option.count(),
+    trafficRules: db.traffic_rule.count(),
+    devices: {
+      total: db.device.count(),
+      gateways: db.device.count({type: 'ugw'}),
+      switches: db.device.count({type: 'usw'}),
+      aps: db.device.count({type: 'uap'}),
+      adopted: db.device.count({adopted: true}),
+      connected: db.device.count({state: 1})
+    },
+    clients: {
+      total: db.user.count(),
+      wired: db.user.count({is_wired: true}),
+      wireless: db.user.count({is_wired: false})
+    }
+  })" "$user")
+
+  # JSON output mode
+  if [[ $json_output == true ]]; then
+    echo "$info" | jq --arg host "$host" '. + {host: $host}'
+    return 0
+  fi
+
+  # Human-readable output
+  echo ""
+  echo -e "${COLOR_BOLD}UniFi Controller Status${COLOR_RESET}"
+  echo "========================"
+  echo ""
+  echo -e "${COLOR_BOLD}Connection:${COLOR_RESET}"
+  echo -e "  Host:             ${COLOR_CYAN}$host${COLOR_RESET}"
+  echo -e "  Site:             $(echo "$info" | jq -r '.site.desc // .site.name // "default"')"
+  echo -e "  Firmware:         $(echo "$info" | jq -r '.version // "unknown"')"
+  echo ""
+  echo -e "${COLOR_BOLD}Configuration:${COLOR_RESET}"
+  echo -e "  Networks:         $(echo "$info" | jq -r '.networks')"
+  echo -e "  WiFi SSIDs:       $(echo "$info" | jq -r '.wifi')"
+  echo -e "  Firewall:         $(echo "$info" | jq -r '.policies') policies"
+  echo -e "  Port Forwards:    $(echo "$info" | jq -r '.portForwards')"
+  echo -e "  DHCP Reservations:$(echo "$info" | jq -r '.dhcpReservations')"
+  echo -e "  Traffic Rules:    $(echo "$info" | jq -r '.trafficRules')"
+  echo ""
+  echo -e "${COLOR_BOLD}Devices:${COLOR_RESET}"
+  echo -e "  Total:            $(echo "$info" | jq -r '.devices.total') ($(echo "$info" | jq -r '.devices.connected') connected)"
+  echo -e "  Gateways:         $(echo "$info" | jq -r '.devices.gateways')"
+  echo -e "  Switches:         $(echo "$info" | jq -r '.devices.switches')"
+  echo -e "  Access Points:    $(echo "$info" | jq -r '.devices.aps')"
+  echo ""
+  echo -e "${COLOR_BOLD}Clients:${COLOR_RESET}"
+  echo -e "  Total:            $(echo "$info" | jq -r '.clients.total')"
+  echo -e "  Wired:            $(echo "$info" | jq -r '.clients.wired')"
+  echo -e "  Wireless:         $(echo "$info" | jq -r '.clients.wireless')"
+  echo ""
+}
+
+cmd_extract_schema() {
+  exec "$SCRIPT_DIR/extract-schema.sh" "$@"
+}
+
+cmd_schema_diff() {
+  exec "$SCRIPT_DIR/schema-diff.sh" "$@"
+}
+
+cmd_multi_site() {
+  exec "$SCRIPT_DIR/multi-site.sh" "$@"
+}
+
+cmd_preflight() {
+  local host="${1:-}"
+
+  if [[ -z $host ]]; then
+    log_error "Usage: unifi preflight <host>"
+    exit 1
+  fi
+
+  preflight_check "$host"
+}
+
+cmd_generate_module() {
+  exec "$SCRIPT_DIR/generate-module.sh" "$@"
+}
+
+cmd_setup() {
+  exec "$SCRIPT_DIR/setup.sh" "$@"
+}
+
+cmd_export_schema() {
+  exec "$SCRIPT_DIR/export-schema.sh" "$@"
+}
+
+# =============================================================================
+# Main
+# =============================================================================
+
+main() {
+  local cmd="${1:-help}"
+  shift || true
+
+  case "$cmd" in
+    eval)
+      cmd_eval "$@"
+      ;;
+    validate)
+      cmd_validate "$@"
+      ;;
+    diff)
+      cmd_diff "$@"
+      ;;
+    deploy)
+      cmd_deploy "$@"
+      ;;
+    plan)
+      cmd_plan "$@"
+      ;;
+    import)
+      cmd_import "$@"
+      ;;
+    restore)
+      cmd_restore "$@"
+      ;;
+    backup)
+      cmd_backup "$@"
+      ;;
+    drift|drift-detect)
+      cmd_drift "$@"
+      ;;
+    status)
+      cmd_status "$@"
+      ;;
+    extract-schema)
+      cmd_extract_schema "$@"
+      ;;
+    schema-diff)
+      cmd_schema_diff "$@"
+      ;;
+    multi-site)
+      cmd_multi_site "$@"
+      ;;
+    preflight|check)
+      cmd_preflight "$@"
+      ;;
+    generate-module)
+      cmd_generate_module "$@"
+      ;;
+    setup)
+      cmd_setup "$@"
+      ;;
+    export-schema)
+      cmd_export_schema "$@"
+      ;;
+    help|--help|-h)
+      show_help
+      ;;
+    version|--version|-v)
+      show_version
+      ;;
+    *)
+      log_error "Unknown command: $cmd"
+      echo ""
+      echo "Run 'unifi help' for usage information."
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

@@ -19,8 +19,10 @@ This tool provides a fully declarative approach to UniFi configuration with auto
 ## Features
 
 - **Declarative configuration** - Define your entire network in Nix
-- **Schema validation** - Automatically validates against UniFi's OpenAPI schema
+- **Zone-based firewall** - Full support for UniFi 10.x+ zone-based policies
+- **Schema validation** - Automatically validates against device-derived enums
 - **Diff before deploy** - Preview all changes before applying
+- **Backup & restore** - Automatic backups with schema-validated restore
 - **Secret management** - Integrates with sops-nix/agenix
 - **Version tracking** - Schemas are versioned per UniFi Network Application version
 
@@ -168,17 +170,57 @@ dhcpReservations = {
 };
 ```
 
-### Firewall Rules
+### Firewall Policies (Zone-Based)
+
+For custom firewall rules, use the zone-based firewall (requires UniFi 10.x+):
 
 ```nix
-firewall.rules = {
-  block-iot-to-lan = {
-    from = "IoT";                    # Source network(s)
-    to = "Default";                  # Destination network(s)
-    action = "drop";                 # accept | drop | reject
-    protocol = "all";                # all | tcp | udp | icmp
-    ports = null;                    # null = all, or [ 80 443 ]
-    index = 2000;                    # Priority (lower = higher)
+firewall.policies = {
+  # Block IoT from accessing main network
+  block-iot-to-default = {
+    action = "block";
+    sourceZone = "internal";
+    sourceType = "network";
+    sourceNetworks = [ "IoT" ];
+    destinationZone = "internal";
+    destinationType = "network";
+    destinationNetworks = [ "Default" ];
+    index = 10000;                   # Lower = higher priority
+  };
+
+  # Allow IoT to reach DNS on gateway
+  allow-iot-dns = {
+    action = "allow";
+    sourceZone = "internal";
+    sourceType = "network";
+    sourceNetworks = [ "IoT" ];
+    destinationZone = "gateway";
+    destinationPort = 53;
+    protocol = "tcp_udp";
+    index = 9000;                    # Higher priority than block
+  };
+};
+```
+
+**Important:** Zone-based firewall must be enabled on your UDM first:
+Settings > Firewall & Security > Upgrade to Zone-Based Firewall
+
+### Network Isolation
+
+For simple inter-VLAN isolation, use the `isolate` option:
+
+```nix
+networks = {
+  IoT = {
+    vlan = 10;
+    subnet = "192.168.10.1/24";
+    isolate = true;                  # Blocks traffic TO this network
+  };
+
+  Guest = {
+    vlan = 30;
+    subnet = "192.168.30.1/24";
+    purpose = "guest";               # Guest networks are auto-isolated
   };
 };
 ```
@@ -253,12 +295,238 @@ ssh-copy-id root@192.168.1.1
 ssh root@192.168.1.1 hostname
 ```
 
+## Command Reference
+
+unifi-nix provides a unified CLI with the following commands:
+
+### Configuration Commands
+
+| Command                            | Description                                |
+| ---------------------------------- | ------------------------------------------ |
+| `unifi eval <config.nix>`          | Evaluate Nix config and output JSON        |
+| `unifi validate <config.nix>`      | Validate configuration without deploying   |
+| `unifi diff <config.nix> <host>`   | Show differences between config and device |
+| `unifi deploy <config.nix> <host>` | Deploy configuration to device             |
+| `unifi plan <config.nix> <host>`   | Show full plan including deletions         |
+
+### Migration & Backup Commands
+
+| Command                              | Description                               |
+| ------------------------------------ | ----------------------------------------- |
+| `unifi import <host> [output.nix]`   | Import existing config from device to Nix |
+| `unifi backup <host> [output.json]`  | Create backup of current device config    |
+| `unifi restore <backup.json> <host>` | Restore from backup file                  |
+
+### Monitoring Commands
+
+| Command                            | Description                                 |
+| ---------------------------------- | ------------------------------------------- |
+| `unifi drift <config.json> <host>` | Detect configuration drift                  |
+| `unifi status [--json] <host>`     | Show device status and configuration counts |
+| `unifi preflight <host>`           | Run pre-flight connectivity checks          |
+
+### Utility Commands
+
+| Command                             | Description                        |
+| ----------------------------------- | ---------------------------------- |
+| `unifi setup`                       | Interactive setup wizard           |
+| `unifi export-schema [output.json]` | Export JSON schema for IDE support |
+| `unifi generate-module <schema>`    | Generate Nix module from schema    |
+
+### Schema Commands
+
+| Command                             | Description                        |
+| ----------------------------------- | ---------------------------------- |
+| `unifi extract-schema <host> <dir>` | Extract MongoDB schema from device |
+| `unifi schema-diff <dir1> <dir2>`   | Compare two schema versions        |
+
+### Multi-site
+
+| Command                         | Description                               |
+| ------------------------------- | ----------------------------------------- |
+| `unifi multi-site <config-dir>` | Deploy to multiple sites from a directory |
+
+### Environment Variables
+
+| Variable                     | Description                          | Default |
+| ---------------------------- | ------------------------------------ | ------- |
+| `SSH_USER`                   | SSH username                         | `root`  |
+| `SSH_TIMEOUT`                | SSH connection timeout (seconds)     | `10`    |
+| `UNIFI_SECRETS_DIR`          | Directory containing secret files    | -       |
+| `UNIFI_KNOWN_HOSTS`          | SSH known_hosts file for key pinning | -       |
+| `DRY_RUN`                    | Preview without changes              | `false` |
+| `ALLOW_DELETES`              | Allow resource deletion              | `false` |
+| `UNIFI_BACKUP_ENCRYPT`       | Enable GPG encryption for backups    | `false` |
+| `UNIFI_BACKUP_GPG_RECIPIENT` | GPG recipient for backup encryption  | -       |
+
+## NixOS Module
+
+unifi-nix can run as a NixOS service for scheduled deployments:
+
+```nix
+{
+  imports = [ unifi-nix.nixosModules.service ];
+
+  services.unifi-nix = {
+    enable = true;
+
+    # Your site configurations
+    sites = {
+      home = {
+        host = "192.168.1.1";
+        configFile = ./sites/home.nix;
+      };
+      office = {
+        host = "10.0.0.1";
+        configFile = ./sites/office.nix;
+      };
+    };
+
+    # SSH configuration
+    sshUser = "root";
+    sshKeyFile = "/run/secrets/udm-ssh-key";
+
+    # Secrets directory (for WiFi passwords, etc.)
+    secretsDir = "/run/secrets/unifi";
+
+    # Optional: scheduled drift detection
+    driftCheck = {
+      enable = true;
+      schedule = "daily";  # or cron expression
+      alertCommand = "${pkgs.ntfy-sh}/bin/ntfy publish alerts 'UniFi drift detected'";
+    };
+  };
+}
+```
+
+The service provides:
+
+- **Scheduled deployments** via systemd timers
+- **Drift detection** with configurable alerts
+- **Secrets integration** with sops-nix/agenix
+- **Logging** to systemd journal
+
+## Advanced Features
+
+### Drift Detection
+
+Monitor for changes made via the UI:
+
+```bash
+# Generate current config
+unifi eval sites/home.nix > /tmp/desired.json
+
+# Check for drift
+unifi drift /tmp/desired.json 192.168.1.1
+
+# Output formats: text (default), json, summary
+OUTPUT_FORMAT=json unifi drift /tmp/desired.json 192.168.1.1
+```
+
+### Multi-Site Management
+
+Deploy to multiple UDM devices:
+
+```
+sites/
+├── home.nix      # host = "192.168.1.1"
+├── office.nix    # host = "10.0.0.1"
+└── cabin.nix     # host = "cabin.vpn.example.com"
+```
+
+```bash
+# Deploy to all sites
+unifi multi-site sites/
+
+# Or use a manifest
+cat > sites/manifest.json <<EOF
+{
+  "sites": [
+    {"name": "home", "host": "192.168.1.1", "config": "home.nix"},
+    {"name": "office", "host": "10.0.0.1", "config": "office.nix"}
+  ]
+}
+EOF
+unifi multi-site sites/
+```
+
+### SSH Key Pinning
+
+For enhanced security, pin SSH host keys:
+
+```bash
+# Get the host key
+ssh-keyscan 192.168.1.1 > ~/.ssh/unifi_known_hosts
+
+# Use pinned keys
+export UNIFI_KNOWN_HOSTS=~/.ssh/unifi_known_hosts
+unifi deploy sites/home.nix 192.168.1.1
+```
+
+### Pre-flight Checks
+
+Validate connectivity before deployment:
+
+```bash
+unifi preflight 192.168.1.1
+
+# Output:
+# ==> Running pre-flight checks...
+#   SSH connectivity... OK
+#   MongoDB connectivity... OK
+#   Config file... OK
+#   Required tools... OK
+#
+# [OK] All pre-flight checks passed
+```
+
+## Firewall Zones
+
+The zone-based firewall uses these predefined zones:
+
+| Zone       | Description                         |
+| ---------- | ----------------------------------- |
+| `internal` | All internal networks (VLANs)       |
+| `external` | WAN/Internet                        |
+| `gateway`  | The UDM itself (management)         |
+| `vpn`      | VPN clients (WireGuard, L2TP, etc.) |
+| `hotspot`  | Hotspot/Guest portal networks       |
+| `dmz`      | DMZ networks                        |
+
 ## Safety
 
 - **Always run `diff` before `deploy`** to preview changes
 - **Use `DRY_RUN=true`** to see commands without executing
+- **Use `unifi preflight`** to verify connectivity
 - **Validation runs automatically** before any changes are applied
-- **Backup your UDM** before major changes
+- **Backup your UDM** before major changes: `unifi backup 192.168.1.1`
+
+### Example Workflows
+
+```bash
+# Encrypted backup with GPG
+UNIFI_BACKUP_ENCRYPT=true UNIFI_BACKUP_GPG_RECIPIENT=me@example.com \
+  unifi backup 192.168.1.1 backups/home.json.gpg
+
+# Get device status as JSON for scripting
+unifi status --json 192.168.1.1 | jq '.devices.connected'
+
+# Run interactive setup wizard
+unifi setup
+
+# Restore from backup with dry-run first
+DRY_RUN=true unifi restore backups/home.json 192.168.1.1
+unifi restore backups/home.json 192.168.1.1
+```
+
+## Documentation
+
+- [API Reference](docs/api-reference.md) - Complete configuration options reference
+- [Migration Guide](docs/migration-guide.md) - Migrate from UniFi UI to declarative config
+- [Secrets Guide](docs/secrets-guide.md) - Secrets management with sops-nix/agenix
+- [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
+- [Schema Documentation](docs/SCHEMA.md) - UniFi schema details
+- [Contributing](CONTRIBUTING.md) - Development guidelines
 
 ## Contributing
 

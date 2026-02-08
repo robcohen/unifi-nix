@@ -35,9 +35,29 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Progress spinner function
+show_spinner() {
+  local pid=$1
+  local delay=0.1
+  local spinstr='|/-\'
+  while kill -0 "$pid" 2>/dev/null; do
+    local temp=${spinstr#?}
+    printf " %c " "$spinstr"
+    spinstr=$temp${spinstr%"$temp"}
+    sleep $delay
+    printf "\b\b\b"
+  done
+  printf "   \b\b\b"
+}
+
 # Fetch current state from UDM via SSH+MongoDB
-echo "Fetching current configuration..."
-CURRENT=$(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
+echo -n "Fetching current configuration..."
+
+# Run SSH in background
+TEMP_FILE=$(mktemp)
+trap "rm -f $TEMP_FILE" EXIT
+
+ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "$SSH_USER@$HOST" 'mongo --quiet --port 27117 ace --eval "
 JSON.stringify({
   networks: db.networkconf.find({}, {
     _id: 0, name: 1, vlan: 1, ip_subnet: 1, dhcpd_enabled: 1,
@@ -49,8 +69,17 @@ JSON.stringify({
     wpa3_support: 1, l2_isolation: 1, networkconf_id: 1
   }).toArray()
 })
-"')
+"' >"$TEMP_FILE" &
+SSH_PID=$!
 
+show_spinner $SSH_PID
+wait $SSH_PID || {
+  echo -e " ${RED}failed${NC}"
+  exit 1
+}
+echo -e " ${GREEN}done${NC}"
+
+CURRENT=$(cat "$TEMP_FILE")
 DESIRED=$(cat "$CONFIG_JSON")
 
 echo ""
