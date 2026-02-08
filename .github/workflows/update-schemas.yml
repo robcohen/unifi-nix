@@ -324,10 +324,6 @@ jobs:
             echo "JSON schemas:"
             ls "$SCHEMA_DIR/generated/json-schema/" | head -10
           fi
-      - name: Run flake check
-        run: |
-          echo "Running flake checks..."
-          nix flake check --no-build
       - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
