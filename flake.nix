@@ -125,6 +125,8 @@
             "SC2012" # ls is fine for simple sorted listings
             "SC2155" # Declare and assign separately - not always needed
             "SC2029" # Variables intentionally expanded client-side for SSH
+            "SC2221" # Case pattern order is intentional
+            "SC2222" # Case pattern order is intentional
           ];
 
           # Deploy script (uses lib/deploy/ modules)
@@ -194,6 +196,7 @@
               jq
             ];
             text = builtins.readFile ./scripts/eval.sh;
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -243,6 +246,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/schema-diff.sh;
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -281,6 +285,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/generate-module.sh;
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
