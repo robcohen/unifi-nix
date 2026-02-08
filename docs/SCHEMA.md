@@ -40,11 +40,11 @@ lib/
 Schemas are automatically extracted via GitHub Actions when new UniFi versions are released:
 
 1. **GitHub Actions workflow** runs weekly (or on-demand)
-2. Starts UniFi Network Application in Docker
-3. Extracts field definitions from `core.jar` (api/fields/*.json)
-4. Queries MongoDB for collection fields and example documents
-5. Generates enums, validation patterns, and JSON schemas
-6. Commits updated schemas to the repository
+1. Starts UniFi Network Application in Docker
+1. Extracts field definitions from `core.jar` (api/fields/\*.json)
+1. Queries MongoDB for collection fields and example documents
+1. Generates enums, validation patterns, and JSON schemas
+1. Commits updated schemas to the repository
 
 The JAR field definitions are the authoritative source - they contain all 282 enum types and 226 validation patterns directly from UniFi's internal schema.
 
@@ -147,24 +147,24 @@ nix run .#schema-diff -- 10.0.159 10.0.162
 Your device is running a version that hasn't been extracted yet:
 
 1. Trigger the `Update UniFi Schemas` workflow manually
-2. Or wait for the weekly automatic update
-3. The workflow will extract and commit schemas for the new version
+1. Or wait for the weekly automatic update
+1. The workflow will extract and commit schemas for the new version
 
 ### "Invalid enum value"
 
 The value isn't in the schema. Either:
 
 1. The enum may have been added in a newer UniFi version
-2. Check `schemas/<version>/generated/enums.json` for available values
-3. Update to a newer schema version if available
+1. Check `schemas/<version>/generated/enums.json` for available values
+1. Update to a newer schema version if available
 
 ### Tests fail with "empty enum list"
 
 The schema loader couldn't find valid enums. Ensure:
 
 1. `schemas/<version>/generated/enums.json` exists and has content
-2. The `jar-fields/` directory contains the field definition files
-3. Run `nix run .#generate-schema` to regenerate
+1. The `jar-fields/` directory contains the field definition files
+1. Run `nix run .#generate-schema` to regenerate
 
 ## CI Integration
 

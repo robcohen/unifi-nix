@@ -104,7 +104,7 @@ sync_device_enums() {
   # Use generated/enums.json path for consistency
   local schema_enums="${schema_dir}/generated/enums.json"
 
-  if [[ ! -f "$schema_enums" ]]; then
+  if [[ ! -f $schema_enums ]]; then
     echo "  Syncing device enums to versioned schema..."
     mkdir -p "${schema_dir}/generated"
     cp "${device_schema_dir}/enums.json" "$schema_enums"
