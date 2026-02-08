@@ -820,24 +820,30 @@
                   && builtins.length (fromSchema.getCollectionFields "dhcp_option") > 0;
                 # Build message conditionally to avoid null interpolation
                 successMsg =
-                  if hasSchema then ''
-                    echo "Schema-generated collections tests passed"
-                    echo "  - Latest version: ${fromSchema.latestVersion}"
-                    echo "  - Collections available: ${toString (builtins.length fromSchema.availableCollections)}"
-                  '' else ''
-                    echo "No generated schema found - skipping (this is OK, CI will populate it)"
-                  '';
+                  if hasSchema then
+                    ''
+                      echo "Schema-generated collections tests passed"
+                      echo "  - Latest version: ${fromSchema.latestVersion}"
+                      echo "  - Collections available: ${toString (builtins.length fromSchema.availableCollections)}"
+                    ''
+                  else
+                    ''
+                      echo "No generated schema found - skipping (this is OK, CI will populate it)"
+                    '';
               in
               pkgs.runCommand "schema-generated-collections" { } ''
                 ${
-                  if result || !hasSchema then ''
-                    ${successMsg}
-                    touch $out
-                  '' else ''
-                    echo "Schema-generated collections tests failed"
-                    echo "  Schema exists but collections are invalid"
-                    exit 1
-                  ''
+                  if result || !hasSchema then
+                    ''
+                      ${successMsg}
+                      touch $out
+                    ''
+                  else
+                    ''
+                      echo "Schema-generated collections tests failed"
+                      echo "  Schema exists but collections are invalid"
+                      exit 1
+                    ''
                 }
               '';
           };
