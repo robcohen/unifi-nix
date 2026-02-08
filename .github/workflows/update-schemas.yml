@@ -176,12 +176,29 @@ jobs:
           SCHEMA_DIR="schemas/$DETECTED_VERSION"
           mkdir -p "$SCHEMA_DIR"
 
-          # 1. Extract OpenAPI spec
+          # 1. Extract OpenAPI spec (with retry for API readiness)
           echo "Extracting OpenAPI spec..."
-          if curl -sk "https://localhost:8443/api-docs/integration.json" -o "$SCHEMA_DIR/integration.json" 2>/dev/null; then
-            echo "  Saved: integration.json"
-          else
-            echo "  Warning: Could not fetch integration.json"
+          INTEGRATION_READY=false
+          for i in {1..30}; do
+            if curl -sk "https://localhost:8443/api-docs/integration.json" -o "$SCHEMA_DIR/integration.json.tmp" 2>/dev/null; then
+              # Verify it's valid JSON (not an HTML error page)
+              if jq -e . "$SCHEMA_DIR/integration.json.tmp" >/dev/null 2>&1; then
+                mv "$SCHEMA_DIR/integration.json.tmp" "$SCHEMA_DIR/integration.json"
+                echo "  Saved: integration.json (valid JSON)"
+                INTEGRATION_READY=true
+                break
+              else
+                echo "  API returned non-JSON response, retrying... ($i)"
+                rm -f "$SCHEMA_DIR/integration.json.tmp"
+              fi
+            else
+              echo "  API not responding, retrying... ($i)"
+            fi
+            sleep 10
+          done
+          if [[ $INTEGRATION_READY == false ]]; then
+            echo "  Warning: Could not fetch valid integration.json after retries"
+            rm -f "$SCHEMA_DIR/integration.json.tmp"
           fi
 
           # 2. Extract MongoDB collections list
@@ -313,11 +330,22 @@ jobs:
           # Run generators directly (the Nix derivation expects schemas in flake source)
           mkdir -p "$SCHEMA_DIR/generated"
 
-          # Run each generator
-          nix-shell -p jq --run "bash scripts/generators/extract-enums.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/enums.json'" || echo "Warning: enum extraction failed"
-          nix-shell -p jq --run "bash scripts/generators/extract-defaults.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/defaults.json'" || echo "Warning: defaults extraction failed"
-          nix-shell -p jq --run "bash scripts/generators/extract-validation.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/validation.json'" || echo "Warning: validation extraction failed"
-          nix-shell -p jq --run "bash scripts/generators/generate-json-schema.sh '$SCHEMA_DIR' '$SCHEMA_DIR/generated/json-schema'" || echo "Warning: JSON schema generation failed"
+          # Run each generator with correct arguments
+          # extract-enums.sh expects: <integration.json> <output.json>
+          if [[ -f "$SCHEMA_DIR/integration.json" ]]; then
+            nix-shell -p jq --run "bash scripts/generators/extract-enums.sh '$SCHEMA_DIR/integration.json' '$SCHEMA_DIR/generated/enums.json'" || echo "Warning: enum extraction failed"
+            nix-shell -p jq --run "bash scripts/generators/extract-validation.sh '$SCHEMA_DIR/integration.json' '$SCHEMA_DIR/generated/validation.json'" || echo "Warning: validation extraction failed"
+          else
+            echo "Skipping enum/validation extraction - no integration.json"
+            echo "{}" > "$SCHEMA_DIR/generated/enums.json"
+            echo "{}" > "$SCHEMA_DIR/generated/validation.json"
+          fi
+
+          # extract-defaults.sh expects: <mongodb-examples.json> <output.json>
+          nix-shell -p jq --run "bash scripts/generators/extract-defaults.sh '$SCHEMA_DIR/mongodb-examples.json' '$SCHEMA_DIR/generated/defaults.json'" || echo "Warning: defaults extraction failed"
+
+          # generate-json-schema.sh expects: <fields.json> <examples.json> <enums.json> <output-dir>
+          nix-shell -p jq --run "bash scripts/generators/generate-json-schema.sh '$SCHEMA_DIR/mongodb-fields.json' '$SCHEMA_DIR/mongodb-examples.json' '$SCHEMA_DIR/generated/enums.json' '$SCHEMA_DIR/generated/json-schema'" || echo "Warning: JSON schema generation failed"
 
           echo "Generated files:"
           ls -la "$SCHEMA_DIR/generated/" || echo "No generated files"
