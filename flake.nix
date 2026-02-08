@@ -118,6 +118,15 @@
             platforms = pkgs.lib.platforms.unix;
           };
 
+          # Common shellcheck exclusions for all packages
+          commonShellChecks = [
+            "SC2034" # Variables may be used in sourced files or for future use
+            "SC1003" # Backslash in strings is intentional
+            "SC2012" # ls is fine for simple sorted listings
+            "SC2155" # Declare and assign separately - not always needed
+            "SC2029" # Variables intentionally expanded client-side for SSH
+          ];
+
           # Deploy script (uses lib/deploy/ modules)
           deploy = pkgs.stdenv.mkDerivation {
             pname = "unifi-deploy";
@@ -173,10 +182,7 @@
               diffutils
             ];
             text = builtins.readFile ./scripts/diff.sh;
-            excludeShellChecks = [
-              "SC2034" # Color variables defined for potential future use
-              "SC1003" # Backslash in spinner string is intentional
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -199,9 +205,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/validate-config.sh;
-            excludeShellChecks = [
-              "SC2034" # Variables defined for schema validation
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -214,9 +218,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/extract-schema.sh;
-            excludeShellChecks = [
-              "SC2029" # Variables intentionally expanded client-side for SSH
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -229,9 +231,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/restore.sh;
-            excludeShellChecks = [
-              "SC2029" # Variables intentionally expanded client-side for SSH
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -255,9 +255,7 @@
               coreutils
             ];
             text = builtins.readFile ./scripts/drift-detect.sh;
-            excludeShellChecks = [
-              "SC2029" # Variables intentionally expanded client-side for SSH
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
@@ -271,10 +269,7 @@
               nix
             ];
             text = builtins.readFile ./scripts/multi-site.sh;
-            excludeShellChecks = [
-              "SC2029" # Variables intentionally expanded client-side for SSH
-              "SC2034" # Color variables
-            ];
+            excludeShellChecks = commonShellChecks;
             inherit meta;
           };
 
