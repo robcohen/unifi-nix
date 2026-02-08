@@ -175,6 +175,7 @@
             text = builtins.readFile ./scripts/diff.sh;
             excludeShellChecks = [
               "SC2034" # Color variables defined for potential future use
+              "SC1003" # Backslash in spinner string is intentional
             ];
             inherit meta;
           };
