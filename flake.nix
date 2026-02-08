@@ -817,7 +817,7 @@
                 result =
                   hasSchema
                   && builtins.length fromSchema.availableCollections > 0
-                  && builtins.length (fromSchema.getCollectionFields "dhcp_option") > 0;
+                  && builtins.length (fromSchema.getCollectionFields "networkconf") > 0;
                 # Build message conditionally to avoid null interpolation
                 successMsg =
                   if hasSchema then

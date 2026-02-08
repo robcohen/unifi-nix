@@ -54,6 +54,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./scripts"
-          severity: warning
-          # Note: Some warnings are acceptable (SC1091 for sourced files, SC2029 for SSH)
+          severity: error
+          # Note: Only fail on errors, not warnings
+          # Common acceptable warnings: SC2034 (unused vars), SC2155 (declare/assign), SC2064 (trap)
           # Run locally with: nix-shell -p shellcheck --run "shellcheck scripts/*.sh"
