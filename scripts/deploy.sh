@@ -54,7 +54,7 @@ Environment:
   ALLOW_DELETES=true            Delete resources not in config
   UNIFI_SECRETS_DIR=path        Directory containing secret files
   SKIP_SCHEMA_CACHE=true        Skip device schema caching
-  SKIP_SCHEMA_VALIDATION=true   Deploy even if OpenAPI schema missing
+  SKIP_SCHEMA_VALIDATION=true   Deploy even if schema validation unavailable
   ALLOW_UNSAFE_CREATE=true      Create resources without schema defaults (dangerous!)
   SKIP_BACKUP=true              Skip automatic backup before deploy
   AUTO_CONFIRM=true             Skip confirmation prompt (for CI/automation)

@@ -1,48 +1,30 @@
 {
-  "zone_keys": [],
-  "network_purposes": [
-    "corporate"
+  "zone_keys": [
+    "internal",
+    "external",
+    "gateway",
+    "vpn",
+    "hotspot",
+    "dmz"
   ],
-  "network_groups": [
-    "LAN"
+  "policy_actions": [],
+  "policy_protocols": [],
+  "policy_ip_versions": [],
+  "policy_connection_states": [],
+  "policy_src_matching_targets": [],
+  "policy_dst_matching_targets": [],
+  "policy_port_matching_types": [],
+  "traffic_rule_actions": [],
+  "network_purposes": [
+    "wan",
+    "corporate",
+    "guest"
   ],
   "wifi_security": [
     "wpapsk"
   ],
   "wifi_wpa_modes": [
+    "wpa3",
     "wpa2"
-  ],
-  "wifi_pmf_modes": [],
-  "policy_actions": [],
-  "setting_keys": [
-    "connectivity",
-    "dashboard",
-    "doh",
-    "dpi",
-    "element_adopt",
-    "ether_lighting",
-    "global_nat",
-    "global_switch",
-    "guest_access",
-    "ips",
-    "lcm",
-    "magic_site_to_site_vpn",
-    "mdns",
-    "mgmt",
-    "netflow",
-    "ntp",
-    "peer_to_peer",
-    "radio_ai",
-    "roaming_assistant",
-    "rsyslogd",
-    "security_posture",
-    "super_cloudaccess",
-    "super_fingerbank",
-    "super_identity",
-    "super_mgmt",
-    "teleport",
-    "traffic_flow",
-    "ugw",
-    "usg"
   ]
 }

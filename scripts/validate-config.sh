@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
-# Validate UniFi configuration against OpenAPI and MongoDB schemas
-# Usage: validate-config.sh <config.json> <openapi-schema-dir> <device-schema-dir>
+# Validate UniFi configuration against schema
+# Usage: validate-config.sh <config.json> <schema-dir> <device-schema-dir>
 #
 # Returns exit code 0 if valid, 1 if invalid with errors printed to stderr
 #
 set -euo pipefail
 
-CONFIG_JSON="${1:?Usage: validate-config.sh <config.json> <openapi-schema-dir> <device-schema-dir>}"
-OPENAPI_DIR="${2:?Missing openapi-schema-dir}"
+CONFIG_JSON="${1:?Usage: validate-config.sh <config.json> <schema-dir> <device-schema-dir>}"
+SCHEMA_DIR="${2:?Missing schema-dir}"
 DEVICE_DIR="${3:?Missing device-schema-dir}"
 
-OPENAPI_SCHEMA="$OPENAPI_DIR/integration.json"
 MONGODB_FIELDS="$DEVICE_DIR/mongodb-fields.json"
 MONGODB_EXAMPLES="$DEVICE_DIR/mongodb-examples.json"
 MONGODB_ENUMS="$DEVICE_DIR/enums.json"
 REFERENCE_IDS="$DEVICE_DIR/reference-ids.json"
+
+# Generated enums (from JAR extraction)
+GENERATED_ENUMS="$SCHEMA_DIR/generated/enums.json"
 
 ERRORS=()
 WARNINGS=()
@@ -28,7 +30,7 @@ warn() {
 }
 
 # Check required files exist
-for f in "$CONFIG_JSON" "$OPENAPI_SCHEMA" "$MONGODB_FIELDS" "$REFERENCE_IDS"; do
+for f in "$CONFIG_JSON" "$MONGODB_FIELDS" "$REFERENCE_IDS"; do
   if [[ ! -f $f ]]; then
     echo "ERROR: Required file not found: $f" >&2
     exit 1
@@ -40,14 +42,52 @@ CONFIG=$(cat "$CONFIG_JSON")
 echo "Validating configuration..."
 
 # =============================================================================
-# Load enum values from device schema
+# Load enum values from schema (prefer JAR-generated, fallback to device-extracted)
 # =============================================================================
-if [[ -f $MONGODB_ENUMS ]]; then
+ENUMS_FILE=""
+if [[ -f $GENERATED_ENUMS ]]; then
+  ENUMS_FILE="$GENERATED_ENUMS"
+  echo "  Loading enums from generated schema..."
+elif [[ -f $MONGODB_ENUMS ]]; then
+  ENUMS_FILE="$MONGODB_ENUMS"
   echo "  Loading enums from device schema..."
-  VALID_NETWORK_PURPOSES=$(jq -r '.network_purposes // [] | join(" ")' "$MONGODB_ENUMS")
-  VALID_WIFI_SECURITY=$(jq -r '.wifi_security // [] | join(" ")' "$MONGODB_ENUMS")
-  VALID_WIFI_WPA_MODES=$(jq -r '.wifi_wpa_modes // [] | join(" ")' "$MONGODB_ENUMS")
 fi
+
+get_enum_values() {
+  local generated_key="$1"
+  local device_key="${2:-$1}"
+  local values=""
+
+  # First get from generated enums (JAR-extracted)
+  if [[ -f $GENERATED_ENUMS ]]; then
+    values=$(jq -r "
+      if .${generated_key} | type == \"array\" then
+        .${generated_key} | join(\" \")
+      elif .${generated_key}.values | type == \"array\" then
+        .${generated_key}.values | join(\" \")
+      else
+        \"\"
+      end
+    " "$GENERATED_ENUMS")
+  fi
+
+  # Merge with device-extracted enums (may have newer values like wpa3)
+  if [[ -f $MONGODB_ENUMS ]]; then
+    local device_values
+    device_values=$(jq -r ".${device_key} // [] | if type == \"array\" then join(\" \") else \"\" end" "$MONGODB_ENUMS" 2>/dev/null || echo "")
+    if [[ -n $device_values ]]; then
+      values="$values $device_values"
+    fi
+  fi
+
+  # Return unique values
+  echo "$values" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs
+}
+
+# Get enums (generated key, device key)
+VALID_NETWORK_PURPOSES=$(get_enum_values "purpose" "network_purposes")
+VALID_WIFI_SECURITY=$(get_enum_values "security" "wifi_security")
+VALID_WIFI_WPA_MODES=$(get_enum_values "wpa_mode" "wifi_wpa_modes")
 
 # Defaults if not loaded from schema
 VALID_NETWORK_PURPOSES="${VALID_NETWORK_PURPOSES:-corporate guest wan vlan-only remote-user-vpn site-vpn}"
@@ -59,30 +99,16 @@ VALID_WIFI_WPA_MODES="${VALID_WIFI_WPA_MODES:-wpa1 wpa2 wpa3 auto}"
 # =============================================================================
 echo "  Checking networks..."
 
-NETWORK_SCHEMA=$(jq -r '.components.schemas.NetworkRequest // .components.schemas.Network // empty' "$OPENAPI_SCHEMA")
-NETWORK_REQUIRED=$(echo "$NETWORK_SCHEMA" | jq -r '.required // []')
-
 for net_name in $(echo "$CONFIG" | jq -r '.networks // {} | keys[]'); do
   net=$(echo "$CONFIG" | jq -c ".networks[\"$net_name\"]")
 
-  # Check required fields from OpenAPI
-  for req_field in $(echo "$NETWORK_REQUIRED" | jq -r '.[]'); do
-    # Map OpenAPI field names to MongoDB field names
-    case "$req_field" in
-    "name") mongo_field="name" ;;
-    "enabled") mongo_field="enabled" ;;
-    "vlanId") mongo_field="vlan" ;;
-    *) mongo_field="$req_field" ;;
-    esac
-
-    if ! echo "$net" | jq -e ".$mongo_field // empty" &>/dev/null; then
-      # Check if it has a default in the schema
-      has_default=$(echo "$NETWORK_SCHEMA" | jq -e ".properties.$req_field.default // empty" 2>/dev/null || echo "")
-      if [[ -z $has_default ]]; then
-        error "Network '$net_name': missing required field '$mongo_field'"
-      fi
-    fi
-  done
+  # Check essential required fields
+  if ! echo "$net" | jq -e '.name // empty' &>/dev/null; then
+    error "Network '$net_name': missing required field 'name'"
+  fi
+  if ! echo "$net" | jq -e '.ip_subnet // empty' &>/dev/null; then
+    error "Network '$net_name': missing required field 'ip_subnet'"
+  fi
 
   # Validate field names exist in MongoDB schema
   VALID_NETWORK_FIELDS=$(jq -r '.networkconf // [] | .[]' "$MONGODB_FIELDS")
@@ -124,10 +150,6 @@ done
 # Validate WiFi Networks
 # =============================================================================
 echo "  Checking WiFi networks..."
-
-# Get WiFi schema from OpenAPI
-WIFI_SCHEMA=$(jq -r '.components.schemas.WifiBroadcastRequest // .components.schemas.WifiNetwork // empty' "$OPENAPI_SCHEMA")
-WIFI_REQUIRED=$(echo "$WIFI_SCHEMA" | jq -r '.required // []')
 
 # Get valid field names from MongoDB
 VALID_WIFI_FIELDS=$(jq -r '.wlanconf // [] | .[]' "$MONGODB_FIELDS")

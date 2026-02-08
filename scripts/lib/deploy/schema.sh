@@ -32,32 +32,33 @@ setup_device_schemas() {
   echo "Device schemas: $device_schema_dir"
   export UNIFI_DEVICE_SCHEMA_DIR="$device_schema_dir"
 
-  # Check if OpenAPI schema exists for this version
+  # Check if schema exists for this version (JAR fields or generated enums)
   DEVICE_VERSION=$(cat "$device_schema_dir/version" 2>/dev/null || echo "unknown")
   export DEVICE_VERSION
 
-  local openapi_schema_dir="$script_dir/../schemas/$DEVICE_VERSION"
+  local schema_dir="$script_dir/../schemas/$DEVICE_VERSION"
 
-  if [[ ! -f "$openapi_schema_dir/integration.json" ]]; then
-    handle_missing_openapi_schema "$device_schema_dir" "$openapi_schema_dir" "$host" || return 1
+  # Check for JAR-extracted schema (preferred) or generated enums
+  if [[ -d "$schema_dir/jar-fields" ]] || [[ -f "$schema_dir/generated/enums.json" ]]; then
+    echo "Schema: $schema_dir"
+    export UNIFI_OPENAPI_SCHEMA_DIR="$schema_dir"
+    sync_device_enums "$device_schema_dir" "$schema_dir"
   else
-    echo "OpenAPI schema: $openapi_schema_dir"
-    export UNIFI_OPENAPI_SCHEMA_DIR="$openapi_schema_dir"
-    sync_device_enums "$device_schema_dir" "$openapi_schema_dir"
+    handle_missing_schema "$device_schema_dir" "$schema_dir" "$host" || return 1
   fi
 
   echo ""
   return 0
 }
 
-# Handle case where OpenAPI schema is missing for device version
-handle_missing_openapi_schema() {
+# Handle case where schema is missing for device version
+handle_missing_schema() {
   local device_schema_dir="$1"
-  local openapi_schema_dir="$2"
+  local schema_dir="$2"
   local host="$3"
 
   echo ""
-  echo "WARNING: OpenAPI schema not found for version $DEVICE_VERSION"
+  echo "WARNING: Schema not found for version $DEVICE_VERSION"
   echo ""
   echo "Your device is running a version that isn't in the schema repository yet."
   echo "This can happen if:"
@@ -68,24 +69,24 @@ handle_missing_openapi_schema() {
   # Create minimal schema directory with device-extracted enums
   if [[ -f "${device_schema_dir}/enums.json" ]]; then
     echo "Creating minimal schema directory for Nix-time validation..."
-    mkdir -p "$openapi_schema_dir"
-    cp "${device_schema_dir}/enums.json" "${openapi_schema_dir}/enums.json"
-    echo "  Created: $openapi_schema_dir/enums.json"
+    mkdir -p "$schema_dir/generated"
+    cp "${device_schema_dir}/enums.json" "${schema_dir}/generated/enums.json"
+    echo "  Created: $schema_dir/generated/enums.json"
     echo ""
-    echo "NOTE: Full OpenAPI schema (integration.json) not available."
-    echo "      Nix-time validation will use device-extracted enums."
+    echo "NOTE: Using device-extracted enums for validation."
+    echo "      Full schema (jar-fields) not available."
     echo ""
   fi
 
   if [[ ${SKIP_SCHEMA_VALIDATION:-false} != "true" ]]; then
     echo "Options:"
-    echo "  1. Wait for CI to extract the schema (runs every 6 hours)"
-    echo "  2. Extract manually: ./scripts/extract-schema.sh $host"
+    echo "  1. Trigger 'Update UniFi Schemas' workflow manually"
+    echo "  2. Wait for weekly automatic schema update"
     echo "  3. Skip validation: SKIP_SCHEMA_VALIDATION=true ./scripts/deploy.sh ..."
     echo ""
     return 1
   else
-    echo "WARNING: Proceeding without OpenAPI validation (SKIP_SCHEMA_VALIDATION=true)"
+    echo "WARNING: Proceeding without full schema validation (SKIP_SCHEMA_VALIDATION=true)"
   fi
 
   return 0
@@ -94,28 +95,34 @@ handle_missing_openapi_schema() {
 # Sync device-extracted enums to versioned schema directory
 sync_device_enums() {
   local device_schema_dir="$1"
-  local openapi_schema_dir="$2"
+  local schema_dir="$2"
 
   if [[ ! -f "${device_schema_dir}/enums.json" ]]; then
     return 0
   fi
 
-  if [[ ! -f "${openapi_schema_dir}/enums.json" ]]; then
+  # Use generated/enums.json path for consistency
+  local schema_enums="${schema_dir}/generated/enums.json"
+
+  if [[ ! -f "$schema_enums" ]]; then
     echo "  Syncing device enums to versioned schema..."
-    cp "${device_schema_dir}/enums.json" "${openapi_schema_dir}/enums.json"
+    mkdir -p "${schema_dir}/generated"
+    cp "${device_schema_dir}/enums.json" "$schema_enums"
     return 0
   fi
 
-  # Check if device enums are newer
-  local device_mtime schema_mtime
-  device_mtime=$(stat -c %Y "${device_schema_dir}/enums.json" 2>/dev/null || echo 0)
-  schema_mtime=$(stat -c %Y "${openapi_schema_dir}/enums.json" 2>/dev/null || echo 0)
+  # Check if device enums are newer (only if not JAR-extracted)
+  if [[ ! -d "${schema_dir}/jar-fields" ]]; then
+    local device_mtime schema_mtime
+    device_mtime=$(stat -c %Y "${device_schema_dir}/enums.json" 2>/dev/null || echo 0)
+    schema_mtime=$(stat -c %Y "$schema_enums" 2>/dev/null || echo 0)
 
-  if [[ $device_mtime -gt $schema_mtime ]]; then
-    echo "  Checking for schema changes..."
-    check_schema_migration "${openapi_schema_dir}/enums.json" "${device_schema_dir}/enums.json"
-    echo "  Updating versioned schema with newer device enums..."
-    cp "${device_schema_dir}/enums.json" "${openapi_schema_dir}/enums.json"
+    if [[ $device_mtime -gt $schema_mtime ]]; then
+      echo "  Checking for schema changes..."
+      check_schema_migration "$schema_enums" "${device_schema_dir}/enums.json"
+      echo "  Updating versioned schema with newer device enums..."
+      cp "${device_schema_dir}/enums.json" "$schema_enums"
+    fi
   fi
 }
 
