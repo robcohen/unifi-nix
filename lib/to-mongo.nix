@@ -163,10 +163,16 @@ let
     ipv6 = "IPV6";
   };
 
-  # Map connection state to MongoDB values
+  # Map connection state to MongoDB values (accepts both cases)
   connectionStateMap = {
     all = "ALL";
+    ALL = "ALL";
     return = "RETURN_TRAFFIC";
+    RETURN_TRAFFIC = "RETURN_TRAFFIC";
+    ESTABLISHED = "ESTABLISHED";
+    INVALID = "INVALID";
+    NEW = "NEW";
+    RELATED = "RELATED";
   };
 
   # Convert a firewall group to MongoDB firewallgroup document
