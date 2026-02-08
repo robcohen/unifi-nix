@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-radiusprofile.schema.json",
+  "title": "UniFi radiusprofile Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "external_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "attr_no_edit": {
+      "type": "boolean"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "use_usg_auth_server": {
+      "type": "boolean"
+    },
+    "auth_servers": {
+      "type": "array"
+    },
+    "acct_servers": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

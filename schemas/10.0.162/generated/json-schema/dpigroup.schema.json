@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-dpigroup.schema.json",
+  "title": "UniFi dpigroup Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    }
+  },
+  "additionalProperties": true
+}

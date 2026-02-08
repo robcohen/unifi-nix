@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-apgroup.schema.json",
+  "title": "UniFi apgroup Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "for_wlanconf": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

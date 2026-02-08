@@ -1,0 +1,556 @@
+{
+  "networkconf": [
+    {
+      "name": "dhcpd_enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "dhcpguard_enabled",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "domain_name",
+      "type": "string",
+      "default": "localdomain",
+      "optional": false
+    },
+    {
+      "name": "igmp_snooping",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "mdns_enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "is_nat",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "purpose",
+      "type": "string",
+      "default": "corporate",
+      "optional": false
+    },
+    {
+      "name": "ipv6_interface_type",
+      "type": "string",
+      "default": "none",
+      "optional": false
+    },
+    {
+      "name": "ipv6_setting_preference",
+      "type": "string",
+      "default": "auto",
+      "optional": false
+    },
+    {
+      "name": "ipv6_client_address_assignment",
+      "type": "string",
+      "default": "slaac",
+      "optional": false
+    },
+    {
+      "name": "dhcpdv6_enabled",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "ipv6_ra_preferred_lifetime",
+      "type": "int",
+      "default": 14400,
+      "optional": false
+    },
+    {
+      "name": "ipv6_ra_enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "ipv6_ra_priority",
+      "type": "string",
+      "default": "high",
+      "optional": false
+    },
+    {
+      "name": "dhcpdv6_dns_auto",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "dhcpdv6_leasetime",
+      "type": "int",
+      "default": 86400,
+      "optional": false
+    },
+    {
+      "name": "ipv6_pd_start",
+      "type": "string",
+      "default": "::2",
+      "optional": false
+    },
+    {
+      "name": "ipv6_pd_stop",
+      "type": "string",
+      "default": "::7d1",
+      "optional": false
+    },
+    {
+      "name": "dhcpdv6_start",
+      "type": "string",
+      "default": "::2",
+      "optional": false
+    },
+    {
+      "name": "dhcpdv6_stop",
+      "type": "string",
+      "default": "::7d1",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "auto_scale_enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "LAN",
+      "optional": false
+    },
+    {
+      "name": "ip_subnet",
+      "type": "string",
+      "default": "192.168.1.1/24",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "dhcpd_start",
+      "type": "string",
+      "default": "192.168.1.6",
+      "optional": false
+    },
+    {
+      "name": "dhcpd_stop",
+      "type": "string",
+      "default": "192.168.1.254",
+      "optional": false
+    },
+    {
+      "name": "vlan_enabled",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "external_id",
+      "type": "string",
+      "default": "56afca07-2241-47c4-a449-c73336e01d9f",
+      "optional": false
+    },
+    {
+      "name": "networkgroup",
+      "type": "string",
+      "default": "LAN",
+      "optional": false
+    }
+  ],
+  "wlanconf": [
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_no_edit",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "element_wlan",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "security",
+      "type": "string",
+      "default": "wpapsk",
+      "optional": false
+    },
+    {
+      "name": "wpa_mode",
+      "type": "string",
+      "default": "wpa2",
+      "optional": false
+    },
+    {
+      "name": "wpa_enc",
+      "type": "string",
+      "default": "ccmp",
+      "optional": false
+    },
+    {
+      "name": "hide_ssid",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "element_adopt",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "element-43a7f274fec3c597",
+      "optional": false
+    },
+    {
+      "name": "minrate_ng_enabled",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "minrate_ng_data_rate_kbps",
+      "type": "int",
+      "default": 1000,
+      "optional": false
+    }
+  ],
+  "radiusprofile": [
+    {
+      "name": "external_id",
+      "type": "string",
+      "default": "21c2bf62-5270-4d6b-98cf-648bc575ea7f",
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_no_edit",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "use_usg_auth_server",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "auth_servers",
+      "type": "list",
+      "default": [
+        {
+          "ip": "192.168.1.1",
+          "port": 1812,
+          "x_secret": "h9tx7GQBrf9FY9HC"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "name": "acct_servers",
+      "type": "list",
+      "default": [],
+      "optional": true
+    }
+  ],
+  "apgroup": [
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "default",
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "All APs",
+      "optional": false
+    },
+    {
+      "name": "for_wlanconf",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    }
+  ],
+  "usergroup": [
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "qos_rate_max_up",
+      "type": "int",
+      "default": -1,
+      "optional": false
+    },
+    {
+      "name": "qos_rate_max_down",
+      "type": "int",
+      "default": -1,
+      "optional": false
+    }
+  ],
+  "dpigroup": [
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    }
+  ],
+  "scheduletask": [
+    {
+      "name": "name",
+      "type": "string",
+      "default": "backup",
+      "optional": false
+    },
+    {
+      "name": "action",
+      "type": "string",
+      "default": "backup",
+      "optional": false
+    },
+    {
+      "name": "execute_only_once",
+      "type": "bool",
+      "default": false,
+      "optional": true
+    },
+    {
+      "name": "cron_expr",
+      "type": "string",
+      "default": "30 0 1 * *",
+      "optional": false
+    },
+    {
+      "name": "timezone",
+      "type": "string",
+      "default": "UTC",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199db",
+      "optional": false
+    }
+  ],
+  "wlangroup": [
+    {
+      "name": "name",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    },
+    {
+      "name": "site_id",
+      "type": "string",
+      "default": "6988c77997f5fa6abc9199dc",
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "Default",
+      "optional": false
+    }
+  ],
+  "setting": [
+    {
+      "name": "key",
+      "type": "string",
+      "default": "super_identity",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "UniFi",
+      "optional": false
+    },
+    {
+      "name": "hostname",
+      "type": "string",
+      "default": "example-domain.ui.com",
+      "optional": false
+    }
+  ],
+  "site": [
+    {
+      "name": "anonymous_id",
+      "type": "string",
+      "default": "1e0af4c6-a6cf-4386-91c5-552c183d4484",
+      "optional": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "super",
+      "optional": false
+    },
+    {
+      "name": "key",
+      "type": "string",
+      "default": "super",
+      "optional": false
+    },
+    {
+      "name": "attr_hidden_id",
+      "type": "string",
+      "default": "super",
+      "optional": false
+    },
+    {
+      "name": "attr_hidden",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_no_delete",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    },
+    {
+      "name": "attr_no_edit",
+      "type": "bool",
+      "default": true,
+      "optional": false
+    }
+  ]
+}

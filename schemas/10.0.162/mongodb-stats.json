@@ -8,11 +8,11 @@
     "count": 2
   },
   {
-    "name": "site",
+    "name": "scheduletask",
     "count": 2
   },
   {
-    "name": "scheduletask",
+    "name": "site",
     "count": 2
   },
   {
@@ -20,15 +20,7 @@
     "count": 1
   },
   {
-    "name": "dpigroup",
-    "count": 1
-  },
-  {
     "name": "apgroup",
-    "count": 1
-  },
-  {
-    "name": "networkconf",
     "count": 1
   },
   {
@@ -36,7 +28,11 @@
     "count": 1
   },
   {
-    "name": "usergroup",
+    "name": "networkconf",
+    "count": 1
+  },
+  {
+    "name": "radiusprofile",
     "count": 1
   },
   {
@@ -44,7 +40,11 @@
     "count": 1
   },
   {
-    "name": "radiusprofile",
+    "name": "dpigroup",
+    "count": 1
+  },
+  {
+    "name": "usergroup",
     "count": 1
   }
 ]

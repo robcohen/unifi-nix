@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-scheduletask.schema.json",
+  "title": "UniFi scheduletask Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    },
+    "execute_only_once": {
+      "type": "boolean"
+    },
+    "cron_expr": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    }
+  },
+  "additionalProperties": true
+}

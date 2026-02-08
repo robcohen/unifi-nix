@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-wlanconf.schema.json",
+  "title": "UniFi wlanconf Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "attr_no_edit": {
+      "type": "boolean"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "security": {
+      "type": "string"
+    },
+    "wpa_mode": {
+      "type": "string"
+    },
+    "wpa_enc": {
+      "type": "string"
+    },
+    "hide_ssid": {
+      "type": "boolean"
+    },
+    "element_adopt": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "x_passphrase": {
+      "type": "string"
+    },
+    "minrate_ng_enabled": {
+      "type": "boolean"
+    },
+    "minrate_ng_data_rate_kbps": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,4 +1,10 @@
 {
+  "setting": [
+    "_id",
+    "key",
+    "name",
+    "hostname"
+  ],
   "dashboard": [
     "_id",
     "attr_hidden_id",
@@ -7,18 +13,12 @@
     "name",
     "is_public"
   ],
-  "dpigroup": [
+  "wlangroup": [
     "_id",
+    "name",
+    "site_id",
     "attr_no_delete",
-    "attr_hidden_id",
-    "name",
-    "site_id"
-  ],
-  "setting": [
-    "_id",
-    "key",
-    "name",
-    "hostname"
+    "attr_hidden_id"
   ],
   "apgroup": [
     "_id",
@@ -27,6 +27,23 @@
     "attr_no_delete",
     "name",
     "for_wlanconf"
+  ],
+  "wlanconf": [
+    "_id",
+    "attr_no_delete",
+    "attr_no_edit",
+    "attr_hidden_id",
+    "site_id",
+    "enabled",
+    "security",
+    "wpa_mode",
+    "wpa_enc",
+    "hide_ssid",
+    "element_adopt",
+    "name",
+    "x_passphrase",
+    "minrate_ng_enabled",
+    "minrate_ng_data_rate_kbps"
   ],
   "networkconf": [
     "_id",
@@ -62,58 +79,6 @@
     "external_id",
     "networkgroup"
   ],
-  "wlanconf": [
-    "_id",
-    "attr_no_delete",
-    "attr_no_edit",
-    "attr_hidden_id",
-    "site_id",
-    "enabled",
-    "security",
-    "wpa_mode",
-    "wpa_enc",
-    "hide_ssid",
-    "element_adopt",
-    "name",
-    "x_passphrase",
-    "minrate_ng_enabled",
-    "minrate_ng_data_rate_kbps"
-  ],
-  "wlangroup": [
-    "_id",
-    "name",
-    "site_id",
-    "attr_no_delete",
-    "attr_hidden_id"
-  ],
-  "site": [
-    "_id",
-    "anonymous_id",
-    "name",
-    "key",
-    "attr_hidden_id",
-    "attr_hidden",
-    "attr_no_delete",
-    "attr_no_edit"
-  ],
-  "scheduletask": [
-    "_id",
-    "name",
-    "action",
-    "execute_only_once",
-    "cron_expr",
-    "timezone",
-    "site_id"
-  ],
-  "usergroup": [
-    "_id",
-    "site_id",
-    "name",
-    "attr_hidden_id",
-    "attr_no_delete",
-    "qos_rate_max_up",
-    "qos_rate_max_down"
-  ],
   "radiusprofile": [
     "_id",
     "external_id",
@@ -125,5 +90,45 @@
     "use_usg_auth_server",
     "auth_servers",
     "acct_servers"
+  ],
+  "version_history": [
+    "_id",
+    "time",
+    "version"
+  ],
+  "scheduletask": [
+    "_id",
+    "name",
+    "action",
+    "execute_only_once",
+    "cron_expr",
+    "timezone",
+    "site_id"
+  ],
+  "dpigroup": [
+    "_id",
+    "attr_no_delete",
+    "attr_hidden_id",
+    "name",
+    "site_id"
+  ],
+  "usergroup": [
+    "_id",
+    "site_id",
+    "name",
+    "attr_hidden_id",
+    "attr_no_delete",
+    "qos_rate_max_up",
+    "qos_rate_max_down"
+  ],
+  "site": [
+    "_id",
+    "anonymous_id",
+    "name",
+    "key",
+    "attr_hidden_id",
+    "attr_hidden",
+    "attr_no_delete",
+    "attr_no_edit"
   ]
 }

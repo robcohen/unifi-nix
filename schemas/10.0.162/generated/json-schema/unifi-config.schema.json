@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-config.schema.json",
+  "title": "UniFi Configuration",
+  "type": "object",
+  "properties": {
+    "apgroup": {
+      "$ref": "./apgroup.schema.json"
+    },
+    "dashboard": {
+      "$ref": "./dashboard.schema.json"
+    },
+    "dpigroup": {
+      "$ref": "./dpigroup.schema.json"
+    },
+    "networkconf": {
+      "$ref": "./networkconf.schema.json"
+    },
+    "radiusprofile": {
+      "$ref": "./radiusprofile.schema.json"
+    },
+    "scheduletask": {
+      "$ref": "./scheduletask.schema.json"
+    },
+    "setting": {
+      "$ref": "./setting.schema.json"
+    },
+    "site": {
+      "$ref": "./site.schema.json"
+    },
+    "usergroup": {
+      "$ref": "./usergroup.schema.json"
+    },
+    "version_history": {
+      "$ref": "./version_history.schema.json"
+    },
+    "wlanconf": {
+      "$ref": "./wlanconf.schema.json"
+    },
+    "wlangroup": {
+      "$ref": "./wlangroup.schema.json"
+    }
+  }
+}

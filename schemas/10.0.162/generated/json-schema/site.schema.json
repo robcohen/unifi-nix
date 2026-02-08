@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-site.schema.json",
+  "title": "UniFi site Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "anonymous_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_hidden": {
+      "type": "boolean"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "attr_no_edit": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

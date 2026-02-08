@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-networkconf.schema.json",
+  "title": "UniFi networkconf Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "dhcpd_enabled": {
+      "type": "boolean"
+    },
+    "dhcpguard_enabled": {
+      "type": "boolean"
+    },
+    "domain_name": {
+      "type": "string"
+    },
+    "igmp_snooping": {
+      "type": "boolean"
+    },
+    "mdns_enabled": {
+      "type": "boolean"
+    },
+    "is_nat": {
+      "type": "boolean"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "ipv6_interface_type": {
+      "type": "string"
+    },
+    "ipv6_setting_preference": {
+      "type": "string"
+    },
+    "ipv6_client_address_assignment": {
+      "type": "string"
+    },
+    "dhcpdv6_enabled": {
+      "type": "boolean"
+    },
+    "ipv6_ra_preferred_lifetime": {
+      "type": "integer"
+    },
+    "ipv6_ra_enabled": {
+      "type": "boolean"
+    },
+    "ipv6_ra_priority": {
+      "type": "string"
+    },
+    "dhcpdv6_dns_auto": {
+      "type": "boolean"
+    },
+    "dhcpdv6_leasetime": {
+      "type": "integer"
+    },
+    "ipv6_pd_start": {
+      "type": "string"
+    },
+    "ipv6_pd_stop": {
+      "type": "string"
+    },
+    "dhcpdv6_start": {
+      "type": "string"
+    },
+    "dhcpdv6_stop": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "auto_scale_enabled": {
+      "type": "boolean"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "ip_subnet": {
+      "type": "string",
+      "pattern": "^[0-9.]+/[0-9]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "dhcpd_start": {
+      "type": "string"
+    },
+    "dhcpd_stop": {
+      "type": "string"
+    },
+    "vlan_enabled": {
+      "type": "boolean"
+    },
+    "external_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "networkgroup": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unifi-usergroup.schema.json",
+  "title": "UniFi usergroup Configuration",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "attr_hidden_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "attr_no_delete": {
+      "type": "boolean"
+    },
+    "qos_rate_max_up": {
+      "type": "integer"
+    },
+    "qos_rate_max_down": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": true
+}
